@@ -1,0 +1,6 @@
+# Ajustes de pnpm (en pnpm 11 los ajustes viven aquí, no en package.json).
+# esbuild y sharp necesitan ejecutar su script de instalación para bajar el binario
+# de la plataforma; pnpm los bloquea por defecto.
+allowBuilds:
+  esbuild: true
+  sharp: true

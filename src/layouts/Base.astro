@@ -1,0 +1,31 @@
+---
+/**
+ * Layout raíz: todo lo que va entre <html> y </html>.
+ * Las metas de SEO completas (Open Graph, canónicas, JSON-LD) llegan en T12;
+ * aquí solo el mínimo válido para que el documento sea correcto desde el primer día.
+ */
+import '../styles/global.css';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+}
+
+const {
+  titulo = 'Bar El Jardín · Bar en Bolnuevo, Mazarrón',
+  descripcion = 'Bar rodeado de flores y plantas en Bolnuevo (Mazarrón, Murcia). Especialidades de la casa, bratwurst, currywurst y tabla de jamón serrano.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

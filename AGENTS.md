@@ -78,12 +78,12 @@ El usuario quiere el vídeo de fondo y que **cada cambio de escena acompañe a u
 ## 4. Estructura de carpetas prevista
 
 ```
-web/
+web-el-jardin/               ← raíz del repo (github.com/antoniorb1913/web-el-jardin)
 ├─ AGENTS.md · TAREAS.md · HISTORIAL.md · README.md
 ├─ astro.config.mjs · package.json · netlify.toml
 ├─ fotos/                    ← originales del usuario. NUNCA se tocan ni se borran
+│  └─ logo.png               ← el logo original vive aquí dentro
 ├─ transicion.mp4            ← vídeo original. NUNCA se sobrescribe
-├─ logo.png                  ← logo original. NUNCA se sobrescribe
 ├─ public/
 │  ├─ _headers               ← cabeceras de seguridad (CSP incluida)
 │  ├─ robots.txt · favicon.svg
@@ -239,7 +239,8 @@ Si algo está ⚠️, el agente dice **exactamente qué comando falta** y no da 
 |---|---|
 | Node.js en el PATH del sistema | ❌ No instalado. El agente usa el runtime incluido: `C:\Users\GIGABYTE-PC\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe` y `pnpm` en `…\dependencies\pnpm\bin\pnpm.mjs` |
 | ffmpeg / ffprobe | ❌ No instalado en el sistema. Para T4 se usará un binario empaquetado (dev-only, no viaja al sitio) |
-| Repositorio git | ❌ Todavía no existe (`.git` ausente) → **lo crea el usuario** |
+| Repositorio git | ✅ `github.com/antoniorb1913/web-el-jardin`, clonado en `Desktop\web\web-el-jardin`. `main` = `a2482f7` (T1). Los assets grandes siguen **sin rastrear** |
+| Node/pnpm del agente | `node v24.21.0` · `pnpm 11.7.0` (runtime incluido; **no hay `node` ni `npm` en el PATH**) |
 | Carpeta de fotos | ✅ `fotos/` con **10 archivos, 31,8 MB**: `kiwi.jpg`, `aperol.png`, `dracula.heic`, `gintonic.png`, `bratwurst.png`, `currywurst.png`, `tabla_jamon.png`, `bar1.jpg`, `bar2.heic` y una copia de `logo.png` |
 | Fotos en **HEIC** | ⚠️ `dracula.heic` y `bar2.heic` son de iPhone. Ni el navegador ni Pillow las leen tal cual: hay que convertirlas a JPEG antes de usarlas (`pillow-heif`, todavía no instalado) |
 | Huecos de material | Falta foto de **«Pasión de la casa»**; y `gintonic.png` no corresponde a ninguna especialidad de la lista |
