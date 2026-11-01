@@ -61,7 +61,7 @@ El usuario quiere el vídeo de fondo y que **cada cambio de escena acompañe a u
 
 **Planteamiento aprobado:**
 
-1. El vídeo original (20 s, 19,8 MB) **se trocea en clips de una escena cada uno** (≈3-6 clips de 1-3 s). Un solo archivo de 20 MB es inviable en móvil y no permite control fino.
+1. El vídeo original (20,17 s, 19,8 MB, recorrido continuo en primera persona **sin cortes**) **se trocea en 6 clips, uno por estancia** (2,2–4,4 s, **960×654**, H.264 CRF 32, sin audio, con póster JPG). Un solo archivo de 20 MB es inviable en móvil y no permite control fino. **Se recorta el 9 % inferior** para eliminar la marca de agua del generador («KlingAI 4.0»), que no puede aparecer en la web.
 2. En la portada, el vídeo va en un contenedor **`position: sticky`** a pantalla completa. Las secciones (`¿Quiénes Somos?`, `Especialidades`, `Comida`, `Fotos`, `Ubicación`) **flotan por encima** con paneles semitransparentes para que el texto siempre se lea.
 3. Un `IntersectionObserver` detecta qué sección está activa e **intercambia el clip** con un fundido corto. Así «la escena cambia cuando llega la sección», no de forma aleatoria.
 4. `requestAnimationFrame` sólo para el parallax/zoom suave de entrada y salida (`congelarFondo`), nunca en bucle infinito.
@@ -249,13 +249,14 @@ Si algo está ⚠️, el agente dice **exactamente qué comando falta** y no da 
 | Cosa | Estado |
 |---|---|
 | Node.js en el PATH del sistema | ❌ No instalado. El agente usa el runtime incluido: `C:\Users\GIGABYTE-PC\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe` y `pnpm` en `…\dependencies\pnpm\bin\pnpm.mjs` |
-| ffmpeg / ffprobe | ❌ No instalado en el sistema. Para T4 se usará un binario empaquetado (dev-only, no viaja al sitio) |
-| Repositorio git | ✅ `github.com/antoniorb1913/web-el-jardin`. T1 y T2 mergeadas en `main` (`ce35133`). Los assets originales (51,6 MB) **ya están versionados** |
+| ffmpeg / ffprobe | ❌ No instalado en el sistema. Se usa el binario empaquetado de `imageio-ffmpeg` (pip) en `…\python\Lib\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe`. **Solo desarrollo**: no viaja al sitio |
+| Repositorio git | ✅ `github.com/antoniorb1913/web-el-jardin`. T1, T2 y T3 mergeadas en `main` (`ad37d1b`). Los assets originales (51,6 MB) **ya están versionados** |
 | Node/pnpm del agente | `node v24.21.0` · `pnpm 11.7.0` (runtime incluido; **no hay `node` ni `npm` en el PATH**) |
 | Carpeta de fotos | ✅ `fotos/` con **10 archivos, 31,8 MB**: `kiwi.jpg`, `aperol.png`, `dracula.heic`, `gintonic.png`, `bratwurst.png`, `currywurst.png`, `tabla_jamon.png`, `bar1.jpg`, `bar2.heic` y una copia de `logo.png` |
 | Fotos en **HEIC** | ⚠️ `dracula.heic` y `bar2.heic` son de iPhone. Ni el navegador ni Pillow las leen tal cual: hay que convertirlas a JPEG antes de usarlas (`pillow-heif`, todavía no instalado) |
 | Huecos de material | Falta foto de **«Pasión de la casa»**; y `gintonic.png` no corresponde a ninguna especialidad de la lista |
-| `transicion.mp4` | 20 s · 19,8 MB · resolución pendiente de medir (T4) |
+| `transicion.mp4` | 20,17 s · 19,8 MB · **1116×836 · 24 fps · 7,9 Mbps · con audio · plano continuo sin cortes** (medido en T4) |
+| Clips web (T4) | `public/video/`: 6 escenas + 6 pósters · **3,43 MB en total** · 306-685 KB por clip · **solo se descarga el clip activo** |
 | `logo.png` | 1052 × 467 px · 378 KB · fondo blanco, sin transparencia |
 
 **Recomendación al usuario:** instalar Node.js LTS para poder ejecutar `npm run dev` por su cuenta; el agente puede levantar el *dev server* con el runtime incluido, pero conviene que no dependa de él.

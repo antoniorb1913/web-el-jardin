@@ -13,6 +13,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T1 | 2026-11-01 | Documentación y plan de trabajo | ✅ Completada |
 | T2 | 2026-11-01 | Andamiaje Astro + Tailwind | ✅ Completada |
 | T3 | 2026-11-01 | Identidad visual: paleta, logotipo, iconos y tipografías | ✅ Completada |
+| T4 | 2026-11-01 | Análisis del vídeo y troceado en escenas | ✅ Completada |
 
 ---
 
@@ -119,6 +120,38 @@ Porque a partir de T6 se van a escribir muchas secciones y, sin tokens, cada com
 4. El logotipo sobre el fondo verde **no** debe tener un rectángulo blanco detrás.
 5. En la pestaña del navegador debe aparecer la «J» roja sobre cuadrado verde.
 6. Con las herramientas de desarrollo abiertas, en la pestaña Red: **ninguna** petición a `fonts.googleapis.com`; las fuentes salen de `/fonts/`.
+
+---
+
+## 2026-11-01 · T4 — Análisis del vídeo y troceado en escenas
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t4-troceado-video`
+**Commit:** `feat: trocear el vídeo en seis escenas para el scrollytelling`
+**Archivos:** `public/video/escena-1..6-*.mp4`, `public/video/escena-1..6-*.jpg`, `src/data/escenas.js`, `AGENTS.md`, `TAREAS.md`, `HISTORIAL.md`
+
+### 1. ¿Qué he realizado?
+
+He medido el vídeo original y lo he partido en **seis clips, uno por estancia** del recorrido (calle, umbral, patio, jardín, terraza y vistas), cada uno con su imagen de póster. Total: **3,43 MB** en lugar de los 19,8 MB del original.
+
+### 2. ¿Por qué?
+
+Porque 20 MB de vídeo de fondo son varios segundos de espera en un móvil con 4G mediocre, y porque el scrollytelling necesita poder cambiar de escena sin descargar el vídeo entero. Además el original traía **la marca de agua del generador** («KlingAI 4.0») y eso no puede salir en la web de un negocio: se recorta el 9 % inferior de cada clip. Y el vídeo **no tiene cortes** —es un plano continuo en primera persona—, así que los límites de escena hubo que decidirlos mirando fotogramas, no detectándolos con un filtro.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/data/escenas.js:17` — array `escenas`: id, `clip`, `poster`, `duracion` y `seccion` que activa cada una.
+- `public/video/escena-1-fachada.mp4` — el clip más ligero (306 KB).
+- `public/video/escena-5-terraza.mp4` — el más pesado (685 KB).
+- `AGENTS.md` §3.1 y §10 — la decisión técnica con las cifras reales.
+- Para regenerarlos: `ffmpeg -i transicion.mp4 -vf "trim=start=INI:end=FIN,setpts=PTS-STARTPTS,crop=iw:ih*0.91:0:0,scale=960:-2,fps=24" -an -c:v libx264 -crf 32 -preset slow -movflags +faststart salida.mp4`
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. Con el servidor de desarrollo levantado, abrir <http://localhost:4321/video/escena-1-fachada.mp4> y <http://localhost:4321/video/escena-5-terraza.mp4>.
+2. Comprobar que cada clip empieza y termina en su estancia, no a mitad de un giro.
+3. Mirar la esquina inferior derecha: no debe aparecer ninguna marca de agua.
+4. Comprobar que ninguno pasa de 700 KB.
 
 ---
 

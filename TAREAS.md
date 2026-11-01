@@ -12,7 +12,7 @@
 | 0 · Base | **T1** · Documentación y plan de trabajo | ✅ Completada | — |
 | 0 · Base | **T2** · Andamiaje Astro + Tailwind + estructura | ✅ Completada | T1 |
 | 0 · Base | **T3** · Identidad visual: paleta, logo, iconos y fuentes | ✅ Completada | T2 |
-| 1 · Scrollytelling | **T4** · Análisis del vídeo y troceado en escenas | ⏳ Pendiente | T2 |
+| 1 · Scrollytelling | **T4** · Análisis del vídeo y troceado en escenas | ✅ Completada | T2 |
 | 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ⏳ Pendiente | T4 |
 | 2 · Contenido | **T6** · Layout base: header, navegación y footer | ⏳ Pendiente | T3 |
 | 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ⏳ Pendiente | T6 |
@@ -85,13 +85,20 @@
 
 ---
 
-### T4 · Análisis del vídeo y troceado en escenas — ⏳
+### T4 · Análisis del vídeo y troceado en escenas — ✅ Completada (2026-11-01)
 
-**Objetivo:** medir `transicion.mp4` (resolución, fps, bitrate, keyframes), localizar los **cortes de escena** y generar **un clip por escena** (≈3-6 clips, H.264 + WebM, 720p, sin audio, `poster` JPG por escena, objetivo ≤ 600 KB por clip).
+**Objetivo:** medir `transicion.mp4`, decidir dónde empieza y acaba cada estancia y generar un clip por escena con su póster.
 
-**Archivos:** `public/video/*.mp4`, `public/video/*.webm`, `public/video/*.jpg`, `src/data/escenas.js` (mapa escena → archivo → sección).
+**Resultado:** el vídeo es **1116×836, 24 fps, 20,17 s, 7,9 Mbps y con audio** (el audio se descarta: es un fondo mudo). **No tiene cortes**: es un recorrido continuo en primera persona, así que los límites de escena se fijaron a ojo sobre una hoja de contactos (calle → puerta → patio → jardín → terraza → vistas). 6 clips de 2,2 a 4,4 s en **960×654, H.264, CRF 32, 24 fps**, con póster JPG de 640 px. **Total: 3,43 MB.**
 
-**Verificación:** carpeta `public/video/` con los clips; reproducir dos clips seguidos en el navegador y confirmar que la transición de escena se ve natural y que ninguno pasa de 600 KB.
+> **Tres decisiones que conviene conocer:**
+> 1. **Se recorta el 9 % inferior del vídeo**: el original lleva la marca de agua «KlingAI 4.0» abajo a la derecha y no puede salir en la web del bar.
+> 2. **Sin WebM**: H.264 en MP4 lo reproduce el 100 % de los navegadores y duplicar cada clip solo engordaría el repo.
+> 3. El límite de 600 KB por clip se quedó corto — el follaje y la grava son carísimos de comprimir. Lo que importa no es el total sino cuánto se descarga de golpe: **solo el clip activo**, entre 306 y 685 KB.
+
+**Archivos:** `public/video/escena-1..6-*.mp4` y `.jpg`, `src/data/escenas.js`.
+
+**Verificación:** reproducir dos clips seguidos y comprobar que cada uno empieza y acaba en la estancia correcta (no a mitad de un giro); comprobar que ninguno pasa de 800 KB.
 
 ---
 
