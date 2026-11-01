@@ -1,0 +1,28 @@
+# Dependencias
+node_modules/
+
+# Salida del build
+dist/
+.astro/
+.netlify/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OJO: `fotos/` y `transicion.mp4` SÍ se versionan a propósito.
+# Son el material original del bar (irreemplazable) y GitHub hace de copia de
+# seguridad. Decisión del usuario, 2026-11-01. No añadir aquí.

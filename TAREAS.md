@@ -10,7 +10,7 @@
 | Fase | Tarea | Estado | Depende de |
 |---|---|---|---|
 | 0 · Base | **T1** · Documentación y plan de trabajo | ✅ Completada | — |
-| 0 · Base | **T2** · Andamiaje Astro + Tailwind + estructura | ⏳ Pendiente | T1 |
+| 0 · Base | **T2** · Andamiaje Astro + Tailwind + estructura | ✅ Completada | T1 |
 | 0 · Base | **T3** · Identidad visual: paleta, logo SVG, favicon, fuentes | ⏳ Pendiente | T2 |
 | 1 · Scrollytelling | **T4** · Análisis del vídeo y troceado en escenas | ⏳ Pendiente | T2 |
 | 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ⏳ Pendiente | T4 |
@@ -41,7 +41,7 @@
 ## Requisitos previos del usuario (no son tareas del agente)
 
 - [ ] **Instalar Node.js LTS** — no hay `node` en el PATH del sistema. Sin esto no puedes ejecutar `npm run dev` tú mismo.
-- [ ] **Crear el repositorio git** (`git init`) y el repo en GitHub. El agente no ejecuta git nunca (AGENTS.md · REGLA 5).
+- [x] **Repositorio git creado** — `github.com/antoniorb1913/web-el-jardin`, clonado en `Desktop\web\web-el-jardin`. T1 se subió directamente a `main`; **a partir de T2, una rama + PR por tarea**.
 - [x] **Copiar las fotos a `fotos/`** — hecho (10 archivos, 31,8 MB). Faltan dos cosas:
   - una foto de **«Pasión de la casa»**, que es la única especialidad sin imagen;
   - decidir qué hacer con **`gintonic.png`**, que no está en la lista de especialidades (¿se añade gin tonic a la carta o se usa sólo en la galería?).
@@ -63,13 +63,13 @@
 
 ---
 
-### T2 · Andamiaje Astro + Tailwind + estructura — ⏳
+### T2 · Andamiaje Astro + Tailwind + estructura — ✅ Completada (2026-11-01)
 
-**Objetivo:** proyecto Astro que arranca en local con Tailwind configurado, carpetas de `src/`, `netlify.toml` y scripts de `npm`. Página de prueba mínima.
+**Objetivo:** proyecto Astro que arranca en local con Tailwind configurado, carpetas de `src/`, `netlify.toml` y scripts de `pnpm`. Página de prueba mínima.
 
-**Archivos:** `package.json`, `astro.config.mjs`, `netlify.toml`, `src/styles/global.css`, `src/layouts/Base.astro`, `src/pages/index.astro`, `.gitignore`, `README.md`.
+**Archivos:** `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `astro.config.mjs`, `tsconfig.json`, `netlify.toml`, `.gitignore`, `README.md`, `src/styles/global.css`, `src/layouts/Base.astro`, `src/pages/index.astro`, `.gitkeep` de las carpetas vacías.
 
-**Verificación:** `npm install` y `npm run dev` → abrir `http://localhost:4321` y ver la página de prueba con estilos aplicados. `npm run build` termina sin errores y genera `dist/`.
+**Verificación:** `pnpm install` y `pnpm dev` → abrir `http://localhost:4321` y ver la página de prueba con estilos aplicados. `pnpm build` termina sin errores y genera `dist/`.
 
 ---
 

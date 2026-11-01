@@ -1,0 +1,32 @@
+---
+/**
+ * Página de prueba de T2. Sirve para verificar que Astro compila y que Tailwind
+ * está aplicando clases de verdad. Se sustituye por la portada real en las
+ * fases de contenido (T6 en adelante).
+ *
+ * Los colores verde/lima de aquí son PROVISIONALES: la paleta definitiva sale del
+ * logo en T3.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base>
+  <main class="mx-auto flex min-h-dvh max-w-3xl flex-col justify-center gap-6 p-6">
+    <p class="w-fit rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-900">
+      Andamiaje listo
+    </p>
+
+    <h1 class="text-4xl font-bold tracking-tight text-emerald-950 sm:text-6xl">
+      Bar El Jardín
+    </h1>
+
+    <p class="text-lg text-stone-700">
+      Av. Antonio Segado del Olmo, 19 · Bolnuevo, Mazarrón (Murcia)
+    </p>
+
+    <p class="rounded-xl border border-emerald-200 bg-white/70 p-4 text-stone-700">
+      Si lees esto con tipografía y colores aplicados, Astro y Tailwind están
+      funcionando. La portada con el scrollytelling se monta en las tareas T5 y T6.
+    </p>
+  </main>
+</Base>

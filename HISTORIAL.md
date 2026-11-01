@@ -11,6 +11,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | # | Fecha | Tarea | Estado |
 |---|---|---|---|
 | T1 | 2026-11-01 | Documentación y plan de trabajo | ✅ Completada |
+| T2 | 2026-11-01 | Andamiaje Astro + Tailwind | ✅ Completada |
 
 ---
 
@@ -44,6 +45,43 @@ Porque el proyecto se va a construir en muchas sesiones y sin un contrato escrit
 3. Abre `TAREAS.md`: en la tabla del principio solo **T1** debe estar en ✅ y **ninguna** tarea en 🔧 ni 👀.
 4. Comprueba que las especialidades son cuatro (Kiwi, Pasión, Drácula, Aperol) y que **no aparece ningún precio** en ningún archivo.
 5. Abre `HISTORIAL.md`: este registro debe tener los 4 puntos y la fila correspondiente en el índice.
+
+---
+
+## 2026-11-01 · T2 — Andamiaje Astro + Tailwind
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t2-andamiaje-astro-tailwind`
+**Commit:** `feat: montar el andamiaje de Astro 7 + Tailwind 4`
+**Archivos:** `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `astro.config.mjs`, `tsconfig.json`, `netlify.toml`, `.gitignore`, `README.md`, `src/styles/global.css`, `src/layouts/Base.astro`, `src/pages/index.astro`, `src/*/.gitkeep`, `AGENTS.md`, `TAREAS.md`, `HISTORIAL.md`
+
+### 1. ¿Qué he realizado?
+
+He montado el proyecto sobre el que se construirá todo lo demás: **Astro 7.4.4 + Tailwind 4.3.3** con salida estática, la estructura de carpetas, `.gitignore`, `netlify.toml`, README nuevo y una página de prueba. Comprobado con un build real (1 página, 713 ms, 1,1 KB de HTML y 8,2 KB de CSS en archivo aparte) y con el servidor de desarrollo respondiendo 200 en `http://localhost:4321`.
+
+### 2. ¿Por qué?
+
+Porque sin proyecto no hay dónde escribir las 16 tareas siguientes, y quería detectar los problemas de herramienta **antes** de tener contenido que perder. Los tres que aparecieron y quedan resueltos: (1) no hay `node` ni `npm` en este equipo, así que el gestor es **pnpm** con el runtime incluido; (2) pnpm 11 ya no lee su configuración de `package.json` y bloquea los scripts de `esbuild`/`sharp`, de ahí `pnpm-workspace.yaml` con `allowBuilds`; (3) el `README.md` que venía del repo vacío no servía para nadie. Además el HTML generado sale **sin `<style>` ni `<script>` inline**, que es la condición para poder aplicar una CSP estricta en T15 sin reescribir nada.
+
+### 3. ¿Dónde verlo en el código?
+
+- `package.json:8` — scripts `dev`, `build`, `preview` y las tres dependencias (Astro, Tailwind, plugin de Vite).
+- `astro.config.mjs:8` — `defineConfig` con el plugin de Tailwind; el `site` se fija en T18.
+- `pnpm-workspace.yaml:5` — `allowBuilds` para `esbuild` y `sharp` (obligatorio en pnpm 11).
+- `src/styles/global.css:1` — `@import "tailwindcss"` y la capa `base` mínima.
+- `src/layouts/Base.astro:25` — el `<html lang="es">`, título y descripción por defecto.
+- `src/pages/index.astro:14` — la página de prueba (se sustituye en T5/T6).
+- `netlify.toml:5` — `pnpm run build` → `dist`, con Node 22 y telemetría de Astro desactivada.
+- `.gitignore:26` — la nota que impide ignorar `fotos/` y `transicion.mp4` por error.
+- `README.md:11` — requisitos, comandos y estructura para cuando vuelvas al proyecto en meses.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. En `web-el-jardin`, ejecuta `pnpm build`: debe terminar con «1 page(s) built» y crear `dist/index.html` + `dist/_astro/*.css`.
+2. Ejecuta `pnpm dev` y abre <http://localhost:4321>: se ven el título, la dirección y el badge «Andamiaje listo» con colores. Eso prueba que Tailwind compila.
+3. Abre `dist/index.html` con un editor: **no** debe haber ninguna etiqueta `<style>` ni `<script>`; el CSS va enlazado aparte.
+4. Mira `.gitignore`: `fotos/` y `transicion.mp4` **no** aparecen (se versionan a propósito).
+5. Comprueba que el título conserva las tildes: «Bar El Jardín · Bar en Bolnuevo, Mazarrón».
 
 ---
 

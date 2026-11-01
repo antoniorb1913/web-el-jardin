@@ -1,0 +1,14 @@
+# Configuración de despliegue en Netlify.
+# Astro genera HTML estático en `dist/`, así que no hace falta ningún adaptador.
+
+[build]
+  command = "pnpm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  PNPM_VERSION = "11.7.0"
+  # Sin pings anónimos de telemetría en cada build de CI.
+  ASTRO_TELEMETRY_DISABLED = "1"
+
+# Las cabeceras de seguridad (CSP incluida) se añaden en T15 mediante public/_headers.

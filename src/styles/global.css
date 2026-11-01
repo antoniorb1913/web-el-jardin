@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Base mínima. Los tokens reales (paleta sacada del logo, tipografías y escala)
+   se definen en T3. Aquí solo lo imprescindible para que el documento se vea bien. */
+
+@layer base {
+  html {
+    /* El ancla de las secciones no debe quedar tapada por la cabecera fija. */
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-stone-50 text-stone-900 antialiased;
+  }
+}
