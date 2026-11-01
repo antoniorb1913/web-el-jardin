@@ -24,6 +24,27 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titulo}</title>
     <meta name="description" content={descripcion} />
+
+    <!-- Iconos (T3): la «J» roja sobre baldosa verde del propio logo. -->
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Las dos tipografías se usan por encima del pliegue: se precargan para
+         evitar el salto de texto al pasar de la fuente del sistema a la nuestra. -->
+    <link
+      rel="preload"
+      href="/fonts/fredoka-latin-400_600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/figtree-latin-400_700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
   </head>
   <body>
     <slot />

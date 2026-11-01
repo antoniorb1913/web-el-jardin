@@ -73,6 +73,16 @@ El usuario quiere el vídeo de fondo y que **cada cambio de escena acompañe a u
 
 > **Nunca** se hace *scrub* de `video.currentTime` ligado al scroll: en iOS Safari el *seek* continuo va a tirones y en Android de gama baja ni responde. Por eso el cambio es **por escena**, no por frame.
 
+### 3.2 Identidad visual (T3)
+
+| Pieza | Decisión |
+|---|---|
+| Colores de marca | Medidos sobre `fotos/logo.png`, no elegidos a ojo: rojo `#FC0000`, ámbar `#FFA000`, verde `#004320`, azul `#004BA9`, granate `#AF0025`. Viven como tokens en `src/styles/global.css` (`bg-jardin-verde`, `text-jardin-granate`…) |
+| Neutros | Cálidos (`crema-50/100/200`, `tinta-500/700/900`). Nada de blanco puro ni gris frío |
+| Tipografías | **Fredoka** (títulos, redondeada, evoca el logotipo) y **Figtree** (texto). Autoalojadas en `public/fonts/` en woff2, subconjunto latino, licencia OFL. **Prohibido** cargarlas de Google Fonts o de cualquier CDN |
+| Logotipo | `src/assets/logo.png` con el blanco eliminado. **Sin SVG**: el original es un PNG con sombra y artefactos de compresión; trazarlo daría un resultado sucio. El archivo vectorial hay que pedírselo al diseñador |
+| Icono | La «J» roja sobre baldosa verde (`public/favicon.png` y `apple-touch-icon.png`) |
+
 ---
 
 ## 4. Estructura de carpetas prevista
@@ -86,7 +96,8 @@ web-el-jardin/               ← raíz del repo (github.com/antoniorb1913/web-el
 ├─ transicion.mp4            ← vídeo original. NUNCA se sobrescribe
 ├─ public/
 │  ├─ _headers               ← cabeceras de seguridad (CSP incluida)
-│  ├─ robots.txt · favicon.svg
+│  ├─ robots.txt · favicon.png · apple-touch-icon.png
+│  ├─ fonts/                 ← Fredoka y Figtree en woff2, autoalojadas
 │  └─ video/                 ← clips ya troceados y comprimidos
 └─ src/
    ├─ layouts/Base.astro
@@ -239,7 +250,7 @@ Si algo está ⚠️, el agente dice **exactamente qué comando falta** y no da 
 |---|---|
 | Node.js en el PATH del sistema | ❌ No instalado. El agente usa el runtime incluido: `C:\Users\GIGABYTE-PC\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe` y `pnpm` en `…\dependencies\pnpm\bin\pnpm.mjs` |
 | ffmpeg / ffprobe | ❌ No instalado en el sistema. Para T4 se usará un binario empaquetado (dev-only, no viaja al sitio) |
-| Repositorio git | ✅ `github.com/antoniorb1913/web-el-jardin`, clonado en `Desktop\web\web-el-jardin`. `main` = `a2482f7` (T1). Los assets grandes siguen **sin rastrear** |
+| Repositorio git | ✅ `github.com/antoniorb1913/web-el-jardin`. T1 y T2 mergeadas en `main` (`ce35133`). Los assets originales (51,6 MB) **ya están versionados** |
 | Node/pnpm del agente | `node v24.21.0` · `pnpm 11.7.0` (runtime incluido; **no hay `node` ni `npm` en el PATH**) |
 | Carpeta de fotos | ✅ `fotos/` con **10 archivos, 31,8 MB**: `kiwi.jpg`, `aperol.png`, `dracula.heic`, `gintonic.png`, `bratwurst.png`, `currywurst.png`, `tabla_jamon.png`, `bar1.jpg`, `bar2.heic` y una copia de `logo.png` |
 | Fotos en **HEIC** | ⚠️ `dracula.heic` y `bar2.heic` son de iPhone. Ni el navegador ni Pillow las leen tal cual: hay que convertirlas a JPEG antes de usarlas (`pillow-heif`, todavía no instalado) |
@@ -258,3 +269,12 @@ Si algo está ⚠️, el agente dice **exactamente qué comando falta** y no da 
 - No sube nada a Netlify en nombre del usuario sin pedirlo explícitamente.
 - No modifica los archivos originales (`transicion.mp4`, `logo.png`, `fotos/`).
 - No avanza de tarea sin el «sí» explícito.
+
+---
+
+## 12. REGLA 7 — Diseño visual: skill `frontend-design`
+
+- **Ubicación:** `.dsh/skills/frontend-design/SKILL.md`, en la raíz del workspace (`Desktop\web`). Vive **fuera del repo** a propósito: es herramienta del agente, no contenido del sitio.
+- **Obligatorio cargarla** antes de escribir o tocar nada visual: T6 (layout y navegación), T7, T8, T9 y T10 (secciones), T13 (responsive) y cualquier retoque de estilos posterior. Se empieza llamando a la skill `frontend-design` y se sigue su proceso: **plan de diseño → crítica del plan contra el encargo → código → autocrítica**.
+- **Qué exige:** decisiones de color, tipografía y composición específicas de este bar, y evitar los clichés del diseño generado — fondo crema con serif y acento terracota, tarjetas idénticas redondeadas con la misma sombra difusa, etiquetas en mayúsculas sobre cada título, numeritos 01/02/03 cuando el contenido no es una secuencia, y animación de entrada en cada sección.
+- **Límite importante:** la skill manda en el **lenguaje visual**, no en los datos. Horarios, dirección, especialidades y textos aprobados salen de §1. Si la skill propone texto de relleno, **no sustituye** a los textos reales del bar.

@@ -12,6 +12,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 |---|---|---|---|
 | T1 | 2026-11-01 | Documentación y plan de trabajo | ✅ Completada |
 | T2 | 2026-11-01 | Andamiaje Astro + Tailwind | ✅ Completada |
+| T3 | 2026-11-01 | Identidad visual: paleta, logotipo, iconos y tipografías | ✅ Completada |
 
 ---
 
@@ -82,6 +83,42 @@ Porque sin proyecto no hay dónde escribir las 16 tareas siguientes, y quería d
 3. Abre `dist/index.html` con un editor: **no** debe haber ninguna etiqueta `<style>` ni `<script>`; el CSS va enlazado aparte.
 4. Mira `.gitignore`: `fotos/` y `transicion.mp4` **no** aparecen (se versionan a propósito).
 5. Comprueba que el título conserva las tildes: «Bar El Jardín · Bar en Bolnuevo, Mazarrón».
+
+---
+
+## 2026-11-01 · T3 — Identidad visual: paleta, logotipo, iconos y tipografías
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t3-identidad-visual`
+**Commit:** `feat: sistema de diseño con la paleta del logo, tipografías e iconos`
+**Archivos:** `src/styles/global.css`, `src/layouts/Base.astro`, `src/assets/logo.png`, `public/favicon.png`, `public/apple-touch-icon.png`, `public/fonts/*.woff2`, `public/fonts/LICENCIAS.txt`, `src/pages/estilo.astro`, `AGENTS.md`, `TAREAS.md`, `HISTORIAL.md`
+
+### 1. ¿Qué he realizado?
+
+He definido la identidad visual del sitio: los cinco colores de marca **medidos** sobre el logotipo (no elegidos a ojo), una paleta de neutros cálidos, dos tipografías autoalojadas (Fredoka para títulos, Figtree para texto), el logotipo con el fondo blanco eliminado y el icono del sitio (la «J» roja sobre baldosa verde). Todo vive como tokens de Tailwind en `global.css` y se revisa en la página `/estilo`.
+
+### 2. ¿Por qué?
+
+Porque a partir de T6 se van a escribir muchas secciones y, sin tokens, cada componente inventaría su propio color y su propio tamaño: el resultado es una web que parece hecha por cinco personas distintas. Además, los colores del logo son muy saturados y usados a ojo quedan sucios, así que los medí con código — incluidas dos sorpresas: la **A** es roja, no ámbar como parecía, y el verde de la **D** es casi negro (`#004320`). Y las fuentes van autoalojadas porque la regla de seguridad prohíbe depender de un CDN de terceros.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/styles/global.css:10` — los dos `@font-face` (Fredoka y Figtree, woff2, `font-display: swap`).
+- `src/styles/global.css:37` — el bloque `@theme` con los tokens: `--color-jardin-rojo`, `--color-jardin-ambar`, `--color-jardin-verde`, `--color-jardin-azul`, `--color-jardin-granate`, los `crema-*` y los `tinta-*`.
+- `src/styles/global.css:60` — la capa `base`: fondo crema, tipografía del cuerpo y `font-display` en los `h1`-`h3`.
+- `src/layouts/Base.astro:28` — `<link rel="icon">`, `apple-touch-icon` y la precarga de las dos fuentes.
+- `src/assets/logo.png` — logotipo recortado con transparencia (Astro lo sirve como WebP de 21 KB).
+- `src/pages/estilo.astro:1` — muestrario de revisión: paleta, tipografías, logo sobre claro y sobre verde, e iconos a tamaño real.
+- `AGENTS.md` §3.2 — el resumen de la identidad para futuras sesiones.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. Ejecuta `pnpm dev` y abre <http://localhost:4321/estilo/>.
+2. Compara los cinco bloques de color con el logotipo de la misma página: deben coincidir.
+3. Los títulos deben verse **redondeados** (Fredoka) y los párrafos en una sans distinta (Figtree). Si todo se ve igual, la fuente no cargó.
+4. El logotipo sobre el fondo verde **no** debe tener un rectángulo blanco detrás.
+5. En la pestaña del navegador debe aparecer la «J» roja sobre cuadrado verde.
+6. Con las herramientas de desarrollo abiertas, en la pestaña Red: **ninguna** petición a `fonts.googleapis.com`; las fuentes salen de `/fonts/`.
 
 ---
 
