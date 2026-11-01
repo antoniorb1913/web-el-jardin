@@ -1,0 +1,167 @@
+---
+/**
+ * Página de muestra del sistema de diseño (T3).
+ * TEMPORAL: sirve para revisar la paleta, las tipografías y los iconos.
+ * Se borra en T17, antes de publicar.
+ */
+import Base from '../layouts/Base.astro';
+import logo from '../assets/logo.png';
+import { Image } from 'astro:assets';
+
+const marca = [
+  { nombre: 'Rojo', token: 'jardin-rojo', hex: '#FC0000', origen: 'la J y la A', clase: 'bg-jardin-rojo' },
+  { nombre: 'Ámbar', token: 'jardin-ambar', hex: '#FFA000', origen: '«Bar El», la R y la curva', clase: 'bg-jardin-ambar' },
+  { nombre: 'Verde', token: 'jardin-verde', hex: '#004320', origen: 'la D', clase: 'bg-jardin-verde' },
+  { nombre: 'Azul', token: 'jardin-azul', hex: '#004BA9', origen: 'la í', clase: 'bg-jardin-azul' },
+  { nombre: 'Granate', token: 'jardin-granate', hex: '#AF0025', origen: 'la N', clase: 'bg-jardin-granate' },
+];
+
+const neutros = [
+  { nombre: 'Crema 50', token: 'crema-50', hex: '#FDFAF4', clase: 'bg-crema-50' },
+  { nombre: 'Crema 100', token: 'crema-100', hex: '#F8F0E0', clase: 'bg-crema-100' },
+  { nombre: 'Crema 200', token: 'crema-200', hex: '#ECE0C8', clase: 'bg-crema-200' },
+  { nombre: 'Tinta 500', token: 'tinta-500', hex: '#66776C', clase: 'bg-tinta-500' },
+  { nombre: 'Tinta 700', token: 'tinta-700', hex: '#35463C', clase: 'bg-tinta-700' },
+  { nombre: 'Tinta 900', token: 'tinta-900', hex: '#16241C', clase: 'bg-tinta-900' },
+];
+---
+
+<Base titulo="Sistema de diseño · Bar El Jardín" descripcion="Página interna de revisión del sistema de diseño.">
+  <main class="mx-auto max-w-5xl space-y-16 px-6 py-12">
+    <header class="space-y-3">
+      <p class="text-sm font-semibold tracking-wide text-jardin-granate uppercase">
+        Documento interno · T3
+      </p>
+      <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">Identidad visual</h1>
+      <p class="max-w-2xl text-lg text-tinta-700">
+        Paleta medida sobre el logotipo original, tipografías autoalojadas y logotipo con
+        fondo transparente. Si algo de esta página se ve mal, es el momento de decirlo.
+      </p>
+    </header>
+
+    <!-- LOGOTIPO -->
+    <section class="space-y-6">
+      <h2 class="text-2xl font-semibold">Logotipo</h2>
+
+      <div class="grid gap-6 sm:grid-cols-2">
+        <div class="flex items-center justify-center rounded-2xl border border-crema-200 bg-white p-8">
+          <Image src={logo} alt="Logotipo de Bar El Jardín" width={420} loading="eager" />
+        </div>
+        <div class="flex items-center justify-center rounded-2xl bg-jardin-verde p-8">
+          <Image src={logo} alt="Logotipo de Bar El Jardín sobre fondo verde" width={420} />
+        </div>
+      </div>
+
+      <p class="text-sm text-tinta-500">
+        Sobre fondo claro y sobre el verde de la marca. El blanco del PNG original se ha
+        eliminado: el logotipo ya no arrastra un rectángulo blanco detrás.
+      </p>
+    </section>
+
+    <!-- PALETA DE MARCA -->
+    <section class="space-y-6">
+      <h2 class="text-2xl font-semibold">Colores de marca</h2>
+      <p class="text-tinta-700">
+        Cada valor está medido sobre el logo, no elegido a ojo. Se usan con las clases de
+        Tailwind: <code class="rounded bg-crema-100 px-1.5 py-0.5 text-sm">bg-jardin-verde</code>,
+        <code class="rounded bg-crema-100 px-1.5 py-0.5 text-sm">text-jardin-granate</code>…
+      </p>
+
+      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {marca.map((color) => (
+          <li class="overflow-hidden rounded-xl border border-crema-200 bg-white">
+            <div class={`${color.clase} h-24 w-full`}></div>
+            <div class="space-y-1 p-4">
+              <p class="font-semibold">{color.nombre}</p>
+              <p class="font-mono text-sm text-tinta-700">{color.hex}</p>
+              <p class="text-sm text-tinta-500">{color.token} · {color.origen}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- NEUTROS -->
+    <section class="space-y-6">
+      <h2 class="text-2xl font-semibold">Neutros cálidos</h2>
+      <p class="text-tinta-700">
+        Fondo y texto. Se evita el blanco puro y el gris frío: el bar es un jardín.
+      </p>
+      <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {neutros.map((color) => (
+          <li class="overflow-hidden rounded-xl border border-crema-200">
+            <div class={`${color.clase} h-16 w-full`}></div>
+            <div class="space-y-0.5 bg-white p-3">
+              <p class="text-sm font-semibold">{color.nombre}</p>
+              <p class="font-mono text-xs text-tinta-500">{color.hex}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- TIPOGRAFÍAS -->
+    <section class="space-y-8">
+      <h2 class="text-2xl font-semibold">Tipografías</h2>
+
+      <div class="rounded-2xl border border-crema-200 bg-white p-8">
+        <p class="mb-2 text-sm font-semibold tracking-wide text-tinta-500 uppercase">
+          Fredoka · títulos
+        </p>
+        <p class="font-display text-5xl font-semibold tracking-tight">
+          Un paraíso de flores
+        </p>
+        <div class="mt-6 space-y-2 font-display text-2xl">
+          <p class="font-normal">Peso 400 · Quiénes somos</p>
+          <p class="font-medium">Peso 500 · Especialidades de la casa</p>
+          <p class="font-semibold">Peso 600 · Kiwi, Pasión, Drácula, Aperol</p>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-crema-200 bg-white p-8">
+        <p class="mb-2 text-sm font-semibold tracking-wide text-tinta-500 uppercase">
+          Figtree · texto
+        </p>
+        <p class="max-w-2xl text-lg leading-relaxed">
+          Somos un bar que te ofrece una opción creada para disfrutar de un ambiente
+          agradable, relajado, sin dejar de lado pasar un rato alegre y rodeado de naturaleza.
+        </p>
+        <div class="mt-4 space-y-1">
+          <p class="font-normal">Peso 400 · texto normal, el de leer.</p>
+          <p class="font-semibold">Peso 600 · énfasis y botones.</p>
+          <p class="font-bold">Peso 700 · avisos y datos importantes.</p>
+        </div>
+      </div>
+
+      <p class="text-sm text-tinta-500">
+        Ambas vienen en woff2, subconjunto latino, autoalojadas en
+        <code class="rounded bg-crema-100 px-1.5 py-0.5">/fonts/</code> y precargadas en el
+        <code class="rounded bg-crema-100 px-1.5 py-0.5">&lt;head&gt;</code>.
+      </p>
+    </section>
+
+    <!-- ICONOS -->
+    <section class="space-y-6">
+      <h2 class="text-2xl font-semibold">Icono del sitio</h2>
+      <p class="text-tinta-700">
+        La «J» del logotipo sobre el verde de la marca. Tamaño real de pestaña (32 px) y
+        tamaño grande:
+      </p>
+      <div class="flex items-end gap-6 rounded-2xl border border-crema-200 bg-white p-8">
+        <img src="/favicon.png" alt="Icono del sitio a 32 píxeles" width="32" height="32" />
+        <img src="/favicon.png" alt="Icono del sitio a 96 píxeles" width="96" height="96" />
+        <img
+          src="/apple-touch-icon.png"
+          alt="Icono para iOS a 180 píxeles"
+          width="180"
+          height="180"
+          class="rounded-2xl"
+        />
+      </div>
+    </section>
+
+    <footer class="border-t border-crema-200 pt-6 text-sm text-tinta-500">
+      Página temporal de revisión. Se elimina en T17 antes de publicar.
+    </footer>
+  </main>
+</Base>

@@ -1,11 +1,58 @@
 @import "tailwindcss";
 
-/* Base mínima. Los tokens reales (paleta sacada del logo, tipografías y escala)
-   se definen en T3. Aquí solo lo imprescindible para que el documento se vea bien. */
+/* ---------------------------------------------------------------------------
+   Tipografías autoalojadas (subconjunto latino en woff2, licencia SIL OFL).
+   Se sirven desde /fonts/ en nuestro propio dominio: la regla de seguridad del
+   proyecto prohíbe cargar nada desde un CDN de terceros.
+   Son variables, así que un solo archivo cubre todos los pesos del rango.
+   --------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Fredoka";
+  src: url("/fonts/fredoka-latin-400_600.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/fonts/figtree-latin-400_700.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------------------------------------------------------------------------
+   Tokens del sistema de diseño (T3).
+   Los cinco colores de marca están MEDIDOS sobre `fotos/logo.png`, no elegidos a
+   ojo: son los valores planos más frecuentes de cada letra del logotipo.
+   Si algún día cambia el logo, hay que volver a medirlos.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  --font-display: "Fredoka", ui-rounded, "Segoe UI Variable", system-ui, sans-serif;
+  --font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Colores de marca */
+  --color-jardin-rojo: #fc0000; /* la J y la A */
+  --color-jardin-ambar: #ffa000; /* «Bar El», la R y la curva */
+  --color-jardin-verde: #004320; /* la D */
+  --color-jardin-azul: #004ba9; /* la í */
+  --color-jardin-granate: #af0025; /* la N */
+
+  /* Neutros cálidos: el bar es un jardín, no un laboratorio */
+  --color-crema-50: #fdfaf4;
+  --color-crema-100: #f8f0e0;
+  --color-crema-200: #ece0c8;
+  --color-tinta-900: #16241c;
+  --color-tinta-700: #35463c;
+  --color-tinta-500: #66776c;
+}
 
 @layer base {
   html {
-    /* El ancla de las secciones no debe quedar tapada por la cabecera fija. */
+    /* Las anclas de la navegación no deben quedar tapadas por la cabecera fija. */
     scroll-behavior: smooth;
   }
 
@@ -16,6 +63,12 @@
   }
 
   body {
-    @apply bg-stone-50 text-stone-900 antialiased;
+    @apply bg-crema-50 font-sans text-tinta-900 antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
   }
 }

@@ -11,7 +11,7 @@
 |---|---|---|---|
 | 0 · Base | **T1** · Documentación y plan de trabajo | ✅ Completada | — |
 | 0 · Base | **T2** · Andamiaje Astro + Tailwind + estructura | ✅ Completada | T1 |
-| 0 · Base | **T3** · Identidad visual: paleta, logo SVG, favicon, fuentes | ⏳ Pendiente | T2 |
+| 0 · Base | **T3** · Identidad visual: paleta, logo, iconos y fuentes | ✅ Completada | T2 |
 | 1 · Scrollytelling | **T4** · Análisis del vídeo y troceado en escenas | ⏳ Pendiente | T2 |
 | 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ⏳ Pendiente | T4 |
 | 2 · Contenido | **T6** · Layout base: header, navegación y footer | ⏳ Pendiente | T3 |
@@ -73,13 +73,15 @@
 
 ---
 
-### T3 · Identidad visual: paleta, logo SVG, favicon, fuentes — ⏳
+### T3 · Identidad visual: paleta, logotipo, iconos y tipografías — ✅ Completada (2026-11-01)
 
-**Objetivo:** extraer los colores exactos de `logo.png` (rojo, ámbar, verde, azul, granate), definir la escala tipográfica y los *design tokens* en Tailwind; convertir el logo a SVG limpio con fondo transparente; generar favicon.
+**Objetivo:** medir los colores exactos de `logo.png`, definir los *design tokens* de Tailwind (`@theme`), preparar el logotipo con fondo transparente, generar el icono del sitio y autoalojar las tipografías.
 
-**Archivos:** `src/styles/global.css` (tokens `@theme`), `public/favicon.svg`, `src/assets/logo.svg`, fuentes en `public/fonts/`.
+> **Cambio respecto al plan original (justificado):** esta tarea decía «convertir el logo a SVG limpio». **No se ha hecho así.** Vectorizar un PNG con sombra, degradados y artefactos de compresión JPEG genera un trazado sucio que se nota justo cuando más se ve, en grande. La solución correcta es pedirle al diseñador el archivo vectorial original. Entregado en su lugar: PNG con el blanco eliminado y fondo transparente, más un WebP de 21 KB que genera Astro.
 
-**Verificación:** muestrario de colores comparado a ojo con el logo original; el logo se ve nítido ampliado al 400 %; la pestaña del navegador muestra el favicon.
+**Archivos:** `src/styles/global.css` (tokens `@theme` y `@font-face`), `src/assets/logo.png` (transparente, recortado), `public/favicon.png`, `public/apple-touch-icon.png`, `public/fonts/*.woff2`, `src/layouts/Base.astro` (iconos y precarga de fuentes), `src/pages/estilo.astro` (muestrario, temporal).
+
+**Verificación:** abrir `/estilo` y comparar la paleta con el logo; comprobar que los títulos salen en Fredoka (redondeada) y el texto en Figtree; mirar el icono en la pestaña del navegador.
 
 ---
 

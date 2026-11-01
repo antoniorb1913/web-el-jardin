@@ -1,0 +1,17 @@
+Tipografías usadas en este sitio
+===============================
+
+Ambas se sirven autoalojadas (nada de CDN de terceros) y están bajo la
+SIL Open Font License 1.1, que permite usarlas, modificarlas y redistribuirlas
+siempre que se conserve esta nota de licencia.
+
+1. Fredoka
+   Diseñada por Hafontia. https://github.com/hafontia/Fredoka
+   Licencia: SIL Open Font License 1.1 — https://openfontlicense.org
+
+2. Figtree
+   Diseñada por Erik Kennedy. https://github.com/erikdkennedy/figtree
+   Licencia: SIL Open Font License 1.1 — https://openfontlicense.org
+
+Los archivos .woff2 de esta carpeta son el subconjunto latino de cada fuente,
+descargados del servicio Google Fonts y convertidos a formato woff2.
