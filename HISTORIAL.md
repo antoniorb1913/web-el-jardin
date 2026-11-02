@@ -14,6 +14,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T2 | 2026-11-01 | Andamiaje Astro + Tailwind | ✅ Completada |
 | T3 | 2026-11-01 | Identidad visual: paleta, logotipo, iconos y tipografías | ✅ Completada |
 | T4 | 2026-11-01 | Análisis del vídeo y troceado en escenas | ✅ Completada |
+| T5 | 2026-11-01 | Motor de scrollytelling | ✅ Completada |
 
 ---
 
@@ -125,33 +126,76 @@ Porque a partir de T6 se van a escribir muchas secciones y, sin tokens, cada com
 
 ## 2026-11-01 · T4 — Análisis del vídeo y troceado en escenas
 
-**Estado:** ✅ Completada
+**Estado:** ✅ Completada (revisada el mismo día)
 **Rama:** `feat/t4-troceado-video`
-**Commit:** `feat: trocear el vídeo en seis escenas para el scrollytelling`
-**Archivos:** `public/video/escena-1..6-*.mp4`, `public/video/escena-1..6-*.jpg`, `src/data/escenas.js`, `AGENTS.md`, `TAREAS.md`, `HISTORIAL.md`
+**Commit:** `feat: trocear el vídeo en sus cuatro escenas a calidad nativa`
+**Archivos:** `clips-originales/escena1-4.mp4`, `public/video/escena-1..4-*.mp4`, `public/video/escena-1..4-*.jpg`, `src/data/escenas.js`, `src/pages/escenas.astro`, `AGENTS.md`, `TAREAS.md`, `HISTORIAL.md`
 
 ### 1. ¿Qué he realizado?
 
-He medido el vídeo original y lo he partido en **seis clips, uno por estancia** del recorrido (calle, umbral, patio, jardín, terraza y vistas), cada uno con su imagen de póster. Total: **3,43 MB** en lugar de los 19,8 MB del original.
+He medido el material y lo he dejado en **cuatro clips, uno por estancia real** del recorrido (calle, patio, jardín y terraza), cada uno con su imagen de póster. **Total: 7,3 MB** frente a los 19,8 MB del original, y a resolución nativa.
 
 ### 2. ¿Por qué?
 
-Porque 20 MB de vídeo de fondo son varios segundos de espera en un móvil con 4G mediocre, y porque el scrollytelling necesita poder cambiar de escena sin descargar el vídeo entero. Además el original traía **la marca de agua del generador** («KlingAI 4.0») y eso no puede salir en la web de un negocio: se recorta el 9 % inferior de cada clip. Y el vídeo **no tiene cortes** —es un plano continuo en primera persona—, así que los límites de escena hubo que decidirlos mirando fotogramas, no detectándolos con un filtro.
+Porque 20 MB de vídeo de fondo son varios segundos de espera en un móvil, y porque el scrollytelling necesita cargar solo la escena que se está viendo. Además el original traía **la marca de agua del generador** («KlingAI 4.0») y eso no puede salir en la web de un negocio: se recorta el 9 % inferior.
+
+> **Segunda vuelta, y por qué.** La primera versión partió el vídeo en seis trozos mirando fotogramas, porque el detector de escenas no encontraba cortes. El usuario avisó de que **se veía peor que el original** y aportó los cuatro clips separados: resultó que el vídeo **está montado a partir de cuatro escenas de 5,04 s**, y los cortes buenos estaban en 5,04 / 10,08 / 15,12 s. La primera versión cortaba por dentro de las escenas y además bajaba la resolución a 960 con CRF 32. Rehecho desde el material original: sin reescalar y con CRF 26. La lección: **preguntar de dónde sale el vídeo antes de trocearlo**.
 
 ### 3. ¿Dónde verlo en el código?
 
-- `src/data/escenas.js:17` — array `escenas`: id, `clip`, `poster`, `duracion` y `seccion` que activa cada una.
-- `public/video/escena-1-fachada.mp4` — el clip más ligero (306 KB).
-- `public/video/escena-5-terraza.mp4` — el más pesado (685 KB).
-- `AGENTS.md` §3.1 y §10 — la decisión técnica con las cifras reales.
-- Para regenerarlos: `ffmpeg -i transicion.mp4 -vf "trim=start=INI:end=FIN,setpts=PTS-STARTPTS,crop=iw:ih*0.91:0:0,scale=960:-2,fps=24" -an -c:v libx264 -crf 32 -preset slow -movflags +faststart salida.mp4`
+- `src/data/escenas.js:17` — array `escenas`: id, `clip`, `poster`, `duracion`, `secciones` y la función `escenaDeSeccion()`.
+- `public/video/escena-1-fachada.mp4` — el clip más ligero (1,5 MB).
+- `public/video/escena-4-terraza.mp4` — el más pesado (2,0 MB).
+- `src/pages/escenas.astro:1` — visor temporal para revisar los clips (se borra en T17).
+- `clips-originales/` — las cuatro escenas de partida, sin tocar.
+- `AGENTS.md` §3.1 y §10 — la decisión con las cifras reales.
+- Para regenerar: `ffmpeg -ss 0.4 -t 4.2 -i clips-originales/escenaN.mp4 -vf "crop=iw:ih*0.91:0:0,scale=1116:-2,fps=24" -an -c:v libx264 -crf 26 -preset slow -movflags +faststart salida.mp4`
 
 ### 4. ¿Cómo comprobar que funciona?
 
-1. Con el servidor de desarrollo levantado, abrir <http://localhost:4321/video/escena-1-fachada.mp4> y <http://localhost:4321/video/escena-5-terraza.mp4>.
-2. Comprobar que cada clip empieza y termina en su estancia, no a mitad de un giro.
+1. Con el servidor de desarrollo levantado, abrir <http://localhost:4321/escenas/> y ver los cuatro clips seguidos.
+2. Comprobar que cada uno empieza y termina dentro de su estancia, y que el paso de uno a otro no corta un movimiento a medias.
 3. Mirar la esquina inferior derecha: no debe aparecer ninguna marca de agua.
-4. Comprobar que ninguno pasa de 700 KB.
+4. Comparar la nitidez con el original: el detalle del follaje y de la grava debe mantenerse.
+
+---
+
+## 2026-11-01 · T5 — Motor de scrollytelling
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t5-scrollytelling`
+**Commit:** `feat: recorrido del bar con scroll por fotogramas y fotos nitidas en cada escena`
+**Archivos:** `src/components/HeroScrolly.astro`, `src/scripts/app.js`, `src/styles/global.css`, `src/pages/index.astro`, `astro.config.mjs`, `public/fondo/*.avif`, `public/escenas/*.webp`, `fotos/escenas/*.jpg`, `AGENTS.md`, `TAREAS.md`, `HISTORIAL.md`
+
+### 1. ¿Qué he realizado?
+
+La portada recorre el bar al hacer scroll con una secuencia de 484 fotogramas dibujados en un canvas, y en cinco puntos —el arranque de cada escena y el final— la cámara se detiene y se enciende una foto nítida de ese mismo encuadre. El texto de cada apartado vive en un panel fijo en el centro de la pantalla: aparece, se desvanece y deja un tramo en el que solo se ve el bar en movimiento.
+
+### 2. ¿Por qué?
+
+Porque el usuario quería el efecto de las webs de producto caras y el vídeo no arrancaba: el navegador bloquea la reproducción y quedaba una imagen congelada. Con fotogramas no hay autoplay que valga. Después de probar varias vías se comprobó que el fondo del vídeo se ve blando (el original mide 1116 px y el navegador lo amplía), y de ahí las cinco fotos: como cada clip se generó a partir de una foto de 4096 px, ponerla justo en el primer fotograma da nitidez sin romper la animación. También se descubrió que fundir la foto con el fotograma produce una doble imagen, porque Kling redibujó la escena y las dos versiones no coinciden píxel a píxel: por eso el apagado es de 3 fotogramas y no de 20.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/components/HeroScrolly.astro:22` — contenedor sticky, canvas y las cinco capas de foto.
+- `src/scripts/app.js:56` — `PAUSA`: la parada de la cámara en cada escena.
+- `src/scripts/app.js:65` — `repartir()`: reparto del scroll entre los cuatro clips.
+- `src/scripts/app.js:30` — `ENTRADA_FOTO` y `SALIDA_FOTO`: encendido y apagado de la foto.
+- `src/scripts/app.js:180` — `pintar()`: fotograma dibujado y freno en los cortes.
+- `src/scripts/app.js:290` — `actualizarPaneles()`: opacidad de cada apartado.
+- `src/styles/global.css:76` — `.fondo__capa`, `.fondo__lienzo`, `.foto` y `.texto-foto`.
+- `src/pages/index.astro:27` — secciones de 300dvh (solo recorrido) y sus paneles.
+- `astro.config.mjs:11` — `assetsInlineLimit: 0`, para que el JS salga como archivo y no rompa la CSP.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. `http://localhost:4321/?animar=1` (el `?animar=1` fuerza la animación aunque el sistema pida reducir movimiento).
+2. Bajar despacio: el fondo avanza sin saltos y el logo se desvanece sin moverse.
+3. Al llegar a cada escena la cámara se para y la imagen se ve **nítida** durante ~1.100 px de scroll.
+4. En ese momento no debe verse ninguna imagen doble ni el cartel duplicado.
+5. Entre escena y escena solo se ve el bar en movimiento, sin texto.
+6. Al final del todo: estatua nítida con «Dónde estamos» y la dirección.
+7. Activar «reducir movimiento» en el sistema y comprobar que se queda un fotograma fijo.
 
 ---
 

@@ -13,7 +13,7 @@
 | 0 · Base | **T2** · Andamiaje Astro + Tailwind + estructura | ✅ Completada | T1 |
 | 0 · Base | **T3** · Identidad visual: paleta, logo, iconos y fuentes | ✅ Completada | T2 |
 | 1 · Scrollytelling | **T4** · Análisis del vídeo y troceado en escenas | ✅ Completada | T2 |
-| 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ⏳ Pendiente | T4 |
+| 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ✅ Completada | T4 |
 | 2 · Contenido | **T6** · Layout base: header, navegación y footer | ⏳ Pendiente | T3 |
 | 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ⏳ Pendiente | T6 |
 | 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ⏳ Pendiente | T7 |
@@ -85,30 +85,52 @@
 
 ---
 
-### T4 · Análisis del vídeo y troceado en escenas — ✅ Completada (2026-11-01)
+### T4 · Análisis del vídeo y troceado en escenas — ✅ Completada (2026-11-01, revisada con los originales)
 
 **Objetivo:** medir `transicion.mp4`, decidir dónde empieza y acaba cada estancia y generar un clip por escena con su póster.
 
-**Resultado:** el vídeo es **1116×836, 24 fps, 20,17 s, 7,9 Mbps y con audio** (el audio se descarta: es un fondo mudo). **No tiene cortes**: es un recorrido continuo en primera persona, así que los límites de escena se fijaron a ojo sobre una hoja de contactos (calle → puerta → patio → jardín → terraza → vistas). 6 clips de 2,2 a 4,4 s en **960×654, H.264, CRF 32, 24 fps**, con póster JPG de 640 px. **Total: 3,43 MB.**
+**Resultado (revisado con los clips originales):** el material real son **4 clips de 5,04 s** (1116×836, 24 fps, ~8 Mbps) y `transicion.mp4` es su unión. Por tanto los cortes buenos están en **5,04 / 10,08 / 15,12 s**, no donde se supuso la primera vez. Se respetan esos cuatro cortes (calle → patio → jardín → terraza) y se codifica a **1116×760 —resolución nativa—, H.264 CRF 26, 24 fps, 4,2 s por clip** (se recortan 0,4 s por extremo). **Total: 7,3 MB**, entre 1,5 y 2,0 MB por clip.
 
-> **Tres decisiones que conviene conocer:**
-> 1. **Se recorta el 9 % inferior del vídeo**: el original lleva la marca de agua «KlingAI 4.0» abajo a la derecha y no puede salir en la web del bar.
-> 2. **Sin WebM**: H.264 en MP4 lo reproduce el 100 % de los navegadores y duplicar cada clip solo engordaría el repo.
-> 3. El límite de 600 KB por clip se quedó corto — el follaje y la grava son carísimos de comprimir. Lo que importa no es el total sino cuánto se descarga de golpe: **solo el clip activo**, entre 306 y 685 KB.
+> **Qué se corrigió:** la primera versión partía el vídeo en 6 trozos de 2-4 s cortando *por dentro* de las escenas del autor, y bajaba la resolución a 960 con CRF 32. Se veía blando y los cortes no coincidían con nada. Ahora no se reescala y los cortes son los del material original.
+> **Qué se mantiene:** el recorte del 9 % inferior para quitar la marca de agua del generador y la decisión de no generar WebM.
+> **Coste:** son clips más pesados (1,5-2 MB frente a 0,3-0,7 MB). Se compensa en T5: primero se pinta el póster de 60-90 KB y el vídeo solo se descarga cuando su sección se acerca.
 
-**Archivos:** `public/video/escena-1..6-*.mp4` y `.jpg`, `src/data/escenas.js`.
+**Archivos:** `clips-originales/escena1-4.mp4` (material de partida), `public/video/escena-1..4-*.mp4` y `.jpg`, `src/data/escenas.js`, `src/pages/escenas.astro` (visor temporal).
 
 **Verificación:** reproducir dos clips seguidos y comprobar que cada uno empieza y acaba en la estancia correcta (no a mitad de un giro); comprobar que ninguno pasa de 800 KB.
 
 ---
 
-### T5 · Motor de scrollytelling — ⏳
+### T5 · Motor de scrollytelling — ✅ Completada (2026-11-01)
 
-**Objetivo:** contenedor `sticky` a pantalla completa con el clip activo, intercambio de escena por `IntersectionObserver`, fundido corto, `congelarFondo` para el parallax, y las degradaciones de AGENTS.md §3.1 (reduced-motion, Save-Data, sin JS).
+**Objetivo:** fondo que recorre el bar al hacer scroll, con el contenido apareciendo y desvaneciéndose sin moverse de sitio.
 
-**Archivos:** `src/components/HeroScrolly.astro`, `src/scripts/app.js`, `src/styles/global.css`.
+**Lo que hay:**
+- **484 fotogramas AVIF** (`public/fondo/`, 1000 px, 13,5 MB) dibujados en un `<canvas>` según el scroll. Sin `<video>`: no depende del autoplay.
+- **Carga por capas**: 10 fotogramas (≈350 KB) primero y el resto en segundo plano.
+- **Inercia** en el avance, para que la rueda no dé saltos; un solo fotograma por repintado, sin fundidos (producían fantasma).
+- **Cinco fotos nítidas** (`public/escenas/`, WebP a 2400 y 1200 px) encendidas en el primer fotograma de cada clip y en el último del vídeo.
+- **Paradas de cámara** al arrancar cada escena (`PAUSA = 0.26`), que es lo que hace posible ver la foto nítida sin doble imagen.
+- **Paneles de texto** fijos en el centro, con tramos entre ellos en los que solo se ve el bar.
+- **Degradaciones**: `prefers-reduced-motion` → fotograma fijo; sin JS → texto íntegro en el HTML.
 
-**Verificación:** bajar despacio por la portada y ver que cada sección activa su escena; activar «reducir movimiento» en el sistema y comprobar que se ven imágenes fijas; desactivar JavaScript y comprobar que todo el texto sigue visible.
+**Números finales:**
+
+| Concepto | Valor |
+|---|---|
+| Recorrido | 15 pantallas (`min-h-[300dvh]` por sección) |
+| Velocidad en el tramo que camina | 18,4 px de scroll por fotograma |
+| Nitidez por escena | ~1.120 px de scroll |
+| Peso del fondo | 13,5 MB de fotogramas + 3,2 MB de fotos (las fotos se cargan al acercarse) |
+
+**Cómo se ajusta:**
+- Velocidad general → `min-h-[300dvh]` en `index.astro` (más alto = más lento, más largo).
+- Rato nítido → `PAUSA` en `app.js` (subirlo acelera la animación: subir también la altura).
+- Ritmo de los textos → constantes `0.1` y `0.36` de `actualizarPaneles()`.
+
+**Pendiente para T9:** en las fotos de la terraza y la estatua se lee la pizarra de precios del bar. Decidir si se recorta o se elige otro encuadre (REGLA: sin precios en la web).
+
+**Verificación:** bajar despacio por la portada y comprobar que (1) el fondo avanza sin saltos, (2) al llegar a cada escena la cámara se para y la imagen se ve nítida, (3) no aparece la doble imagen, (4) entre escenas solo se ve el bar, (5) al final está la estatua nítida con la dirección.
 
 ---
 

@@ -1,32 +1,104 @@
 ---
 /**
- * Página de prueba de T2. Sirve para verificar que Astro compila y que Tailwind
- * está aplicando clases de verdad. Se sustituye por la portada real en las
- * fases de contenido (T6 en adelante).
+ * Portada (T5: el motor del scrollytelling).
  *
- * Los colores verde/lima de aquí son PROVISIONALES: la paleta definitiva sale del
- * logo en T3.
+ * Cómo funciona el escenario:
+ *
+ * - Cada `<section>` es solo **recorrido**: mide 320dvh y no tiene contenido visible
+ *   propio. Cuanto más altas, más lenta la cámara del fondo y más larga la página.
+ *   Ojo con el equilibrio: si se alarga la parada de cada escena (`PAUSA` en
+ *   `app.js`) sin subir esto, el trozo en el que la cámara anda se comprime y la
+ *   animación se acelera justo donde debería ir tranquila.
+ * - El contenido de cada escena vive en un `.panel` en `position: fixed`: está
+ *   siempre anclado al centro de la pantalla, así que **no viaja al hacer scroll**.
+ *   Aparece cerca del centro y se desvanece al alejarse.
+ * - Entre una escena y la siguiente queda un tramo en el que solo se ve el vídeo.
+ *
+ * El texto va **directo sobre la imagen**, sin recuadro: es la dirección visual de
+ * la referencia (Vesper). El contenido real de cada apartado llega en T6-T10.
  */
 import Base from '../layouts/Base.astro';
+import HeroScrolly from '../components/HeroScrolly.astro';
+import logo from '../assets/logo.png';
+import { Image } from 'astro:assets';
+
+const seccion = 'relative mx-auto max-w-2xl min-h-[300dvh]';
+const panel = 'panel';
+const texto = 'texto-foto max-w-xl text-center text-crema-50';
 ---
 
 <Base>
-  <main class="mx-auto flex min-h-dvh max-w-3xl flex-col justify-center gap-6 p-6">
-    <p class="w-fit rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-900">
-      Andamiaje listo
-    </p>
+  <HeroScrolly>
+    <!-- PORTADA -->
+    <section id="portada" data-seccion="portada" class="relative min-h-dvh">
+      <div class={panel} data-panel>
+        <div class="flex flex-col items-center gap-6 text-center">
+          <Image src={logo} alt="Bar El Jardín" width={520} class="h-auto w-[min(78vw,520px)]" />
+          <p class="texto-foto max-w-xl text-lg text-crema-50/90">
+            Un paraíso de flores y plantas en Bolnuevo, Mazarrón.
+          </p>
+          <p class="texto-foto text-sm text-crema-50/70">Baja para entrar</p>
+        </div>
+      </div>
+    </section>
 
-    <h1 class="text-4xl font-bold tracking-tight text-emerald-950 sm:text-6xl">
-      Bar El Jardín
-    </h1>
+    <!-- QUIÉNES SOMOS -->
+    <section id="quienes-somos" data-seccion="quienes-somos" class={seccion}>
+      <div class={panel} data-panel>
+        <div class={texto}>
+          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">¿Quiénes somos?</h2>
+          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
+            Somos un bar que te ofrece una opción creada para disfrutar de un ambiente
+            agradable, relajado, sin dejar de lado pasar un rato alegre y rodeado de naturaleza.
+          </p>
+        </div>
+      </div>
+    </section>
 
-    <p class="text-lg text-stone-700">
-      Av. Antonio Segado del Olmo, 19 · Bolnuevo, Mazarrón (Murcia)
-    </p>
+    <!-- ESPECIALIDADES -->
+    <section id="especialidades" data-seccion="especialidades" class={seccion}>
+      <div class={panel} data-panel>
+        <div class={texto}>
+          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">Nuestras especialidades</h2>
+          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
+            Kiwi de la casa · Pasión de la casa · Drácula · Aperol · Gin Tonic
+          </p>
+        </div>
+      </div>
+    </section>
 
-    <p class="rounded-xl border border-emerald-200 bg-white/70 p-4 text-stone-700">
-      Si lees esto con tipografía y colores aplicados, Astro y Tailwind están
-      funcionando. La portada con el scrollytelling se monta en las tareas T5 y T6.
-    </p>
-  </main>
+    <!-- COMIDA -->
+    <section id="comida" data-seccion="comida" class={seccion}>
+      <div class={panel} data-panel>
+        <div class={texto}>
+          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">Nuestra comida</h2>
+          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
+            Salchicha bratwurst · Salchicha currywurst · Tabla de jamón serrano de Teruel
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOTOS -->
+    <section id="fotos" data-seccion="fotos" class={seccion}>
+      <div class={panel} data-panel>
+        <div class={texto}>
+          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">Fotos del bar</h2>
+          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">La galería llega en T9.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- UBICACIÓN -->
+    <section id="ubicacion" data-seccion="ubicacion" class={seccion}>
+      <div class={panel} data-panel>
+        <div class={texto}>
+          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">Dónde estamos</h2>
+          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
+            Av. Antonio Segado del Olmo, 19 — Bolnuevo, Mazarrón (Murcia)
+          </p>
+        </div>
+      </div>
+    </section>
+  </HeroScrolly>
 </Base>

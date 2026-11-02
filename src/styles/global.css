@@ -72,3 +72,99 @@
     @apply font-display;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Scrollytelling (T5) — fondo por secuencia de fotogramas
+   `app.js` dibuja en el `<canvas>` el fotograma que toca y escribe dos variables:
+   `--opacidad-fondo` (baja al avanzar) y `--fuerza-velo` (sube para que el texto
+   gane contraste). La imagen llena la pantalla: sin bandas ni desenfoques.
+   --------------------------------------------------------------------------- */
+
+.fondo__capa {
+  position: absolute;
+  inset: 0;
+  opacity: var(--opacidad-fondo, 1);
+}
+
+.fondo__lienzo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Foto nítida del primer fotograma de cada escena. Va encima del lienzo y `app.js`
+   le escribe `--op-foto`. No lleva transform ni recorte propio: tiene que coincidir
+   píxel a píxel con el fotograma de debajo. */
+.foto {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: var(--op-foto, 0);
+}
+
+.foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.portada__velo {
+  background: linear-gradient(
+    to bottom,
+    rgb(22 36 28 / calc(var(--fuerza-velo, 0.3) * 0.6)),
+    rgb(22 36 28 / var(--fuerza-velo, 0.3))
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fondo__capa {
+    opacity: 0.6;
+  }
+}
+
+/* Panel de cada escena: anclado al centro de la pantalla, nunca viaja. `app.js`
+   escribe `--opacidad-panel` según el avance dentro de su sección. */
+.panel {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  opacity: var(--opacidad-panel, 0);
+  pointer-events: none;
+}
+
+/* Solo el panel visible recibe clics y teclado. */
+.panel[data-visible='si'] {
+  pointer-events: auto;
+}
+
+/* Texto directo sobre la foto: sin recuadro. La sombra es lo que lo hace legible
+   cuando debajo pasa una zona clara del vídeo. */
+.texto-foto {
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 0.45),
+    0 2px 24px rgb(0 0 0 / 0.55);
+}
+
+/* Panel de estado: lo crea app.js. Temporal, se quita en T17. */
+.panel-depuracion {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 50;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: rgb(0 0 0 / 0.78);
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: pre;
+  pointer-events: none;
+}
+
+

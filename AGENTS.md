@@ -21,9 +21,10 @@ Eres el agente que construye la web de un **bar familiar**. Trabajas **una tarea
 | Horario | Domingo a jueves: **16:00 – 23:00** · Viernes y sábado: **16:00 – 00:00** |
 | Zona horaria | `Europe/Madrid` (fijar explícitamente, nunca la del navegador) |
 
-**Especialidades (bebidas de la casa):** Kiwi de la casa · Pasión de la casa · **Drácula** · **Aperol**.
+**Especialidades (bebidas de la casa):** Kiwi de la casa · Pasión de la casa · **Drácula** · **Aperol** · **Gin Tonic**.
 
-> Cambio del 2026-11-01: «Especial Jardín» pasa a llamarse **Drácula**, y se añade **Aperol**. Hay foto de las cuatro menos de «Pasión de la casa», que sigue pendiente.
+> Respuestas del usuario (2026-11-01): el nombre del sitio es **«Bar El Jardín»** —el rótulo del vídeo dice «Bar Café JARDIN», que es el cartel del local, no el nombre que usamos en la web—; la especialidad se llama **«Aperol»**, no «Aperol Spritz»; se añade **Gin Tonic** como quinta especialidad; y «Especial Jardín» pasó a llamarse **Drácula**.
+> Fotos: hay de kiwi, Drácula, Aperol, gintonic y los tres platos. **«Pasión de la casa» se queda sin foto por decisión del usuario** (2026-11-01): la añadirá más adelante si quiere. Su tarjeta se maqueta sin imagen, no con un hueco vacío.
 
 **Comida:** Salchicha bratwurst · Salchicha currywurst · Tabla de jamón serrano de Teruel.
 
@@ -57,21 +58,24 @@ Eres el agente que construye la web de un **bar familiar**. Trabajas **una tarea
 
 ### 3.1 Scrollytelling (la decisión técnica central)
 
-El usuario quiere el vídeo de fondo y que **cada cambio de escena acompañe a una sección** («por cada parón o cambio de escena se verán las cosas»).
+El fondo de la portada es un **recorrido de cámara por el bar** que avanza con el scroll. Se intentó primero con `<video>` y no funcionó: el navegador bloquea la reproducción y quedaba una imagen congelada. Se resolvió con **fotogramas**.
 
-**Planteamiento aprobado:**
+**Cómo está montado (cerrado en T5):**
 
-1. El vídeo original (20,17 s, 19,8 MB, recorrido continuo en primera persona **sin cortes**) **se trocea en 6 clips, uno por estancia** (2,2–4,4 s, **960×654**, H.264 CRF 32, sin audio, con póster JPG). Un solo archivo de 20 MB es inviable en móvil y no permite control fino. **Se recorta el 9 % inferior** para eliminar la marca de agua del generador («KlingAI 4.0»), que no puede aparecer en la web.
-2. En la portada, el vídeo va en un contenedor **`position: sticky`** a pantalla completa. Las secciones (`¿Quiénes Somos?`, `Especialidades`, `Comida`, `Fotos`, `Ubicación`) **flotan por encima** con paneles semitransparentes para que el texto siempre se lea.
-3. Un `IntersectionObserver` detecta qué sección está activa e **intercambia el clip** con un fundido corto. Así «la escena cambia cuando llega la sección», no de forma aleatoria.
-4. `requestAnimationFrame` sólo para el parallax/zoom suave de entrada y salida (`congelarFondo`), nunca en bucle infinito.
-5. **Degradación obligatoria** (esto es calidad, no un extra):
-   - `prefers-reduced-motion: reduce` → imagen estática por escena, cero vídeo.
-   - `Save-Data` o pantalla pequeña con `prefers-reduced-data` → clips ligeros o imagen.
-   - Ningún texto depende del vídeo: si no carga, la web es 100 % usable.
-   - `playsinline muted loop preload="none"` + `poster` en cada clip.
+1. **Secuencia de 484 fotogramas AVIF** en `public/fondo/` (1000 px de ancho, 16:9, 13,5 MB). Son todos los del vídeo original —24 por segundo—, recortados el 9 % inferior para quitar la marca de agua del generador. `app.js` dibuja el que toca en un `<canvas>`: no hay `<video>`, así que no depende del autoplay ni de ningún códec.
+2. **Carga por capas**: primero 10 fotogramas (≈350 KB) y el resto en segundo plano. La primera imagen no bloquea.
+3. **Inercia**: la posición dibujada persigue a la del scroll, para que las muescas de la rueda no se noten como saltos.
+4. **Un fotograma por repintado**, el más cercano. Mezclar dos deja un fantasma visible.
+5. **Cinco fotos nítidas** en `public/escenas/` (2400 px y 1200 px en WebP), sacadas de los HEIC que aportó el usuario. Cada una es el primer fotograma de su clip; la última es el último fotograma del vídeo. Se encienden justo en ese punto y se apagan en 3 fotogramas.
+6. **Paradas**: al llegar al arranque de cada escena la cámara se queda quieta el 26 % de su tramo (`PAUSA` en `app.js`). Es lo que permite ver la foto nítida sin que aparezca la doble imagen.
+7. **Contenido por paneles**: cada apartado es un panel `position: fixed` centrado, que aparece y se desvanece. Entre uno y otro queda un tramo sin texto en el que solo se ve el bar en movimiento.
+8. **Degradaciones**: `prefers-reduced-motion` → un fotograma fijo; sin JavaScript → todo el texto sigue en el HTML.
 
-> **Nunca** se hace *scrub* de `video.currentTime` ligado al scroll: en iOS Safari el *seek* continuo va a tirones y en Android de gama baja ni responde. Por eso el cambio es **por escena**, no por frame.
+> **Nunca** se hace *scrub* de `video.currentTime` ligado al scroll: en iOS Safari el *seek* continuo va a tirones. Por eso no se usa vídeo.
+
+> ⚠️ **Aviso de equilibrio.** El recorrido de cada sección es fijo. Alargar `PAUSA` **acelera** la animación, porque el trozo en el que la cámara camina se queda más corto. Si se sube, hay que subir también la altura de las secciones (`min-h-[...]` en `index.astro`) o la animación se dispara.
+
+---
 
 ### 3.2 Identidad visual (T3)
 
@@ -93,7 +97,8 @@ web-el-jardin/               ← raíz del repo (github.com/antoniorb1913/web-el
 ├─ astro.config.mjs · package.json · netlify.toml
 ├─ fotos/                    ← originales del usuario. NUNCA se tocan ni se borran
 │  └─ logo.png               ← el logo original vive aquí dentro
-├─ transicion.mp4            ← vídeo original. NUNCA se sobrescribe
+├─ transicion.mp4            ← vídeo original (unión de las 4 escenas). NUNCA se sobrescribe
+├─ clips-originales/         ← las 4 escenas separadas, tal cual las entregó el usuario
 ├─ public/
 │  ├─ _headers               ← cabeceras de seguridad (CSP incluida)
 │  ├─ robots.txt · favicon.png · apple-touch-icon.png
@@ -254,9 +259,10 @@ Si algo está ⚠️, el agente dice **exactamente qué comando falta** y no da 
 | Node/pnpm del agente | `node v24.21.0` · `pnpm 11.7.0` (runtime incluido; **no hay `node` ni `npm` en el PATH**) |
 | Carpeta de fotos | ✅ `fotos/` con **10 archivos, 31,8 MB**: `kiwi.jpg`, `aperol.png`, `dracula.heic`, `gintonic.png`, `bratwurst.png`, `currywurst.png`, `tabla_jamon.png`, `bar1.jpg`, `bar2.heic` y una copia de `logo.png` |
 | Fotos en **HEIC** | ⚠️ `dracula.heic` y `bar2.heic` son de iPhone. Ni el navegador ni Pillow las leen tal cual: hay que convertirlas a JPEG antes de usarlas (`pillow-heif`, todavía no instalado) |
-| Huecos de material | Falta foto de **«Pasión de la casa»**; y `gintonic.png` no corresponde a ninguna especialidad de la lista |
+| Huecos de material | **«Pasión de la casa» sin foto** (decisión del usuario, se maqueta sin imagen). `gintonic.png` ya es la quinta especialidad |
 | `transicion.mp4` | 20,17 s · 19,8 MB · **1116×836 · 24 fps · 7,9 Mbps · con audio · plano continuo sin cortes** (medido en T4) |
-| Clips web (T4) | `public/video/`: 6 escenas + 6 pósters · **3,43 MB en total** · 306-685 KB por clip · **solo se descarga el clip activo** |
+| Clips web (T4) | `public/video/`: 4 escenas + 4 pósters · **7,3 MB en total** · 1,5-2,0 MB por clip · **solo se descarga el clip activo, y después del póster** |
+| Material de partida | `clips-originales/escena1-4.mp4` · 4 × 5,04 s · 19,7 MB · las escenas separadas que aportó el usuario |
 | `logo.png` | 1052 × 467 px · 378 KB · fondo blanco, sin transparencia |
 
 **Recomendación al usuario:** instalar Node.js LTS para poder ejecutar `npm run dev` por su cuenta; el agente puede levantar el *dev server* con el runtime incluido, pero conviene que no dependa de él.
