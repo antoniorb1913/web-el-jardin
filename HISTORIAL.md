@@ -164,38 +164,37 @@ Porque 20 MB de vídeo de fondo son varios segundos de espera en un móvil, y po
 
 **Estado:** ✅ Completada
 **Rama:** `feat/t5-scrollytelling`
-**Commit:** `feat: recorrido del bar con scroll por fotogramas y fotos nitidas en cada escena`
-**Archivos:** `src/components/HeroScrolly.astro`, `src/scripts/app.js`, `src/styles/global.css`, `src/pages/index.astro`, `astro.config.mjs`, `public/fondo/*.avif`, `public/escenas/*.webp`, `fotos/escenas/*.jpg`, `AGENTS.md`, `TAREAS.md`, `HISTORIAL.md`
+**Commit:** `feat: recorrido del bar con scroll por fotogramas y fotos nitidas en cada apartado`
+**Archivos:** `src/components/HeroScrolly.astro`, `src/scripts/app.js`, `src/styles/global.css`, `src/pages/index.astro`, `astro.config.mjs`, `public/fondo/*.avif` (240), `public/escenas/*.webp` (10), `fotos/escenas/*.jpg` (5), `AGENTS.md`, `TAREAS.md`, `HISTORIAL.md`
 
 ### 1. ¿Qué he realizado?
 
-La portada recorre el bar al hacer scroll con una secuencia de 484 fotogramas dibujados en un canvas, y en cinco puntos —el arranque de cada escena y el final— la cámara se detiene y se enciende una foto nítida de ese mismo encuadre. El texto de cada apartado vive en un panel fijo en el centro de la pantalla: aparece, se desvanece y deja un tramo en el que solo se ve el bar en movimiento.
+La portada recorre el bar al hacer scroll con una secuencia de 240 fotogramas dibujados en un canvas, y en cinco puntos la cámara se detiene y se enciende una foto nítida de ese mismo encuadre. El texto de cada apartado vive en un panel fijo en el centro de la pantalla: aparece justo cuando su foto se enciende, se desvanece y deja un tramo en el que solo se ve el bar en movimiento.
 
 ### 2. ¿Por qué?
 
-Porque el usuario quería el efecto de las webs de producto caras y el vídeo no arrancaba: el navegador bloquea la reproducción y quedaba una imagen congelada. Con fotogramas no hay autoplay que valga. Después de probar varias vías se comprobó que el fondo del vídeo se ve blando (el original mide 1116 px y el navegador lo amplía), y de ahí las cinco fotos: como cada clip se generó a partir de una foto de 4096 px, ponerla justo en el primer fotograma da nitidez sin romper la animación. También se descubrió que fundir la foto con el fotograma produce una doble imagen, porque Kling redibujó la escena y las dos versiones no coinciden píxel a píxel: por eso el apagado es de 3 fotogramas y no de 20.
+Porque el vídeo no arrancaba solo (el navegador bloquea la reproducción) y porque el fondo del vídeo se ve blando: el original mide 1116 px y el navegador lo amplía. Como cada clip se generó a partir de una foto de 4096 px, encenderla en el primer fotograma da nitidez sin romper la animación. Se bajó de 484 a 240 fotogramas para que la web pese la mitad (13,5 → 6,7 MB) con un modo de 120 para móvil (3,3 MB). Se intentó además atar las paradas de la cámara a los centros de los apartados, para que cada texto entrara justo con su foto nítida; funcionaba, pero dejaba el recorrido desigual entre tramos y el usuario prefirió el reparto regular en cuartos.
 
 ### 3. ¿Dónde verlo en el código?
 
 - `src/components/HeroScrolly.astro:22` — contenedor sticky, canvas y las cinco capas de foto.
-- `src/scripts/app.js:56` — `PAUSA`: la parada de la cámara en cada escena.
-- `src/scripts/app.js:65` — `repartir()`: reparto del scroll entre los cuatro clips.
+- `src/scripts/app.js:43` — `PAUSA`: cuánto se queda quieta la cámara en cada tramo.
+- `src/scripts/app.js:68` — `repartir()`: avance del scroll → fotograma, con la parada al principio de cada tramo.
 - `src/scripts/app.js:30` — `ENTRADA_FOTO` y `SALIDA_FOTO`: encendido y apagado de la foto.
-- `src/scripts/app.js:180` — `pintar()`: fotograma dibujado y freno en los cortes.
-- `src/scripts/app.js:290` — `actualizarPaneles()`: opacidad de cada apartado.
+- `src/scripts/app.js:196` — `cargar()`: carga por capas y modo ligero.
 - `src/styles/global.css:76` — `.fondo__capa`, `.fondo__lienzo`, `.foto` y `.texto-foto`.
-- `src/pages/index.astro:27` — secciones de 300dvh (solo recorrido) y sus paneles.
+- `src/pages/index.astro:29` — secciones de 300dvh (solo recorrido) y sus paneles.
 - `astro.config.mjs:11` — `assetsInlineLimit: 0`, para que el JS salga como archivo y no rompa la CSP.
 
 ### 4. ¿Cómo comprobar que funciona?
 
 1. `http://localhost:4321/?animar=1` (el `?animar=1` fuerza la animación aunque el sistema pida reducir movimiento).
 2. Bajar despacio: el fondo avanza sin saltos y el logo se desvanece sin moverse.
-3. Al llegar a cada escena la cámara se para y la imagen se ve **nítida** durante ~1.100 px de scroll.
+3. Al llegar a cada escena la cámara se para y la imagen se ve **nítida** durante ~1.000 px de scroll.
 4. En ese momento no debe verse ninguna imagen doble ni el cartel duplicado.
-5. Entre escena y escena solo se ve el bar en movimiento, sin texto.
-6. Al final del todo: estatua nítida con «Dónde estamos» y la dirección.
-7. Activar «reducir movimiento» en el sistema y comprobar que se queda un fotograma fijo.
+5. Entre apartado y apartado solo se ve el bar en movimiento, sin texto.
+6. Al final: estatua nítida con «Dónde estamos» y la dirección.
+7. En una ventana estrecha (o en el móvil) comprobar que solo se descargan 120 fotogramas.
 
 ---
 

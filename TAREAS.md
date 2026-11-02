@@ -106,31 +106,47 @@
 **Objetivo:** fondo que recorre el bar al hacer scroll, con el contenido apareciendo y desvaneciéndose sin moverse de sitio.
 
 **Lo que hay:**
-- **484 fotogramas AVIF** (`public/fondo/`, 1000 px, 13,5 MB) dibujados en un `<canvas>` según el scroll. Sin `<video>`: no depende del autoplay.
-- **Carga por capas**: 10 fotogramas (≈350 KB) primero y el resto en segundo plano.
-- **Inercia** en el avance, para que la rueda no dé saltos; un solo fotograma por repintado, sin fundidos (producían fantasma).
-- **Cinco fotos nítidas** (`public/escenas/`, WebP a 2400 y 1200 px) encendidas en el primer fotograma de cada clip y en el último del vídeo.
-- **Paradas de cámara** al arrancar cada escena (`PAUSA = 0.26`), que es lo que hace posible ver la foto nítida sin doble imagen.
+- **240 fotogramas AVIF** (`public/fondo/`, 1000 px, 6,7 MB) dibujados en un `<canvas>` según el scroll. Sin `<video>`: no depende del autoplay.
+- **Modo ligero** en móvil, ahorro de datos o 2G: 120 fotogramas (3,3 MB).
+- **Carga por capas** (10 fotogramas primero, ≈290 KB) e **inercia** en el avance.
+- **Un fotograma por repintado**, sin fundidos: producían fantasma.
+- **Paradas de cámara al principio de cada cuarto** (`PAUSA = 0.26`): la cámara se queda quieta el 26 % de cada tramo. Se probó a atarlas a los centros de los apartados; el reparto quedaba desigual y se revirtió.
+- **Cinco fotos nítidas** (`public/escenas/`, WebP 2400 y 1200 px) en los fotogramas 0, 60, 120, 180 y 239.
 - **Paneles de texto** fijos en el centro, con tramos entre ellos en los que solo se ve el bar.
 - **Degradaciones**: `prefers-reduced-motion` → fotograma fijo; sin JS → texto íntegro en el HTML.
+
+**Dónde se enciende cada foto:**
+
+| Fotograma | Foto | Momento |
+|---|---|---|
+| 0 | Fachada | Portada |
+| 60 | Entrada | Arranque del segundo cuarto |
+| 120 | Patio | Arranque del tercero |
+| 180 | Terraza | Arranque del cuarto |
+| 239 | Estatua | Final del recorrido |
+
+> El texto de cada apartado se rige por su sección y la foto por el fotograma, así que
+> no siempre coinciden al píxel: el texto puede entrar cuando la foto ya lleva un rato
+> encendida. Es el compromiso que se eligió tras probar el anclaje exacto, que dejaba
+> el recorrido desigual.
 
 **Números finales:**
 
 | Concepto | Valor |
 |---|---|
 | Recorrido | 15 pantallas (`min-h-[300dvh]` por sección) |
-| Velocidad en el tramo que camina | 18,4 px de scroll por fotograma |
-| Nitidez por escena | ~1.120 px de scroll |
-| Peso del fondo | 13,5 MB de fotogramas + 3,2 MB de fotos (las fotos se cargan al acercarse) |
+| Velocidad media por tramo | 45 px de scroll por fotograma (≈25 mientras camina) |
+| Peso del fondo | 6,7 MB escritorio · 3,3 MB móvil |
+| Carga inicial | ≈290 KB de fotogramas + la primera foto |
 
 **Cómo se ajusta:**
-- Velocidad general → `min-h-[300dvh]` en `index.astro` (más alto = más lento, más largo).
-- Rato nítido → `PAUSA` en `app.js` (subirlo acelera la animación: subir también la altura).
-- Ritmo de los textos → constantes `0.1` y `0.36` de `actualizarPaneles()`.
+- Velocidad general → `min-h-[300dvh]` en `index.astro`.
+- Rato nítido → `PAUSA` en `app.js` (subirlo acelera la animación).
+- Reparto texto/foto → `FOTOGRAMAS_ANCLA` en `app.js`.
 
 **Pendiente para T9:** en las fotos de la terraza y la estatua se lee la pizarra de precios del bar. Decidir si se recorta o se elige otro encuadre (REGLA: sin precios en la web).
 
-**Verificación:** bajar despacio por la portada y comprobar que (1) el fondo avanza sin saltos, (2) al llegar a cada escena la cámara se para y la imagen se ve nítida, (3) no aparece la doble imagen, (4) entre escenas solo se ve el bar, (5) al final está la estatua nítida con la dirección.
+**Verificación:** bajar despacio y comprobar que cada apartado aparece **a la vez** que su imagen nítida; que no hay doble imagen; que entre apartados solo se ve el bar; y que al final está la estatua nítida con la dirección.
 
 ---
 

@@ -62,18 +62,17 @@ El fondo de la portada es un **recorrido de cámara por el bar** que avanza con 
 
 **Cómo está montado (cerrado en T5):**
 
-1. **Secuencia de 484 fotogramas AVIF** en `public/fondo/` (1000 px de ancho, 16:9, 13,5 MB). Son todos los del vídeo original —24 por segundo—, recortados el 9 % inferior para quitar la marca de agua del generador. `app.js` dibuja el que toca en un `<canvas>`: no hay `<video>`, así que no depende del autoplay ni de ningún códec.
-2. **Carga por capas**: primero 10 fotogramas (≈350 KB) y el resto en segundo plano. La primera imagen no bloquea.
-3. **Inercia**: la posición dibujada persigue a la del scroll, para que las muescas de la rueda no se noten como saltos.
-4. **Un fotograma por repintado**, el más cercano. Mezclar dos deja un fantasma visible.
-5. **Cinco fotos nítidas** en `public/escenas/` (2400 px y 1200 px en WebP), sacadas de los HEIC que aportó el usuario. Cada una es el primer fotograma de su clip; la última es el último fotograma del vídeo. Se encienden justo en ese punto y se apagan en 3 fotogramas.
-6. **Paradas**: al llegar al arranque de cada escena la cámara se queda quieta el 26 % de su tramo (`PAUSA` en `app.js`). Es lo que permite ver la foto nítida sin que aparezca la doble imagen.
-7. **Contenido por paneles**: cada apartado es un panel `position: fixed` centrado, que aparece y se desvanece. Entre uno y otro queda un tramo sin texto en el que solo se ve el bar en movimiento.
-8. **Degradaciones**: `prefers-reduced-motion` → un fotograma fijo; sin JavaScript → todo el texto sigue en el HTML.
+1. **Secuencia de 240 fotogramas AVIF** en `public/fondo/` (1000 px de ancho, 16:9, 6,7 MB), uno de cada dos del vídeo original —12 por segundo—, recortados el 9 % inferior para quitar la marca de agua del generador. `app.js` dibuja el que toca en un `<canvas>`: no hay `<video>`, así que no depende del autoplay ni de ningún códec.
+2. **Modo ligero**: en pantallas menores de 760 px, con ahorro de datos o en 2G se carga **uno de cada dos** fotogramas (120, 3,3 MB). Se decide en JS porque afecta a lo que se descarga.
+3. **Carga por capas**: primero 10 fotogramas (≈290 KB) y el resto en segundo plano.
+4. **Inercia** en el avance, para que las muescas de la rueda no se noten; un solo fotograma por repintado, sin fundirlos (producía fantasma).
+5. **Paradas de cámara al principio de cada cuarto** (`PAUSA = 0,26`): la cámara se queda quieta el 26 % de cada tramo y luego camina. Es lo que permite que la foto nítida se vea sin doble imagen. Se probó a atar las paradas a los centros de los apartados para que el texto entrara justo con su foto, pero el reparto quedaba desigual entre tramos y se revirtió.
+6. **Cinco fotos nítidas** en `public/escenas/` (2400 px y 1200 px en WebP), sacadas de los HEIC del usuario. Cada una es el primer fotograma de su clip; la de la estatua es el último del vídeo. Se encienden en los fotogramas 0, 60, 120, 180 y 239, y se apagan en 3 fotogramas (más tiempo produce doble imagen, porque Kling redibujó la escena y las dos versiones no coinciden píxel a píxel).
+7. **Degradaciones**: `prefers-reduced-motion` → un fotograma fijo; sin JavaScript → todo el texto sigue en el HTML.
 
 > **Nunca** se hace *scrub* de `video.currentTime` ligado al scroll: en iOS Safari el *seek* continuo va a tirones. Por eso no se usa vídeo.
 
-> ⚠️ **Aviso de equilibrio.** El recorrido de cada sección es fijo. Alargar `PAUSA` **acelera** la animación, porque el trozo en el que la cámara camina se queda más corto. Si se sube, hay que subir también la altura de las secciones (`min-h-[...]` en `index.astro`) o la animación se dispara.
+> ⚠️ **Aviso de equilibrio.** El recorrido de cada sección es fijo. Alargar `PAUSA` **acelera** la animación, porque el trozo en el que la cámara camina se queda más corto. Si se sube, hay que subir también la altura de las secciones (`min-h-[...]` en `index.astro`).
 
 ---
 

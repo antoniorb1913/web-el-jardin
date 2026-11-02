@@ -49,21 +49,22 @@ const FRENO = 3;
  * salta. Parada, la imagen es la misma que el fotograma de debajo y se puede mirar
  * sin que aparezca nada doble.
  *
- * `PAUSA = 0.2` son unos 590 px de scroll quieto al principio de cada escena.
+ * Se probó a atar las paradas a los centros de los apartados para que el texto
+ * entrara justo con su foto, pero el reparto resultante no convenció: el recorrido
+ * quedaba desigual entre tramos. Se dejó en cuartos exactos, que es más regular.
  *
- * Ojo al tocarlo: alargar la parada **acelera la animación**, porque el recorrido de
- * la sección es fijo y el trozo que camina se queda más corto. Si se sube, hay que
- * subir también la altura de las secciones en `index.astro`.
+ * Ojo al tocar `PAUSA`: alargar la parada **acelera la animación**, porque el
+ * recorrido de la sección es fijo y el trozo que camina se queda más corto.
  */
 const PAUSA = 0.26;
 
-/** Número de clips del vídeo, que es también el de fotos nítidas. */
+/** Cuatro clips en el vídeo, uno por tramo. */
 const TRAMOS = 4;
 
-/** Fotogramas por clip. */
-const FOTOGRAMAS_POR_TRAMO = 121;
+/** Fotogramas por clip (60 = 5,04 s a 12 por segundo). */
+const FOTOGRAMAS_POR_TRAMO = 60;
 
-/** Avance dentro de un tramo: parado al principio, luego acelera y frena. */
+/** Avance del scroll (0-1) → fotograma que toca dibujar. */
 function repartir(avance) {
   const total = Math.min(Math.max(avance, 0), 1) * TRAMOS;
   const tramo = Math.min(Math.floor(total), TRAMOS - 1);
@@ -72,10 +73,8 @@ function repartir(avance) {
   if (dentro <= PAUSA) return tramo * FOTOGRAMAS_POR_TRAMO;
 
   const resto = (dentro - PAUSA) / (1 - PAUSA);
-  // Curva casi lineal. Con un suavizado puro la cámara va despacio al principio y al
-  // final, pero **se acelera en el medio** hasta un 50 % por encima de la media, y
-  // eso es justo lo que se percibe como «avanzo poco y corre mucho». Mezclada con la
-  // recta, la velocidad se queda parecida en todo el tramo.
+  // Curva casi lineal: un suavizado puro acelera en el medio y se percibe como
+  // «avanzo poco y corre mucho».
   const curva = 0.3 * (resto * resto * (3 - 2 * resto)) + 0.7 * resto;
   return (tramo + curva) * FOTOGRAMAS_POR_TRAMO;
 }
@@ -85,10 +84,14 @@ const ANTELACION_FOTO = 40;
 
 /**
  * Pasos de carga, en fotogramas de separación, y cuándo empieza cada uno.
- * Con 484 fotogramas: primero 10 (uno de cada 48) y luego se rellenan los huecos.
- * Así hay algo que enseñar en cuanto se abre la página (unos 350 KB).
+ * Con 240 fotogramas: primero 10 (uno de cada 24) y luego se rellenan los huecos.
+ * Así hay algo que enseñar en cuanto se abre la página (unos 290 KB).
  */
-const PASOS_CARGA = [48, 24, 8, 1];
+/**
+ * Pasos de carga, en fotogramas de separación, y cuándo empieza cada uno.
+ * Primero 10 (uno de cada 24) y luego se rellenan los huecos: unos 290 KB.
+ */
+const PASOS_CARGA = [24, 12, 4, 1];
 const RETARDOS_CARGA = [0, 700, 1800, 3500];
 
 const limitar = (valor, min, max) => Math.min(Math.max(valor, min), max);
@@ -130,6 +133,17 @@ export function iniciarPortada() {
   const forzarAnimacion = new URLSearchParams(window.location.search).has('animar');
   const sinMovimiento = !forzarAnimacion && prefiereMenosMovimiento();
 
+  /**
+   * En pantallas pequeñas o con conexión lenta se carga uno de cada dos fotogramas:
+   * la mitad de peso (3,3 MB en vez de 6,7) a cambio de un movimiento algo más a
+   * saltos. Se decide aquí y no en CSS porque afecta a lo que se descarga.
+   */
+  const conexion = navigator.connection || {};
+  const esLigero = window.matchMedia('(max-width: 760px)').matches
+    || conexion.saveData === true
+    || /(^|-)2g$/.test(conexion.effectiveType || '');
+  const salto = esLigero ? 2 : 1;
+
   const imagenes = new Array(total).fill(null);
   const estado = { posicion: 0, ancho: 0, alto: 0, dpr: 1 };
   let peticion = null;
@@ -147,6 +161,9 @@ export function iniciarPortada() {
 
   function cargar(indice) {
     if (indice < 0 || indice >= total || imagenes[indice] !== null) return;
+    // En modo ligero solo se descargan los pares: el dibujado siempre encuentra el
+    // más cercano de los que hay, así que la secuencia sigue funcionando a la mitad.
+    if (indice % salto !== 0) return;
     imagenes[indice] = 'cargando';
     const imagen = new Image();
     imagen.decoding = 'async';
