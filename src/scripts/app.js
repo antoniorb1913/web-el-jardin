@@ -53,6 +53,21 @@ const VENTANA_PORTAL = 0.03;
 /** Dónde late el desenfoque: al final del recorrido de cada tramo. */
 const PORTALES = [0.2, 0.45, 0.7, 0.95];
 
+/** Lo que tarda el fondo en desenfocarse al pulsar un enlace de la cabecera, en ms. */
+const ENTRADA_CRUCE = 460;
+
+/** Lo que tarda en volver a enfocarse, en ms. */
+const SALIDA_CRUCE = 950;
+
+/** Respiro con la pantalla tapada antes de abrir, en ms. */
+const ESPERA_CRUCE = 280;
+
+/**
+ * Intensidad del desenfoque en el cruce, en px. Mas baja que la del scroll (16):
+ * el salto tambien queda tapado y el paso se siente mas suave.
+ */
+const DESENFOQUE_CRUCE = 10;
+
 /** Pasos de carga del recorrido y cuándo empieza cada uno. */
 const PASOS_CARGA = [24, 12, 4, 1];
 const RETARDOS_CARGA = [0, 700, 1800, 3500];
@@ -67,26 +82,26 @@ const SALIDA_FOTO = 3;
 const limitar = (valor, min, max) => Math.min(Math.max(valor, min), max);
 const suavizar = (valor) => valor * valor * (3 - 2 * valor);
 
-/**
- * Viaje entre apartados: estado compartido con la navegación.
- *
- * `posicionForzada` se usa durante el viaje para que la cámara vaya de una tirada, sin
- * que el reparto normal la frene en las paradas que quedan por el camino.
- */
+/** Mientras dura un cruce no se enseña ningún texto: solo el fondo. */
 let viajando = false;
+
+/** Mientras dura un cruce, el desenfoque lo manda la animación, no el scroll. */
+let cruzando = false;
+
 let tokenViaje = 0;
-let posicionForzada = null;
 
 /** Lo rellena `iniciarPortada` para pedir un repintado desde la navegación. */
 let refrescarPortada = () => {};
 
-/** Lo rellena `iniciarPortada`: avance del scroll (0-1) → fotograma. */
-let fotogramaDeAvance = () => 0;
+/**
+ * Lo rellena `iniciarPortada`: coloca el fotograma del sitio donde se ha saltado, sin
+ * que la cámara lo recorra. Se llama con la pantalla desenfocada, así que no se ve.
+ */
+let colocarFotograma = () => {};
 
 function cancelarViaje() {
   tokenViaje += 1;
   viajando = false;
-  posicionForzada = null;
   refrescarPortada();
 }
 
@@ -305,7 +320,7 @@ export function iniciarPortada() {
 
   /** Abre y cierra el círculo del cruce. */
   function actualizarPortal(avance) {
-    if (!portal) return;
+    if (!portal || cruzando) return;
     const curva = suavizar(estadoPortal(avance));
     portal.style.setProperty('--radio', (curva * 115).toFixed(2));
     portal.style.setProperty('--desenfoque', (curva * 16).toFixed(2));
@@ -365,7 +380,7 @@ export function iniciarPortada() {
 
     const avance = limitar((window.scrollY - portada.offsetTop) / recorrido, 0, 1);
     actualizarPortal(avance);
-    objetivo = posicionForzada !== null ? posicionForzada : repartir(avance);
+    objetivo = repartir(avance);
     precargarAlrededor(objetivo);
 
     const fondo = portada.querySelector('[data-fondo]');
@@ -402,7 +417,14 @@ export function iniciarPortada() {
     redimensionar();
     precargar();
     refrescarPortada = pedirPintado;
-    fotogramaDeAvance = repartir;
+    colocarFotograma = () => {
+      const recorrido = portada.offsetHeight - window.innerHeight;
+      if (recorrido <= 0) return;
+      const avance = limitar((window.scrollY - portada.offsetTop) / recorrido, 0, 1);
+      objetivo = repartir(avance);
+      estado.posicion = objetivo;
+      pintar();
+    };
     if (sinMovimiento) {
       estado.posicion = 0;
       pintar();
@@ -421,7 +443,7 @@ export function iniciarPortada() {
  * Cabecera, índice y viaje entre apartados.
  *
  * El destino de cada apartado es la parada de cámara donde se enciende su foto, y el
- * viaje lo conduce `viajarA` con los paneles apagados.
+ * salto lo conduce `cruzarA`: desenfoque, salto y enfoque, medio segundo en total.
  */
 export function iniciarNavegacion() {
   const encabezado = document.querySelector('[data-encabezado]');
@@ -449,73 +471,113 @@ export function iniciarNavegacion() {
     return Math.max(0, centro - window.innerHeight / 2);
   }
 
-  function viajarA(destinoY) {
+  /**
+   * Cruce rápido al pulsar un enlace de la cabecera.
+   *
+   * No se recorre la página: se desenfoca, se salta al apartado y se enfoca. Medio
+   * segundo en vez de los dos o tres que tardaba el viaje, y con el mismo lenguaje que
+   * los cruces del scroll.
+   *
+   * El barrido del lienzo no se fuerza: la inercia lo alcanza durante el enfoque, así
+   * que no se ve ningún salto de fotograma.
+   */
+  function cruzarA(destinoY, id) {
     const desde = window.scrollY;
-    const distancia = destinoY - desde;
-    if (Math.abs(distancia) < 40) return;
+    if (Math.abs(destinoY - desde) < 4) return;
 
+    const portal = document.querySelector('[data-portal]');
     cancelarViaje();
     const token = tokenViaje;
-    viajando = true;
 
-    const portada = document.querySelector('[data-scrolly]');
-    let fotogramaDesde = null;
-    let fotogramaHasta = null;
-    if (portada) {
-      const recorrido = portada.offsetHeight - window.innerHeight;
-      if (recorrido > 0) {
-        fotogramaDesde = fotogramaDeAvance(limitar((desde - portada.offsetTop) / recorrido, 0, 1));
-        fotogramaHasta = fotogramaDeAvance(limitar((destinoY - portada.offsetTop) / recorrido, 0, 1));
-      }
+    // Sin animación o sin el elemento: salto directo, que es lo correcto.
+    if (!portal || prefiereMenosMovimiento()) {
+      window.scrollTo(0, destinoY);
+      return;
     }
-    refrescarPortada();
 
-    // El CSS tiene `scroll-behavior: smooth` y pelearía con este bucle.
-    const raiz = document.documentElement;
-    const comportamientoPrevio = raiz.style.scrollBehavior;
-    raiz.style.scrollBehavior = 'auto';
+    viajando = true;
+    cruzando = true;
 
-    // Duración de 1,1 a 3,6 s según la distancia. El divisor fija la velocidad.
-    const duracion = Math.min(3600, Math.max(1100, Math.abs(distancia) / 1.3));
+    // El texto del destino entra desenfocado y se enfoca a la vez que se funde, en
+    // lugar de aparecer seco al abrirse el fondo.
+    const seccion = id ? document.getElementById(id) : null;
+    const panelDestino = seccion ? seccion.querySelector('[data-panel]') : null;
+    if (panelDestino) {
+      panelDestino.style.transition = 'opacity 700ms ease-out, filter 700ms ease-out';
+      panelDestino.style.setProperty('--desenfoque-panel', '9');
+    }
+
     const arranque = performance.now();
+    let saltado = false;
 
     function paso(ahora) {
       if (token !== tokenViaje) {
-        raiz.style.scrollBehavior = comportamientoPrevio;
+        cruzando = false;
+        viajando = false;
+        portal.dataset.visible = 'no';
         return;
       }
-      const avance = Math.min((ahora - arranque) / duracion, 1);
-      // Curva quíntica: arranca y frena con la derivada segunda a cero.
-      const suave = avance * avance * avance * (avance * (avance * 6 - 15) + 10);
-      window.scrollTo(0, desde + distancia * suave);
-      if (fotogramaDesde !== null && fotogramaHasta !== null) {
-        posicionForzada = fotogramaDesde + (fotogramaHasta - fotogramaDesde) * suave;
-      }
-      refrescarPortada();
-      if (avance < 1) {
+
+      const transcurrido = ahora - arranque;
+
+      if (transcurrido < ENTRADA_CRUCE) {
+        const f = suavizar(transcurrido / ENTRADA_CRUCE);
+        portal.style.setProperty('--radio', (f * 115).toFixed(2));
+        portal.style.setProperty('--desenfoque', (f * DESENFOQUE_CRUCE).toFixed(2));
+        portal.dataset.visible = 'si';
         window.requestAnimationFrame(paso);
         return;
       }
-      raiz.style.scrollBehavior = comportamientoPrevio;
+
+      if (!saltado) {
+        // El salto ocurre con la pantalla ya desenfocada, y el fotograma se coloca de
+        // golpe: no hay barrido de cámara que se pueda notar.
+        window.scrollTo(0, destinoY);
+        colocarFotograma();
+        saltado = true;
+      }
+
+      // El apartado se suelta en cuanto empieza a abrirse, no al final: así el texto
+      // se funde sobre la escena mientras el desenfoque se retira, y no llega tarde.
+      if (viajando) {
+        viajando = false;
+        refrescarPortada();
+        if (panelDestino) panelDestino.style.setProperty('--desenfoque-panel', '0');
+      }
+
+      const f = limitar((transcurrido - ENTRADA_CRUCE - ESPERA_CRUCE) / SALIDA_CRUCE, 0, 1);
+      const abierto = 1 - suavizar(f);
+      portal.style.setProperty('--radio', (abierto * 115).toFixed(2));
+      portal.style.setProperty('--desenfoque', (abierto * DESENFOQUE_CRUCE).toFixed(2));
+
+      if (f < 1) {
+        window.requestAnimationFrame(paso);
+        return;
+      }
+
+      portal.dataset.visible = 'no';
+      cruzando = false;
       viajando = false;
-      posicionForzada = null;
       refrescarPortada();
+
+      if (panelDestino) {
+        window.setTimeout(() => {
+          panelDestino.style.transition = '';
+          panelDestino.style.removeProperty('--desenfoque-panel');
+        }, 750);
+      }
     }
 
     window.requestAnimationFrame(paso);
   }
+
 
   ['wheel', 'touchstart', 'keydown'].forEach((gesto) => {
     window.addEventListener(gesto, cancelarViaje, { passive: true });
   });
 
   function irA(destino) {
-    const destinoY = destinoDeApartado(destino);
-    if (prefiereMenosMovimiento()) {
-      window.scrollTo(0, destinoY);
-      return;
-    }
-    viajarA(destinoY);
+    cruzarA(destinoDeApartado(destino), destino);
   }
 
   enlaces.forEach((enlace) => {

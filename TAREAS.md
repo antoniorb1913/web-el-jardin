@@ -159,7 +159,12 @@
 - **Cabecera fija** sobre la película: **el logotipo** a la izquierda (sin repetir el nombre en texto) y los cinco apartados a la derecha, sobre un velo que los hace legibles. Sin tarjetas ni sombras de caja; el ámbar del logo se reserva para el foco y el hover.
 - **La cabecera no se ve en la primera pantalla**: allí manda el logotipo grande de la portada y dos a la vez sería ruido. Aparece al salir del héroe y se retira al llegar a un pie claro (en las páginas que lo tengan).
 - **Índice a pantalla completa** por debajo de 860 px: mismo listado, más la dirección y el horario al pie. Abre con el botón, cierra con «Cerrar», con Escape o al elegir un apartado; el foco entra en el primer apartado, no escapa del panel y vuelve al botón al cerrar; la página de debajo no hace scroll.
-- **Viaje entre apartados**: al pulsar un enlace de la cabecera el scroll no salta, lo conduce `app.js`. La curva es quíntica —arranca y frena con la derivada segunda a cero, así que planea en vez de arrancar y parar— y la duración va de 1,1 a 3,6 s según la distancia. Mientras dura, **todos los paneles de texto están apagados**: se ve la cámara recorriendo el bar sin que aparezcan los apartados que quedan en medio. Funciona igual hacia delante y hacia atrás. Cualquier gesto del visitante (rueda, dedo, tecla) cancela el viaje y manda él. **El último apartado apunta al final de la película**, no al centro de su sección: ese centro cae donde el cierre todavía no está encendido. Con `prefers-reduced-motion` el salto es directo, sin animación; `?animar=1` fuerza la animación.
+- **Cruce al pulsar un apartado**: la cabecera **no recorre la página**. El fondo se
+  desenfoca (0,46 s), se salta al apartado con la pantalla tapada, se mantiene tapado un
+  respiro (0,28 s) y se abre despacio (0,95 s) mientras el texto del destino entra
+  desenfocado y se enfoca. Total ~1,7 s. El fotograma se coloca de golpe, sin barrido de
+  cámara. Con `prefers-reduced-motion` el salto es directo, sin animación; `?animar=1`
+  fuerza la animación.
 - **Cinco apartados, cinco paradas**: «Quiénes somos» va con el logo en la portada, así que la página
   queda en portada, especialidades, comida, fotos y dónde estamos. Cada uno cae en una de las cuatro
   paradas de cámara o en el final, donde está la estatua, y en todas se enciende su foto nítida. El

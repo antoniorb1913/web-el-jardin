@@ -151,6 +151,12 @@
   padding: 1.5rem;
   opacity: var(--opacidad-panel, 0);
   pointer-events: none;
+  /* Suaviza la aparicion del texto: sin esto, al terminar un cruce el apartado
+     aparecia de golpe en vez de fundirse con el fondo. */
+  transition: opacity 260ms ease-out;
+  /* En los cruces de la cabecera el texto entra desenfocado y se enfoca: `cruzarA`
+     mueve esta variable. */
+  filter: blur(calc(var(--desenfoque-panel, 0) * 1px));
 }
 
 /* Solo el panel visible recibe clics y teclado. */

@@ -75,7 +75,11 @@ El fondo de la portada es un **recorrido de cámara por el bar** que avanza con 
 8. **Los 240 fotogramas se descargan de golpe** al entrar. La carga por capas se probó y fallaba: si el tramo que se estaba viendo no había llegado, el dibujo se quedaba quieto y luego saltaba. Además, `precargarAlrededor()` pide los del entorno de la cámara en cada movimiento.
 9. **Cruce entre escenas**: en cada tramo, al irse el apartado (28 %) nace un círculo pequeño en el centro y crece **desenfocando el fondo** (`backdrop-filter` + máscara radial, radio hasta 165 % e intensidad hasta 16 px); se abre al llegar la escena siguiente (90 %). Tapa el tramo en el que la cámara viaja, que es donde los fotogramas se ven blandos.
 10. **La foto nítida nunca se mezcla**: se enciende entera con su apartado y se apaga de golpe al arrancar la cámara. La foto y el fotograma son dos imágenes distintas de la misma escena; al 50 % se ven dos paredes superpuestas. La del cierre entra con el último desenfoque, en el fotograma 228 de 239.
-11. **La portada no se ve doble**: el rótulo pintado «JARDÍN» de la pared queda a la derecha y se apaga con una sombra cálida (`--velo-lado`), así solo se lee el logotipo.
+11. **Los enlaces de la cabecera no recorren la página**: se desenfoca (0,46 s), se salta al
+    apartado con la pantalla tapada, se respira (0,28 s) y se abre despacio (0,95 s) con el
+    texto del destino entrando desenfocado. El fotograma se coloca de golpe
+    (`colocarFotograma`), sin barrido de cámara. Con `prefers-reduced-motion`, salto directo.
+12. **La portada no se ve doble**: el rótulo pintado «JARDÍN» de la pared queda a la derecha y se apaga con una sombra cálida (`--velo-lado`), así solo se lee el logotipo.
 
 > **Nunca** se hace *scrub* de `video.currentTime` ligado al scroll: en iOS Safari el *seek* continuo va a tirones. Por eso no se usa vídeo.
 >
