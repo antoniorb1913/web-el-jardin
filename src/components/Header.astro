@@ -1,0 +1,79 @@
+---
+/**
+ * Cabecera (T6).
+ *
+ * Va fija sobre la película, así que se mantiene pequeña: el logotipo del bar y los
+ * cinco apartados. El logotipo es la única imagen de la cabecera; no se escribe el
+ * nombre al lado para no repetirlo con el que ya forma parte del propio logo.
+ *
+ * En la portada la cabecera **no se ve durante la primera pantalla**: allí está el
+ * logotipo grande y dos a la vez sería ruido. Aparece al salir del héroe.
+ *
+ * En pantallas estrechas los enlaces se esconden y queda un botón «Índice» que abre
+ * el mismo listado a pantalla completa, con la dirección y el horario al pie: es lo
+ * que se busca al abrir un menú en el móvil.
+ */
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import { apartados, direccion, horario } from '../data/negocio';
+---
+
+<header class="encabezado" data-encabezado>
+  <a class="encabezado__marca" href="#portada" data-enlace-apartado data-destino="portada">
+    <Image src={logo} alt="Bar El Jardín" width={180} class="encabezado__logo" loading="eager" />
+  </a>
+
+  <nav class="encabezado__nav" aria-label="Apartados de la portada">
+    <ul>
+      {apartados.map((apartado) => (
+        <li>
+          <a href={`#${apartado.id}`} data-enlace-apartado data-destino={apartado.id}>
+            {apartado.nombre}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <button
+    class="encabezado__boton"
+    type="button"
+    data-abrir-indice
+    aria-expanded="false"
+    aria-controls="indice"
+  >
+    Índice
+  </button>
+</header>
+
+<!-- Índice a pantalla completa: mismo listado, cómodo en móvil. -->
+<div class="indice" id="indice" data-indice data-abierto="no">
+  <div class="indice__caja" role="dialog" aria-modal="true" aria-label="Índice de la web">
+    <div class="indice__cabecera">
+      <p class="indice__marca">Bar El Jardín</p>
+      <button class="indice__cerrar" type="button" data-cerrar-indice>Cerrar</button>
+    </div>
+
+    <nav aria-label="Apartados de la portada">
+      <ul class="indice__lista">
+        {apartados.map((apartado) => (
+          <li>
+            <a href={`#${apartado.id}`} data-enlace-apartado data-destino={apartado.id}>
+              {apartado.nombre}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="indice__ficha">
+      <p>{direccion.completa}</p>
+      {horario.map((tramo) => (
+        <p class="indice__horario">
+          <span>{tramo.dias}</span>
+          <span>{tramo.horas}</span>
+        </p>
+      ))}
+    </div>
+  </div>
+</div>

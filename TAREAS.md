@@ -13,8 +13,8 @@
 | 0 · Base | **T2** · Andamiaje Astro + Tailwind + estructura | ✅ Completada | T1 |
 | 0 · Base | **T3** · Identidad visual: paleta, logo, iconos y fuentes | ✅ Completada | T2 |
 | 1 · Scrollytelling | **T4** · Análisis del vídeo y troceado en escenas | ✅ Completada | T2 |
-| 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ⏳ Pendiente | T4 |
-| 2 · Contenido | **T6** · Layout base: header, navegación y footer | ⏳ Pendiente | T3 |
+| 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ✅ Completada | T4 |
+| 2 · Contenido | **T6** · Layout base: header, navegación y footer | ✅ Completada | T3 |
 | 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ⏳ Pendiente | T6 |
 | 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ⏳ Pendiente | T7 |
 | 2 · Contenido | **T9** · Galería de fotos del bar | ⏳ Pendiente · ⚠️ necesita fotos | T8 |
@@ -85,40 +85,112 @@
 
 ---
 
-### T4 · Análisis del vídeo y troceado en escenas — ✅ Completada (2026-11-01)
+### T4 · Análisis del vídeo y troceado en escenas — ✅ Completada (2026-11-01, revisada con los originales)
 
 **Objetivo:** medir `transicion.mp4`, decidir dónde empieza y acaba cada estancia y generar un clip por escena con su póster.
 
-**Resultado:** el vídeo es **1116×836, 24 fps, 20,17 s, 7,9 Mbps y con audio** (el audio se descarta: es un fondo mudo). **No tiene cortes**: es un recorrido continuo en primera persona, así que los límites de escena se fijaron a ojo sobre una hoja de contactos (calle → puerta → patio → jardín → terraza → vistas). 6 clips de 2,2 a 4,4 s en **960×654, H.264, CRF 32, 24 fps**, con póster JPG de 640 px. **Total: 3,43 MB.**
+**Resultado (revisado con los clips originales):** el material real son **4 clips de 5,04 s** (1116×836, 24 fps, ~8 Mbps) y `transicion.mp4` es su unión. Por tanto los cortes buenos están en **5,04 / 10,08 / 15,12 s**, no donde se supuso la primera vez. Se respetan esos cuatro cortes (calle → patio → jardín → terraza) y se codifica a **1116×760 —resolución nativa—, H.264 CRF 26, 24 fps, 4,2 s por clip** (se recortan 0,4 s por extremo). **Total: 7,3 MB**, entre 1,5 y 2,0 MB por clip.
 
-> **Tres decisiones que conviene conocer:**
-> 1. **Se recorta el 9 % inferior del vídeo**: el original lleva la marca de agua «KlingAI 4.0» abajo a la derecha y no puede salir en la web del bar.
-> 2. **Sin WebM**: H.264 en MP4 lo reproduce el 100 % de los navegadores y duplicar cada clip solo engordaría el repo.
-> 3. El límite de 600 KB por clip se quedó corto — el follaje y la grava son carísimos de comprimir. Lo que importa no es el total sino cuánto se descarga de golpe: **solo el clip activo**, entre 306 y 685 KB.
+> **Qué se corrigió:** la primera versión partía el vídeo en 6 trozos de 2-4 s cortando *por dentro* de las escenas del autor, y bajaba la resolución a 960 con CRF 32. Se veía blando y los cortes no coincidían con nada. Ahora no se reescala y los cortes son los del material original.
+> **Qué se mantiene:** el recorte del 9 % inferior para quitar la marca de agua del generador y la decisión de no generar WebM.
+> **Coste:** son clips más pesados (1,5-2 MB frente a 0,3-0,7 MB). Se compensa en T5: primero se pinta el póster de 60-90 KB y el vídeo solo se descarga cuando su sección se acerca.
 
-**Archivos:** `public/video/escena-1..6-*.mp4` y `.jpg`, `src/data/escenas.js`.
+**Archivos:** `clips-originales/escena1-4.mp4` (material de partida), `public/video/escena-1..4-*.mp4` y `.jpg`, `src/data/escenas.js`, `src/pages/escenas.astro` (visor temporal).
 
 **Verificación:** reproducir dos clips seguidos y comprobar que cada uno empieza y acaba en la estancia correcta (no a mitad de un giro); comprobar que ninguno pasa de 800 KB.
 
 ---
 
-### T5 · Motor de scrollytelling — ⏳
+### T5 · Motor de scrollytelling — ✅ Completada (2026-11-01)
 
-**Objetivo:** contenedor `sticky` a pantalla completa con el clip activo, intercambio de escena por `IntersectionObserver`, fundido corto, `congelarFondo` para el parallax, y las degradaciones de AGENTS.md §3.1 (reduced-motion, Save-Data, sin JS).
+**Objetivo:** fondo que recorre el bar al hacer scroll, con el contenido apareciendo y desvaneciéndose sin moverse de sitio.
 
-**Archivos:** `src/components/HeroScrolly.astro`, `src/scripts/app.js`, `src/styles/global.css`.
+**Lo que hay:**
+- **240 fotogramas AVIF** (`public/fondo/`, 1000 px, 6,7 MB) dibujados en un `<canvas>` según el scroll. Sin `<video>`: no depende del autoplay.
+- **Modo ligero** en móvil, ahorro de datos o 2G: 120 fotogramas (3,3 MB).
+- **Carga por capas** (10 fotogramas primero, ≈290 KB) e **inercia** en el avance.
+- **Un fotograma por repintado**, sin fundidos: producían fantasma.
+- **Paradas de cámara al principio de cada cuarto** (`PAUSA = 0.26`): la cámara se queda quieta el 26 % de cada tramo. Se probó a atarlas a los centros de los apartados; el reparto quedaba desigual y se revirtió.
+- **Cinco fotos nítidas** (`public/escenas/`, WebP 2400 y 1200 px) en los fotogramas 0, 60, 120, 180 y 239.
+- **Paneles de texto** fijos en el centro, con tramos entre ellos en los que solo se ve el bar.
+- **Degradaciones**: `prefers-reduced-motion` → fotograma fijo; sin JS → texto íntegro en el HTML.
 
-**Verificación:** bajar despacio por la portada y ver que cada sección activa su escena; activar «reducir movimiento» en el sistema y comprobar que se ven imágenes fijas; desactivar JavaScript y comprobar que todo el texto sigue visible.
+**Dónde se enciende cada foto:**
+
+| Fotograma | Foto | Momento |
+|---|---|---|
+| 0 | Fachada | Portada |
+| 60 | Entrada | Arranque del segundo cuarto |
+| 120 | Patio | Arranque del tercero |
+| 180 | Terraza | Arranque del cuarto |
+| 239 | Estatua | Final del recorrido |
+
+> El texto de cada apartado se rige por su sección y la foto por el fotograma, así que
+> no siempre coinciden al píxel: el texto puede entrar cuando la foto ya lleva un rato
+> encendida. Es el compromiso que se eligió tras probar el anclaje exacto, que dejaba
+> el recorrido desigual.
+
+**Números finales:**
+
+| Concepto | Valor |
+|---|---|
+| Recorrido | 15 pantallas (`min-h-[300dvh]` por sección) |
+| Velocidad media por tramo | 45 px de scroll por fotograma (≈25 mientras camina) |
+| Peso del fondo | 6,7 MB escritorio · 3,3 MB móvil |
+| Carga inicial | ≈290 KB de fotogramas + la primera foto |
+
+**Cómo se ajusta:**
+- Velocidad general → `min-h-[300dvh]` en `index.astro`.
+- Rato nítido → `PAUSA` en `app.js` (subirlo acelera la animación).
+- Reparto texto/foto → `FOTOGRAMAS_ANCLA` en `app.js`.
+
+**Pendiente para T9:** en las fotos de la terraza y la estatua se lee la pizarra de precios del bar. Decidir si se recorta o se elige otro encuadre (REGLA: sin precios en la web).
+
+**Verificación:** bajar despacio y comprobar que cada apartado aparece **a la vez** que su imagen nítida; que no hay doble imagen; que entre apartados solo se ve el bar; y que al final está la estatua nítida con la dirección.
 
 ---
 
-### T6 · Layout base: header, navegación y footer — ⏳
+### T6 · Layout base: header, navegación y cierre — ✅ Completada
 
-**Objetivo:** cabecera con logo y navegación a las 5 secciones (anclas), menú móvil accesible, footer con dirección, horario y redes.
+**Objetivo:** cabecera con el logotipo y navegación a los 5 apartados, menú móvil accesible, y el pie **dentro** de la película como última escena.
 
-**Archivos:** `src/layouts/Base.astro`, `src/components/Header.astro`, `src/components/Footer.astro`, `src/data/negocio.js`.
+**Lo que hay:**
+- **`src/data/negocio.js`**: nombre, lema, dirección, horarios, enlace a Google Maps y lista de apartados. Única fuente de estos datos.
+- **Cabecera fija** sobre la película: **el logotipo** a la izquierda (sin repetir el nombre en texto) y los cinco apartados a la derecha, sobre un velo que los hace legibles. Sin tarjetas ni sombras de caja; el ámbar del logo se reserva para el foco y el hover.
+- **La cabecera no se ve en la primera pantalla**: allí manda el logotipo grande de la portada y dos a la vez sería ruido. Aparece al salir del héroe y se retira al llegar a un pie claro (en las páginas que lo tengan).
+- **Índice a pantalla completa** por debajo de 860 px: mismo listado, más la dirección y el horario al pie. Abre con el botón, cierra con «Cerrar», con Escape o al elegir un apartado; el foco entra en el primer apartado, no escapa del panel y vuelve al botón al cerrar; la página de debajo no hace scroll.
+- **Viaje entre apartados**: al pulsar un enlace de la cabecera el scroll no salta, lo conduce `app.js`. La curva es quíntica —arranca y frena con la derivada segunda a cero, así que planea en vez de arrancar y parar— y la duración va de 1,1 a 3,6 s según la distancia. Mientras dura, **todos los paneles de texto están apagados**: se ve la cámara recorriendo el bar sin que aparezcan los apartados que quedan en medio. Funciona igual hacia delante y hacia atrás. Cualquier gesto del visitante (rueda, dedo, tecla) cancela el viaje y manda él. **El último apartado apunta al final de la película**, no al centro de su sección: ese centro cae donde el cierre todavía no está encendido. Con `prefers-reduced-motion` el salto es directo, sin animación; `?animar=1` fuerza la animación.
+- **Cinco apartados, cinco paradas**: «Quiénes somos» va con el logo en la portada, así que la página
+  queda en portada, especialidades, comida, fotos y dónde estamos. Cada uno cae en una de las cuatro
+  paradas de cámara o en el final, donde está la estatua, y en todas se enciende su foto nítida. El
+  mapa APARECE_EN de pp.js es la única lista que hay que tocar para moverlos.
+- **Cierre dentro de la película**: el pie ya no es un bloque aparte debajo de la animación. Es la última escena, sobre el fotograma de la estatua: «Dónde estamos», la dirección en dos líneas, el horario en dos filas con su raya, «Cómo llegar» con subrayado ámbar y la línea de copyright. `Base.astro` acepta `pie={false}` para no repetirlo.
+- **Enlace «Saltar al contenido»** y foco visible en toda la web (anillo oscuro con halo ámbar: se ve igual sobre crema que sobre foto).
+- El JS se arranca desde `Base.astro`, único punto de entrada.
+- **El cruce entre escenas**: al irse el texto, un círculo nace pequeño en el centro y crece
+  desenfocando el fondo (`backdrop-filter` + máscara radial), de modo que el viaje de la cámara
+  queda tapado y la escena siguiente entra nítida. Son cuatro cruces, uno por tramo, y empiezan
+  en cuanto desaparece su apartado (28 % del tramo) y se abren al llegar el siguiente (90 %).
+- **Los 240 fotogramas se descargan de golpe** al entrar. Antes iban por capas y, si faltaba el
+  tramo que se estaba viendo, el dibujo se quedaba quieto y luego saltaba.
+- **La foto nítida se enciende con su apartado y se apaga al arrancar la cámara**, nunca a medias:
+  la foto y el fotograma son imágenes distintas de la misma escena y mezclarlas deja dos paredes
+  superpuestas. La del cierre entra con el último desenfoque, en el fotograma 228 de 239.
 
-**Verificación:** la navegación lleva a cada sección también en móvil; se puede usar el menú sólo con teclado (Tab + Enter); el foco es visible.
+**Archivos:** `src/data/negocio.js` (nuevo), `src/components/Header.astro` (nuevo), `src/components/Footer.astro` (para las páginas que sí llevan pie al final), `src/layouts/Base.astro`, `src/pages/index.astro`, `src/scripts/app.js`, `src/styles/global.css`, `src/components/HeroScrolly.astro`.
+
+**Verificación:**
+1. Arriba del todo la cabecera **no** se ve: solo el logotipo grande de la portada.
+2. Al bajar una pantalla aparece la cabecera con el logotipo y los cinco apartados.
+3. Desde otra posición, pulsar «Especialidades»: la cámara recorre el bar **sin que aparezcan los textos** de los apartados intermedios, y al llegar se enciende solo el de destino. Lo mismo hacia atrás.
+4. Con el teclado: Tab hasta los enlaces y Enter para activarlos; el foco se ve siempre.
+5. En ventana estrecha (< 860 px): los enlaces se esconden y aparece «Índice»; al abrirlo el foco entra en «Quiénes somos», Escape lo cierra y devuelve el foco al botón.
+6. Bajar hasta el final: el cierre aparece **sobre** el último fotograma, sin bloque aparte debajo.
+7. `?animar=1` sigue funcionando y el fondo recorre el bar.
+
+**Pendiente (no es de esta tarea):**
+- Redes sociales: no se han puesto porque no se han facilitado las cuentas.
+- ~~El logotipo grande de la portada cae encima del rótulo pintado «JARDÍN» de la pared.~~ Resuelto: en la portada la mitad derecha se oscurece con una sombra cálida, así solo se lee un «JARDIN».
 
 ---
 
