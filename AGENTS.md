@@ -70,7 +70,16 @@ El fondo de la portada es un **recorrido de cámara por el bar** que avanza con 
 6. **Cinco fotos nítidas** en `public/escenas/` (2400 px y 1200 px en WebP), sacadas de los HEIC del usuario. Cada una es el primer fotograma de su clip; la de la estatua es el último del vídeo. Se encienden en los fotogramas 0, 60, 120, 180 y 239, y se apagan en 3 fotogramas (más tiempo produce doble imagen, porque Kling redibujó la escena y las dos versiones no coinciden píxel a píxel).
 7. **Degradaciones**: `prefers-reduced-motion` → un fotograma fijo; sin JavaScript → todo el texto sigue en el HTML.
 
+**Cierre del recorrido (T6):**
+
+8. **Los 240 fotogramas se descargan de golpe** al entrar. La carga por capas se probó y fallaba: si el tramo que se estaba viendo no había llegado, el dibujo se quedaba quieto y luego saltaba. Además, `precargarAlrededor()` pide los del entorno de la cámara en cada movimiento.
+9. **Cruce entre escenas**: en cada tramo, al irse el apartado (28 %) nace un círculo pequeño en el centro y crece **desenfocando el fondo** (`backdrop-filter` + máscara radial, radio hasta 165 % e intensidad hasta 16 px); se abre al llegar la escena siguiente (90 %). Tapa el tramo en el que la cámara viaja, que es donde los fotogramas se ven blandos.
+10. **La foto nítida nunca se mezcla**: se enciende entera con su apartado y se apaga de golpe al arrancar la cámara. La foto y el fotograma son dos imágenes distintas de la misma escena; al 50 % se ven dos paredes superpuestas. La del cierre entra con el último desenfoque, en el fotograma 228 de 239.
+11. **La portada no se ve doble**: el rótulo pintado «JARDÍN» de la pared queda a la derecha y se apaga con una sombra cálida (`--velo-lado`), así solo se lee el logotipo.
+
 > **Nunca** se hace *scrub* de `video.currentTime` ligado al scroll: en iOS Safari el *seek* continuo va a tirones. Por eso no se usa vídeo.
+>
+> `backdrop-filter` es lo más caro que hace el navegador en gráficos: cada fotograma tiene que leer y desenfocar lo de debajo. Aquí se acepta porque el cruce dura poco, pero **no se puede ampliar** su duración sin que se caigan fotogramas. Se probó a desenfocar una copia del lienzo con `filter` (mucho más barato); el resultado no convenció y se volvió a `backdrop-filter`.
 
 > ⚠️ **Aviso de equilibrio.** El recorrido de cada sección es fijo. Alargar `PAUSA` **acelera** la animación, porque el trozo en el que la cámara camina se queda más corto. Si se sube, hay que subir también la altura de las secciones (`min-h-[...]` en `index.astro`).
 

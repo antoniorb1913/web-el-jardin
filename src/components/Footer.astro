@@ -1,0 +1,42 @@
+---
+/**
+ * Pie (T6).
+ *
+ * Va debajo de la película, sobre fondo verde de la marca. Tres bloques: quién es el
+ * bar, dónde está y cuándo abre. Sin iconos, sin tarjetas y sin enlaces a redes que
+ * todavía no nos han dado — cuando existan, se añaden aquí.
+ */
+import { negocio, direccion, horario, enlaceMapa } from '../data/negocio';
+
+const anio = new Date().getFullYear();
+---
+
+<footer class="pie">
+  <div class="pie__interior">
+    <div class="pie__bloque">
+      <p class="pie__nombre">{negocio.nombre}</p>
+      <p class="pie__lema">{negocio.lema}.</p>
+    </div>
+
+    <div class="pie__bloque">
+      <p class="pie__titulo">Dónde</p>
+      <p>{direccion.calle}</p>
+      <p>{direccion.poblacion} ({direccion.provincia})</p>
+      <p class="pie__accion">
+        <a href={enlaceMapa} target="_blank" rel="noopener noreferrer">Cómo llegar</a>
+      </p>
+    </div>
+
+    <div class="pie__bloque">
+      <p class="pie__titulo">Cuándo</p>
+      {horario.map((tramo) => (
+        <p class="pie__horario">
+          <span>{tramo.dias}</span>
+          <span class="pie__horas">{tramo.horas}</span>
+        </p>
+      ))}
+    </div>
+  </div>
+
+  <p class="pie__legal">© {anio} {negocio.nombre} · Bolnuevo, Mazarrón</p>
+</footer>

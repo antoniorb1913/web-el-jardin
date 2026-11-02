@@ -14,7 +14,7 @@
 | 0 · Base | **T3** · Identidad visual: paleta, logo, iconos y fuentes | ✅ Completada | T2 |
 | 1 · Scrollytelling | **T4** · Análisis del vídeo y troceado en escenas | ✅ Completada | T2 |
 | 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ✅ Completada | T4 |
-| 2 · Contenido | **T6** · Layout base: header, navegación y footer | ⏳ Pendiente | T3 |
+| 2 · Contenido | **T6** · Layout base: header, navegación y footer | ✅ Completada | T3 |
 | 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ⏳ Pendiente | T6 |
 | 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ⏳ Pendiente | T7 |
 | 2 · Contenido | **T9** · Galería de fotos del bar | ⏳ Pendiente · ⚠️ necesita fotos | T8 |
@@ -150,13 +150,47 @@
 
 ---
 
-### T6 · Layout base: header, navegación y footer — ⏳
+### T6 · Layout base: header, navegación y cierre — ✅ Completada
 
-**Objetivo:** cabecera con logo y navegación a las 5 secciones (anclas), menú móvil accesible, footer con dirección, horario y redes.
+**Objetivo:** cabecera con el logotipo y navegación a los 5 apartados, menú móvil accesible, y el pie **dentro** de la película como última escena.
 
-**Archivos:** `src/layouts/Base.astro`, `src/components/Header.astro`, `src/components/Footer.astro`, `src/data/negocio.js`.
+**Lo que hay:**
+- **`src/data/negocio.js`**: nombre, lema, dirección, horarios, enlace a Google Maps y lista de apartados. Única fuente de estos datos.
+- **Cabecera fija** sobre la película: **el logotipo** a la izquierda (sin repetir el nombre en texto) y los cinco apartados a la derecha, sobre un velo que los hace legibles. Sin tarjetas ni sombras de caja; el ámbar del logo se reserva para el foco y el hover.
+- **La cabecera no se ve en la primera pantalla**: allí manda el logotipo grande de la portada y dos a la vez sería ruido. Aparece al salir del héroe y se retira al llegar a un pie claro (en las páginas que lo tengan).
+- **Índice a pantalla completa** por debajo de 860 px: mismo listado, más la dirección y el horario al pie. Abre con el botón, cierra con «Cerrar», con Escape o al elegir un apartado; el foco entra en el primer apartado, no escapa del panel y vuelve al botón al cerrar; la página de debajo no hace scroll.
+- **Viaje entre apartados**: al pulsar un enlace de la cabecera el scroll no salta, lo conduce `app.js`. La curva es quíntica —arranca y frena con la derivada segunda a cero, así que planea en vez de arrancar y parar— y la duración va de 1,1 a 3,6 s según la distancia. Mientras dura, **todos los paneles de texto están apagados**: se ve la cámara recorriendo el bar sin que aparezcan los apartados que quedan en medio. Funciona igual hacia delante y hacia atrás. Cualquier gesto del visitante (rueda, dedo, tecla) cancela el viaje y manda él. **El último apartado apunta al final de la película**, no al centro de su sección: ese centro cae donde el cierre todavía no está encendido. Con `prefers-reduced-motion` el salto es directo, sin animación; `?animar=1` fuerza la animación.
+- **Cinco apartados, cinco paradas**: «Quiénes somos» va con el logo en la portada, así que la página
+  queda en portada, especialidades, comida, fotos y dónde estamos. Cada uno cae en una de las cuatro
+  paradas de cámara o en el final, donde está la estatua, y en todas se enciende su foto nítida. El
+  mapa APARECE_EN de pp.js es la única lista que hay que tocar para moverlos.
+- **Cierre dentro de la película**: el pie ya no es un bloque aparte debajo de la animación. Es la última escena, sobre el fotograma de la estatua: «Dónde estamos», la dirección en dos líneas, el horario en dos filas con su raya, «Cómo llegar» con subrayado ámbar y la línea de copyright. `Base.astro` acepta `pie={false}` para no repetirlo.
+- **Enlace «Saltar al contenido»** y foco visible en toda la web (anillo oscuro con halo ámbar: se ve igual sobre crema que sobre foto).
+- El JS se arranca desde `Base.astro`, único punto de entrada.
+- **El cruce entre escenas**: al irse el texto, un círculo nace pequeño en el centro y crece
+  desenfocando el fondo (`backdrop-filter` + máscara radial), de modo que el viaje de la cámara
+  queda tapado y la escena siguiente entra nítida. Son cuatro cruces, uno por tramo, y empiezan
+  en cuanto desaparece su apartado (28 % del tramo) y se abren al llegar el siguiente (90 %).
+- **Los 240 fotogramas se descargan de golpe** al entrar. Antes iban por capas y, si faltaba el
+  tramo que se estaba viendo, el dibujo se quedaba quieto y luego saltaba.
+- **La foto nítida se enciende con su apartado y se apaga al arrancar la cámara**, nunca a medias:
+  la foto y el fotograma son imágenes distintas de la misma escena y mezclarlas deja dos paredes
+  superpuestas. La del cierre entra con el último desenfoque, en el fotograma 228 de 239.
 
-**Verificación:** la navegación lleva a cada sección también en móvil; se puede usar el menú sólo con teclado (Tab + Enter); el foco es visible.
+**Archivos:** `src/data/negocio.js` (nuevo), `src/components/Header.astro` (nuevo), `src/components/Footer.astro` (para las páginas que sí llevan pie al final), `src/layouts/Base.astro`, `src/pages/index.astro`, `src/scripts/app.js`, `src/styles/global.css`, `src/components/HeroScrolly.astro`.
+
+**Verificación:**
+1. Arriba del todo la cabecera **no** se ve: solo el logotipo grande de la portada.
+2. Al bajar una pantalla aparece la cabecera con el logotipo y los cinco apartados.
+3. Desde otra posición, pulsar «Especialidades»: la cámara recorre el bar **sin que aparezcan los textos** de los apartados intermedios, y al llegar se enciende solo el de destino. Lo mismo hacia atrás.
+4. Con el teclado: Tab hasta los enlaces y Enter para activarlos; el foco se ve siempre.
+5. En ventana estrecha (< 860 px): los enlaces se esconden y aparece «Índice»; al abrirlo el foco entra en «Quiénes somos», Escape lo cierra y devuelve el foco al botón.
+6. Bajar hasta el final: el cierre aparece **sobre** el último fotograma, sin bloque aparte debajo.
+7. `?animar=1` sigue funcionando y el fondo recorre el bar.
+
+**Pendiente (no es de esta tarea):**
+- Redes sociales: no se han puesto porque no se han facilitado las cuentas.
+- ~~El logotipo grande de la portada cae encima del rótulo pintado «JARDÍN» de la pared.~~ Resuelto: en la portada la mitad derecha se oscurece con una sombra cálida, así solo se lee un «JARDIN».
 
 ---
 

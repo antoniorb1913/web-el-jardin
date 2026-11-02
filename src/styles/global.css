@@ -112,11 +112,27 @@
 }
 
 .portada__velo {
-  background: linear-gradient(
-    to bottom,
-    rgb(22 36 28 / calc(var(--fuerza-velo, 0.3) * 0.6)),
-    rgb(22 36 28 / var(--fuerza-velo, 0.3))
-  );
+  background:
+    /* Luz calida de atardecer: aclara la portada, que es un jardin de flores y no una
+       sala a oscuras. Va en modo `screen`, asi que suma luz en vez de tapar. */
+    radial-gradient(
+      120% 90% at 78% 8%,
+      rgb(255 178 60 / var(--luz-portada, 0)) 0%,
+      rgb(255 178 60 / 0) 62%
+    ),
+    /* Sombra suave solo sobre el rotulo pintado, para que no se lean dos «JARDIN». */
+    linear-gradient(
+      to left,
+      rgb(30 22 8 / var(--velo-lado, 0)) 0%,
+      rgb(30 22 8 / calc(var(--velo-lado, 0) * 0.62)) 44%,
+      transparent 74%
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(22 36 28 / calc(var(--fuerza-velo, 0.3) * 0.6)),
+      rgb(22 36 28 / var(--fuerza-velo, 0.3))
+    );
+  background-blend-mode: screen, normal, normal;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -168,3 +184,458 @@
 }
 
 
+
+/* ---------------------------------------------------------------------------
+   Cabecera, índice y pie (T6)
+   El chrome va sobre la película, así que se mantiene pequeño y sin cajas: el
+   ámbar del logotipo se reserva para el foco y el hover, y nada lleva sombra.
+   --------------------------------------------------------------------------- */
+
+/* Enlace de salto: invisible hasta que recibe el foco con Tab. */
+.saltar {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 90;
+  padding: 0.75rem 1rem;
+  background: var(--color-jardin-verde);
+  color: var(--color-crema-50);
+  border-radius: 0 0 4px 0;
+}
+
+.saltar:focus {
+  left: 0;
+}
+
+/* Foco visible en toda la web. Anillo oscuro con halo ámbar: se ve igual sobre el
+   crema del pie que sobre la foto del fondo. */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-tinta-900);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--color-jardin-ambar);
+  border-radius: 2px;
+}
+
+.encabezado {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.85rem clamp(1rem, 3.5vw, 2.5rem);
+  color: var(--color-crema-50);
+  /* Velo propio: sin él, el texto se pierde cuando debajo pasa una zona clara. */
+  background: linear-gradient(to bottom, rgb(8 26 16 / 0.62), rgb(8 26 16 / 0));
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Sobre el pie claro la cabecera crema no se leería: se retira al llegar abajo.
+   Y en la portada no aparece hasta salir de la primera pantalla. */
+.encabezado[data-oculto='si'],
+.encabezado[data-visible='no'] {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.encabezado__marca {
+  display: block;
+  line-height: 0;
+}
+
+.encabezado__logo {
+  display: block;
+  width: auto;
+  height: 38px;
+  /* Sombra suave: el logotipo tiene partes amarillas y sobre una pared clara se
+     perdería sin ella. */
+  filter: drop-shadow(0 1px 8px rgb(0 0 0 / 0.55));
+}
+
+.encabezado__nav {
+  margin-inline-start: auto;
+  display: none;
+}
+
+.encabezado__nav ul {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.encabezado__nav a {
+  position: relative;
+  display: inline-block;
+  padding-block: 0.3rem;
+  font-size: 0.95rem;
+  color: rgb(253 250 244 / 0.82);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Subrayado que crece desde la izquierda: es el único adorno interactivo. */
+.encabezado__nav a::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-jardin-ambar);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.encabezado__nav a:hover,
+.encabezado__nav a:focus-visible {
+  color: var(--color-crema-50);
+}
+
+.encabezado__nav a:hover::after,
+.encabezado__nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.encabezado__boton {
+  margin-inline-start: auto;
+  padding: 0.4rem 0.8rem;
+  background: none;
+  border: 1px solid rgb(253 250 244 / 0.5);
+  border-radius: 2px;
+  color: var(--color-crema-50);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.encabezado__boton:hover {
+  border-color: var(--color-jardin-ambar);
+}
+
+/* Índice a pantalla completa */
+.indice {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  padding: clamp(1.25rem, 5vw, 3rem);
+  background: var(--color-crema-50);
+  opacity: 0;
+  visibility: hidden;
+  /* La visibilidad se retrasa solo al cerrar. Al abrir tiene que ser inmediata, o el
+     foco no puede entrar en el panel hasta que termina la transición. */
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.indice[data-abierto='si'] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease, visibility 0s;
+}
+
+.indice__caja {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(34rem, 100%);
+}
+
+.indice__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-crema-200);
+}
+
+.indice__marca {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--color-tinta-900);
+}
+
+.indice__cerrar {
+  padding: 0.4rem 0.8rem;
+  background: none;
+  border: 1px solid var(--color-crema-200);
+  border-radius: 2px;
+  color: var(--color-tinta-700);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.indice__cerrar:hover {
+  border-color: var(--color-tinta-900);
+  color: var(--color-tinta-900);
+}
+
+.indice__lista {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.indice__lista a {
+  display: block;
+  padding-block: 0.55rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 6vw, 2.1rem);
+  color: var(--color-tinta-900);
+  text-decoration: none;
+}
+
+.indice__lista a:hover,
+.indice__lista a:focus-visible {
+  color: var(--color-jardin-granate);
+}
+
+/* Dirección y horario al pie del índice: es lo que se busca al abrir un menú. */
+.indice__ficha {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-crema-200);
+  font-size: 0.9rem;
+  color: var(--color-tinta-500);
+}
+
+.indice__ficha p {
+  margin: 0 0 0.2rem;
+}
+
+.indice__horario {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 20rem;
+  color: var(--color-tinta-700);
+}
+
+/* Pie */
+.pie {
+  padding: clamp(2.5rem, 6vw, 4rem) clamp(1.25rem, 4vw, 2.5rem) 1.5rem;
+  background: var(--color-jardin-verde);
+  color: var(--color-crema-50);
+}
+
+.pie__interior {
+  display: grid;
+  gap: 2.25rem;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.pie__nombre {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+}
+
+.pie__lema {
+  margin: 0.4rem 0 0;
+  color: rgb(253 250 244 / 0.72);
+}
+
+.pie__titulo {
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+  color: var(--color-crema-200);
+}
+
+.pie p {
+  margin: 0 0 0.15rem;
+  line-height: 1.55;
+}
+
+.pie__accion {
+  margin-top: 0.75rem !important;
+}
+
+.pie a {
+  color: var(--color-crema-50);
+  text-decoration: none;
+  border-bottom: 1px solid rgb(253 250 244 / 0.35);
+  padding-bottom: 1px;
+}
+
+.pie a:hover,
+.pie a:focus-visible {
+  border-bottom-color: var(--color-jardin-ambar);
+}
+
+.pie__horario {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  max-width: 20rem;
+  padding-block: 0.3rem;
+  border-bottom: 1px solid rgb(253 250 244 / 0.14);
+}
+
+.pie__horas {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-crema-200);
+}
+
+.pie__legal {
+  max-width: 72rem;
+  margin: 2.5rem auto 0;
+  font-size: 0.8rem;
+  color: rgb(253 250 244 / 0.55);
+}
+
+@media (min-width: 860px) {
+  .encabezado__nav {
+    display: block;
+  }
+
+  .encabezado__boton {
+    display: none;
+  }
+
+  .pie__interior {
+    grid-template-columns: 1.2fr 1fr 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Cierre de la película (T6): el pie vive dentro del recorrido, como última
+   escena, sobre el fotograma de la estatua. Sin recuadro: el texto va directo
+   sobre la imagen, igual que el resto de apartados.
+   --------------------------------------------------------------------------- */
+
+/* El cierre es una sección a todo el ancho; el contenido lo centra `.cierre__interior`. */
+.cierre__titulo {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1.05;
+}
+
+.cierre__direccion {
+  margin: 0;
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
+  line-height: 1.45;
+}
+
+.cierre__horario {
+  width: min(23rem, 100%);
+  margin: 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgb(253 250 244 / 0.3);
+  font-size: 0.95rem;
+}
+
+.cierre__horario div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 0.2rem;
+}
+
+.cierre__horario dt {
+  color: rgb(253 250 244 / 0.78);
+}
+
+.cierre__horario dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.cierre__acciones {
+  margin: 0;
+}
+
+.cierre__mapa {
+  display: inline-block;
+  padding-bottom: 2px;
+  color: var(--color-crema-50);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-jardin-ambar);
+}
+
+.cierre__mapa:hover,
+.cierre__mapa:focus-visible {
+  border-bottom-width: 2px;
+}
+
+.cierre__legal {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgb(253 250 244 / 0.55);
+}
+
+@media (min-width: 860px) {
+  .encabezado__logo {
+    height: 44px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Cierre de la película: el pie vive dentro del recorrido, como última escena,
+   sobre el fotograma de la estatua. Sin recuadro: el texto va directo sobre la
+   imagen, igual que el resto de apartados.
+   --------------------------------------------------------------------------- */
+
+.cierre {
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  max-width: 34rem;
+  text-align: center;
+  /* Sin esto hereda el color oscuro del documento y desaparece sobre la foto. */
+  color: var(--color-crema-50);
+}
+
+/* Vídeo de fondo en bucle: ocupa la pantalla como una imagen, sin controles. */
+.fondo__video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* ---------------------------------------------------------------------------
+   El círculo del cruce
+
+   Nace pequeño en el centro y crece desenfocando el fondo con `backdrop-filter`. El
+   borde lo difumina la máscara radial, así que no se ve un círculo duro: es una
+   penumbra que se cierra y se abre.
+   --------------------------------------------------------------------------- */
+
+.portal {
+  --radio: 0;
+  --desenfoque: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(calc(var(--desenfoque) * 1px));
+  -webkit-backdrop-filter: blur(calc(var(--desenfoque) * 1px));
+  mask-image: radial-gradient(
+    circle at 50% 46%,
+    #000 calc(var(--radio) * 1%),
+    transparent calc(var(--radio) * 1% + 34%)
+  );
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 46%,
+    #000 calc(var(--radio) * 1%),
+    transparent calc(var(--radio) * 1% + 34%)
+  );
+  transition: opacity 140ms linear;
+}
+
+.portal[data-visible='si'] {
+  opacity: 1;
+}

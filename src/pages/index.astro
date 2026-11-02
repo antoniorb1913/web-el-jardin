@@ -1,56 +1,39 @@
 ---
 /**
- * Portada (T5: el motor del scrollytelling).
+ * Portada (T5 + T6): recorrido del bar con scroll.
  *
- * Cómo funciona el escenario:
+ * Cada `<section>` es solo **recorrido**: mide 300dvh y no tiene contenido visible
+ * propio. El texto de cada apartado vive en un `.panel` en `position: fixed`, que no
+ * viaja: aparece en la parada de la cámara y se desvanece.
  *
- * - Cada `<section>` es solo **recorrido**: mide 320dvh y no tiene contenido visible
- *   propio. Cuanto más altas, más lenta la cámara del fondo y más larga la página.
- *   Ojo con el equilibrio: si se alarga la parada de cada escena (`PAUSA` en
- *   `app.js`) sin subir esto, el trozo en el que la cámara anda se comprime y la
- *   animación se acelera justo donde debería ir tranquila.
- * - El contenido de cada escena vive en un `.panel` en `position: fixed`: está
- *   siempre anclado al centro de la pantalla, así que **no viaja al hacer scroll**.
- *   Aparece cerca del centro y se desvanece al alejarse.
- * - Entre una escena y la siguiente queda un tramo en el que solo se ve el vídeo.
- *
- * El texto va **directo sobre la imagen**, sin recuadro: es la dirección visual de
- * la referencia (Vesper). El contenido real de cada apartado llega en T6-T10.
+ * «Quiénes somos» va con el logo, en la portada. Así los cinco apartados caen uno por
+ * cada parada de cámara —donde se enciende su foto nítida— y la página queda en
+ * portada, especialidades, comida, fotos y dónde estamos.
  */
 import Base from '../layouts/Base.astro';
 import HeroScrolly from '../components/HeroScrolly.astro';
 import logo from '../assets/logo.png';
 import { Image } from 'astro:assets';
+import { direccion, horario, enlaceMapa } from '../data/negocio';
 
 const seccion = 'relative mx-auto max-w-2xl min-h-[300dvh]';
 const panel = 'panel';
 const texto = 'texto-foto max-w-xl text-center text-crema-50';
+const anio = new Date().getFullYear();
 ---
 
-<Base>
+<Base pie={false}>
   <HeroScrolly>
-    <!-- PORTADA -->
+    <!-- PORTADA: el logo y «Quiénes somos» van juntos, en el mismo sitio -->
     <section id="portada" data-seccion="portada" class="relative min-h-dvh">
       <div class={panel} data-panel>
-        <div class="flex flex-col items-center gap-6 text-center">
+        <div class="flex flex-col items-center gap-7 text-center">
           <Image src={logo} alt="Bar El Jardín" width={520} class="h-auto w-[min(78vw,520px)]" />
-          <p class="texto-foto max-w-xl text-lg text-crema-50/90">
-            Un paraíso de flores y plantas en Bolnuevo, Mazarrón.
-          </p>
-          <p class="texto-foto text-sm text-crema-50/70">Baja para entrar</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- QUIÉNES SOMOS -->
-    <section id="quienes-somos" data-seccion="quienes-somos" class={seccion}>
-      <div class={panel} data-panel>
-        <div class={texto}>
-          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">¿Quiénes somos?</h2>
-          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
+          <p class="texto-foto max-w-xl text-lg leading-relaxed text-crema-50/90">
             Somos un bar que te ofrece una opción creada para disfrutar de un ambiente
             agradable, relajado, sin dejar de lado pasar un rato alegre y rodeado de naturaleza.
           </p>
+          <p class="texto-foto text-sm text-crema-50/60">Baja para entrar</p>
         </div>
       </div>
     </section>
@@ -89,14 +72,33 @@ const texto = 'texto-foto max-w-xl text-center text-crema-50';
       </div>
     </section>
 
-    <!-- UBICACIÓN -->
+    <!-- CIERRE: el pie, dentro de la película -->
     <section id="ubicacion" data-seccion="ubicacion" class={seccion}>
       <div class={panel} data-panel>
-        <div class={texto}>
-          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">Dónde estamos</h2>
-          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
-            Av. Antonio Segado del Olmo, 19 — Bolnuevo, Mazarrón (Murcia)
+        <div class="cierre texto-foto">
+          <h2 class="cierre__titulo">Dónde estamos</h2>
+
+          <p class="cierre__direccion">
+            {direccion.calle}<br />
+            {direccion.poblacion} ({direccion.provincia})
           </p>
+
+          <dl class="cierre__horario">
+            {horario.map((tramo) => (
+              <div>
+                <dt>{tramo.dias}</dt>
+                <dd>{tramo.horas}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <p class="cierre__acciones">
+            <a class="cierre__mapa" href={enlaceMapa} target="_blank" rel="noopener noreferrer">
+              Cómo llegar
+            </a>
+          </p>
+
+          <p class="cierre__legal">© {anio} Bar El Jardín · Bolnuevo, Mazarrón</p>
         </div>
       </div>
     </section>

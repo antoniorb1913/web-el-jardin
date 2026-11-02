@@ -2,16 +2,18 @@
 /**
  * Fondo del scrollytelling (T5).
  *
- * El recorrido por el bar son 484 fotogramas (todos los del vídeo original, 24 por
- * segundo) que `app.js` dibuja en un `<canvas>` según la posición del scroll.
+ * El recorrido por el bar son 240 fotogramas (12 por segundo) que `app.js` dibuja en
+ * un `<canvas>` según la posición del scroll. No hay `<video>`: así no depende del
+ * autoplay del navegador ni de ningún códec.
  *
- * Encima van **cuatro fotos nítidas**, una por clip. Cada foto es el primer
- * fotograma de su escena, así que `app.js` la enciende justo en ese punto: la
- * imagen aparece con toda su nitidez un instante y se disuelve otra vez en la
- * animación, que sigue su curso sin enterarse.
+ * Encima van **cinco fotos nítidas**, una por punto de parada. Cada foto es el primer
+ * fotograma de su clip —la última, el último del vídeo—, así que `app.js` la enciende
+ * justo en ese fotograma: la imagen se ve nítida un instante y se apaga en tres.
  *
- * El recorte de las fotos es el mismo que el de los fotogramas (9 % inferior fuera
- * y 16:9 centrado). Si no coincidiera, el cambio se vería como un salto de encuadre.
+ * El recorte de las fotos es el mismo que el de los fotogramas (9 % inferior fuera y
+ * 16:9 centrado). Si no coincidiera, el cambio se vería como un salto de encuadre.
+ *
+ * El JS lo arranca `Base.astro`: aquí no se importa nada.
  */
 const TOTAL = 240;
 
@@ -23,8 +25,7 @@ const fotos = [
   { nombre: 'escena2', inicio: FOTOGRAMAS_POR_CLIP },
   { nombre: 'escena3', inicio: FOTOGRAMAS_POR_CLIP * 2 },
   { nombre: 'escena4', inicio: FOTOGRAMAS_POR_CLIP * 3 },
-  // La estatua no abre ninguna escena: es el último fotograma del vídeo, donde acaba
-  // el recorrido. Se enciende al llegar al final de la página.
+  // La estatua es el último fotograma del vídeo, donde acaba el recorrido.
   { nombre: 'escena5', inicio: TOTAL - 1 },
 ];
 ---
@@ -51,13 +52,12 @@ const fotos = [
       ))}
     </div>
     <div class="portada__velo absolute inset-0" aria-hidden="true"></div>
+
+    {/* El círculo que crece y desenfoca el fondo en cada cruce. */}
+    <div class="portal" data-portal aria-hidden="true"></div>
   </div>
 
   <div class="relative z-10 -mt-[100dvh]">
     <slot />
   </div>
 </div>
-
-<script>
-  import '../scripts/app.js';
-</script>

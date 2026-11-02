@@ -1,19 +1,32 @@
 ---
 /**
  * Layout raíz: todo lo que va entre <html> y </html>.
- * Las metas de SEO completas (Open Graph, canónicas, JSON-LD) llegan en T12;
- * aquí solo el mínimo válido para que el documento sea correcto desde el primer día.
+ *
+ * Las metas de SEO completas (Open Graph, canónicas, JSON-LD) llegan en T12; aquí
+ * solo el mínimo válido. La cabecera y el pie viven aquí para que cualquier página
+ * los tenga sin repetirlos.
+ *
+ * El JS de cliente se arranca desde este layout y no desde cada componente: es el
+ * único punto de entrada, y cada módulo se activa solo si encuentra su marcador.
  */
 import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   titulo?: string;
   descripcion?: string;
+  /**
+   * En la portada el pie va **dentro de la película**, como última escena. El resto
+   * de páginas llevan el pie normal al final del documento.
+   */
+  pie?: boolean;
 }
 
 const {
   titulo = 'Bar El Jardín · Bar en Bolnuevo, Mazarrón',
   descripcion = 'Bar rodeado de flores y plantas en Bolnuevo (Mazarrón, Murcia). Especialidades de la casa, bratwurst, currywurst y tabla de jamón serrano.',
+  pie = true,
 } = Astro.props;
 ---
 
@@ -47,6 +60,15 @@ const {
     />
   </head>
   <body>
-    <slot />
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    {pie && <Footer />}
   </body>
 </html>
+
+<script>
+  import '../scripts/app.js';
+</script>

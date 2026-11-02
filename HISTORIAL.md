@@ -15,6 +15,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T3 | 2026-11-01 | Identidad visual: paleta, logotipo, iconos y tipografías | ✅ Completada |
 | T4 | 2026-11-01 | Análisis del vídeo y troceado en escenas | ✅ Completada |
 | T5 | 2026-11-01 | Motor de scrollytelling | ✅ Completada |
+| T6 | 2026-11-01 | Cabecera, navegación, cierre y cruces entre escenas | ✅ Completada |
 
 ---
 
@@ -216,3 +217,46 @@ Porque el vídeo no arrancaba solo (el navegador bloquea la reproducción) y por
 ### 4. ¿Cómo comprobar que funciona?
 
 -->
+
+---
+
+## 2026-11-01 · T6 — Cabecera, navegación, cierre y cruces entre escenas
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t6-cabecera-y-navegacion`
+**Commit:** `feat: cabecera, navegación, cierre y cruces entre escenas`
+**Archivos:** `src/data/negocio.js`, `src/components/Header.astro`, `src/components/HeroScrolly.astro`, `src/layouts/Base.astro`, `src/pages/index.astro`, `src/scripts/app.js`, `src/styles/global.css`, `TAREAS.md`, `HISTORIAL.md`
+
+### 1. ¿Qué he realizado?
+
+Cabecera con el logotipo y los cinco apartados, índice a pantalla completa en móvil, y el pie dentro de la película como última escena. Además, el cruce entre escenas: un círculo que nace pequeño en el centro y crece desenfocando el fondo, de modo que el viaje de la cámara queda tapado y la escena siguiente entra nítida.
+
+### 2. ¿Por qué?
+
+La cabecera hacía falta para poder saltar de un apartado a otro sin bajar trece pantallas, y el cierre tenía que estar dentro del recorrido para no romper la película. El cruce resuelve un problema de material: los fotogramas salen de un vídeo de 1116 px que se amplía casi al doble, y en los tramos en los que la cámara viaja se ven blandos. Tapando esos tramos con el desenfoque, la vista descansa entre apartado y apartado.
+
+Coste y decisiones que se aprendieron por el camino:
+
+- **`backdrop-filter` es carísimo**: desenfoca lo que hay debajo en cada fotograma y hunde la animación. Se probó a desenfocar una copia del lienzo con `filter`, pero el resultado no convenció al usuario; se volvió al `backdrop-filter` aceptando el coste porque el cruce dura poco.
+- **La foto nítida no puede mezclarse con el fotograma**: son dos imágenes distintas de la misma pared y al 50 % se ven dos rótulos. Se enciende entera con su apartado y se apaga de golpe al arrancar la cámara.
+- **Los fotogramas se descargan de golpe**: por capas, si faltaba el tramo que se estaba viendo, el dibujo se quedaba quieto y saltaba.
+- **La portada no se ve doble**: el rótulo pintado de la pared queda a la derecha y se apaga con una sombra cálida, así solo se lee el logotipo.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/scripts/app.js:127` — `estadoPortal()`: el desenfoque empieza al irse el apartado (28 % del tramo) y se abre al llegar el siguiente (90 %).
+- `src/scripts/app.js:300` — `actualizarPortal()`: mueve el radio del círculo y la intensidad del desenfoque.
+- `src/scripts/app.js:235` — `actualizarFotos()`: la foto nítida se enciende con su apartado, nunca a medias.
+- `src/scripts/app.js:190` — `precargar()` y `precargarAlrededor()`: los 240 fotogramas, de golpe, y los del entorno de la cámara al moverse.
+- `src/styles/global.css:114` — `.portada__velo`: la sombra cálida sobre el rótulo pintado.
+- `src/styles/global.css` (bloque «El círculo del cruce») — `.portal` y su máscara radial.
+
+### 4. ¿Cómo comprobarlo?
+
+1. Abrir `http://localhost:4321/?animar=1`.
+2. Bajar despacio: en cada apartado se ve su foto nítida y su texto; al desaparecer el texto empieza el desenfoque, que cubre el recorrido y se abre con la escena siguiente.
+3. Comprobar que no hay dos textos a la vez ni dos imágenes superpuestas en ningún punto.
+4. Al final: la estatua entra con el último desenfoque (fotograma 228 de 239) y el apartado «Dónde estamos» aparece nítido con la dirección y el horario.
+5. Pulsar «Comida» desde arriba: la cámara viaja sin que aparezcan los textos intermedios.
+
+---
