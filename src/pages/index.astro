@@ -2,7 +2,7 @@
 /**
  * Portada (T5 + T6): recorrido del bar con scroll.
  *
- * Cada `<section>` es solo **recorrido**: mide 300dvh y no tiene contenido visible
+ * Cada `<section>` es solo **recorrido**: mide 250dvh y no tiene contenido visible
  * propio. El texto de cada apartado vive en un `.panel` en `position: fixed`, que no
  * viaja: aparece en la parada de la cámara y se desvanece.
  *
@@ -12,11 +12,12 @@
  */
 import Base from '../layouts/Base.astro';
 import HeroScrolly from '../components/HeroScrolly.astro';
+import Seccion from '../components/Seccion.astro';
 import logo from '../assets/logo.png';
 import { Image } from 'astro:assets';
 import { direccion, horario, enlaceMapa } from '../data/negocio';
 
-const seccion = 'relative mx-auto max-w-2xl min-h-[300dvh]';
+const seccion = 'relative mx-auto max-w-2xl min-h-[250dvh]';
 const panel = 'panel';
 const texto = 'texto-foto max-w-xl text-center text-crema-50';
 const anio = new Date().getFullYear();
@@ -24,16 +25,24 @@ const anio = new Date().getFullYear();
 
 <Base pie={false}>
   <HeroScrolly>
-    <!-- PORTADA: el logo y «Quiénes somos» van juntos, en el mismo sitio -->
+    <!-- PORTADA: la foto manda y la tipografía susurra. Un bloque pequeño, apoyado en
+         una línea fina, abajo a la izquierda. -->
     <section id="portada" data-seccion="portada" class="relative min-h-dvh">
-      <div class={panel} data-panel>
-        <div class="flex flex-col items-center gap-7 text-center">
-          <Image src={logo} alt="Bar El Jardín" width={520} class="h-auto w-[min(78vw,520px)]" />
-          <p class="texto-foto max-w-xl text-lg leading-relaxed text-crema-50/90">
+      <div class={`${panel} panel--cubierta`} data-panel>
+        <div class="susurro">
+          <p class="susurro__marca">Bar El Jardín · Bolnuevo</p>
+
+          <h1 class="susurro__titular">
+            <span class="susurro__linea">Un paraíso</span>
+            <span class="susurro__linea">en Bolnuevo</span>
+          </h1>
+
+          <p class="susurro__texto">
             Somos un bar que te ofrece una opción creada para disfrutar de un ambiente
             agradable, relajado, sin dejar de lado pasar un rato alegre y rodeado de naturaleza.
           </p>
-          <p class="texto-foto text-sm text-crema-50/60">Baja para entrar</p>
+
+          <p class="susurro__pie">Baja para entrar</p>
         </div>
       </div>
     </section>
@@ -42,7 +51,7 @@ const anio = new Date().getFullYear();
     <section id="especialidades" data-seccion="especialidades" class={seccion}>
       <div class={panel} data-panel>
         <div class={texto}>
-          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">Nuestras especialidades</h2>
+          <h2 class="titulo-apartado">Nuestras especialidades</h2>
           <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
             Kiwi de la casa · Pasión de la casa · Drácula · Aperol · Gin Tonic
           </p>
@@ -54,7 +63,7 @@ const anio = new Date().getFullYear();
     <section id="comida" data-seccion="comida" class={seccion}>
       <div class={panel} data-panel>
         <div class={texto}>
-          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">Nuestra comida</h2>
+          <h2 class="titulo-apartado">Nuestra comida</h2>
           <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
             Salchicha bratwurst · Salchicha currywurst · Tabla de jamón serrano de Teruel
           </p>
@@ -66,7 +75,7 @@ const anio = new Date().getFullYear();
     <section id="fotos" data-seccion="fotos" class={seccion}>
       <div class={panel} data-panel>
         <div class={texto}>
-          <h2 class="text-4xl font-semibold tracking-tight sm:text-6xl">Fotos del bar</h2>
+          <h2 class="titulo-apartado">Fotos del bar</h2>
           <p class="mt-6 text-lg leading-relaxed text-crema-50/85">La galería llega en T9.</p>
         </div>
       </div>
@@ -76,7 +85,7 @@ const anio = new Date().getFullYear();
     <section id="ubicacion" data-seccion="ubicacion" class={seccion}>
       <div class={panel} data-panel>
         <div class="cierre texto-foto">
-          <h2 class="cierre__titulo">Dónde estamos</h2>
+          <h2 class="titulo-apartado cierre__titulo">Dónde estamos</h2>
 
           <p class="cierre__direccion">
             {direccion.calle}<br />

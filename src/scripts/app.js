@@ -30,22 +30,21 @@ const FOTOGRAMAS_POR_TRAMO = 60;
 const APARECE_EN = [0, 0.25, 0.5, 0.75, 1];
 
 /** Ancho de la ventana del texto, en fracción del recorrido. */
-const VENTANA_APARTADO = 0.06;
-
 /**
- * La ventana del ultimo apartado es mas estrecha: tiene que entrar cuando el
- * recorrido ya ha terminado, no antes.
- */
-const VENTANA_FINAL = 0.028;
-
-/**
- * La portada tiene ventana propia, mucho más corta.
+ * Zona de agarre de un apartado, en tanto por uno del recorrido total.
  *
- * Con la ventana normal, el logotipo tardaba casi una pantalla en desvanecerse y
- * durante ese rato se veía a medias encima del rótulo pintado de la pared: dos
- * «JARDIN» superpuestos. Con esta se va en el primer golpe de rueda.
+ * Dentro de esta distancia al apartado **no se mueve nada**: ni el texto se va, ni la
+ * foto se apaga, ni crece el desenfoque. Es lo que hace que un poco de scroll de más no
+ * se lleve por delante lo que estás leyendo. El valor es generoso a propósito: unos
+ * 160 px en una pantalla de 900.
  */
-const VENTANA_PORTADA = 0.05;
+const AGARRE_APARTADO = 0.015;
+
+/** Donde termina el fundido del texto, también en tanto por uno del recorrido. */
+const FUNDIDO_APARTADO = 0.042;
+
+/** Fracción del recorrido en la que termina la película: el resto es aterrizaje. */
+const TOPE_FINAL = 0.96;
 
 /** Media anchura del desenfoque, en fracción del recorrido. */
 const VENTANA_PORTAL = 0.03;
@@ -143,10 +142,17 @@ function estadoPortal(avance) {
   const tramo = Math.min(Math.floor(total), TRAMOS - 1);
   const dentro = total - tramo;
 
-  // Arranca en cuanto se va el apartado y se abre justo al llegar la escena
-  // siguiente, que entra con su texto ya nitido.
-  const subida = limitar((dentro - 0.28) / 0.1, 0, 1);
-  const bajada = limitar((dentro - 0.9) / 0.1, 0, 1);
+  // Arranca ANTES de que se vaya la foto nitida (0,26) y a esa altura ya esta a tope:
+  // asi el relevo de la foto buena al fotograma del recorrido ocurre tapado y no se ve
+  // el bajon de nitidez. Se abre justo al llegar la escena siguiente, que entra nitida.
+  const subida = limitar((dentro - 0.17) / 0.09, 0, 1);
+
+  // En el ultimo tramo el desenfoque se queda cerrado hasta que la camara llega al
+  // fotograma 239. Si se abriera al 90 % como en los demas, se verian a la vez el
+  // fotograma que queda por llegar y la foto del cierre, y eso es el salto doble.
+  const bajada = tramo === TRAMOS - 1
+    ? limitar((dentro - 0.93) / 0.07, 0, 1)
+    : limitar((dentro - 0.9) / 0.1, 0, 1);
   return subida * (1 - bajada);
 }
 
@@ -287,7 +293,7 @@ export function iniciarPortada() {
         opacidad = indice === tramo && dentro <= PAUSA ? 1 : 0;
       } else {
         // La estatua entra ya borrosa, al final del ultimo tramo.
-        opacidad = limitar((avance - 0.965) / 0.012, 0, 1);
+        opacidad = limitar((avance - 0.978) / 0.008, 0, 1);
       }
 
       if (opacidad > 0 && imagen && !imagen.getAttribute('src')) {
@@ -331,12 +337,23 @@ export function iniciarPortada() {
 
   // ---- Paneles de texto --------------------------------------------------
 
+  /**
+   * Avance del recorrido, de 0 a 1.
+   *
+   * El recorrido termina un poco ANTES del final de la página (`TOPE_FINAL`). Los
+   * últimos píxeles de scroll no cambian nada: sin eso, al tocar fondo con la rueda el
+   * desenfoque del cierre se abría de golpe y se veía un salto.
+   */
+  function avanceDeScroll() {
+    const recorrido = portada.offsetHeight - window.innerHeight;
+    if (recorrido <= 0) return 0;
+    return limitar((window.scrollY - portada.offsetTop) / (recorrido * TOPE_FINAL), 0, 1);
+  }
+
+
   function actualizarPaneles() {
     const altoPantalla = window.innerHeight;
-    const recorrido = portada.offsetHeight - altoPantalla;
-    const avance = recorrido > 0
-      ? limitar((window.scrollY - portada.offsetTop) / recorrido, 0, 1)
-      : 0;
+    const avance = avanceDeScroll();
 
     const ultima = secciones.length - 1;
 
@@ -345,20 +362,23 @@ export function iniciarPortada() {
       if (!panel) return;
 
       const objetivoApartado = APARECE_EN[indice];
-      let lejania;
+      let opacidad;
 
       if (objetivoApartado === null || objetivoApartado === undefined) {
         const caja = seccion.getBoundingClientRect();
         const centro = caja.top + caja.height / 2;
-        lejania = Math.abs((centro - altoPantalla / 2) / (caja.height / 2 + altoPantalla / 2)) / 0.46;
+        let lejania = Math.abs((centro - altoPantalla / 2) / (caja.height / 2 + altoPantalla / 2)) / 0.46;
+        const bruto = limitar(1 - (lejania - 0.1) / 0.36, 0, 1);
+        opacidad = bruto * bruto * (3 - 2 * bruto);
       } else {
-        const ventana = indice === 0 ? VENTANA_PORTADA : indice === ultima ? VENTANA_FINAL : VENTANA_APARTADO;
-        lejania = Math.abs(avance - objetivoApartado) / ventana;
+        // Dentro del agarre no hay fundido: se queda entero. A partir de ahí, se va.
+        const distancia = Math.abs(avance - objetivoApartado);
+        const fuera = limitar((distancia - AGARRE_APARTADO) / (FUNDIDO_APARTADO - AGARRE_APARTADO), 0, 1);
+        opacidad = 1 - fuera * fuera * (3 - 2 * fuera);
       }
 
-      const bruto = limitar(1 - (lejania - 0.1) / 0.36, 0, 1);
-      // Durante un viaje entre apartados no se enseña ningún texto: solo la cámara.
-      const opacidad = viajando ? 0 : bruto * bruto * (3 - 2 * bruto);
+      // Durante un cruce entre apartados no se enseña ningún texto: solo el fondo.
+      if (viajando) opacidad = 0;
 
       panel.style.setProperty('--opacidad-panel', opacidad.toFixed(3));
       if (opacidad > 0.5) panel.dataset.visible = 'si';
@@ -378,7 +398,7 @@ export function iniciarPortada() {
     const recorrido = portada.offsetHeight - window.innerHeight;
     if (recorrido <= 0) return;
 
-    const avance = limitar((window.scrollY - portada.offsetTop) / recorrido, 0, 1);
+    const avance = avanceDeScroll();
     actualizarPortal(avance);
     objetivo = repartir(avance);
     precargarAlrededor(objetivo);
@@ -393,7 +413,11 @@ export function iniciarPortada() {
 
       // El rotulo pintado de la pared se apaga solo en la portada: si no, se leen dos
       // JARDIN a la vez, el del logotipo y el de la pared.
-      fondo.style.setProperty('--velo-lado', (limitar(1 - avance / 0.03, 0, 1) * 0.9).toFixed(3));
+      fondo.style.setProperty('--velo-lado', (limitar(1 - avance / 0.03, 0, 1) * 1).toFixed(3));
+
+      // Suelo: la parte baja se oscurece para que los creditos de la portada no se
+      // apoyen en la acera clara.
+      fondo.style.setProperty('--velo-suelo', (limitar(1 - avance / 0.05, 0, 1) * 0.8).toFixed(3));
     }
 
     if (!animando) {

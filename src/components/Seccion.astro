@@ -1,0 +1,53 @@
+---
+/**
+ * Contenido de un apartado dentro de la película.
+ *
+ * Todas las paradas de cámara comparten la misma composición: un titular, el texto
+ * aprobado del bar y, opcionalmente, el subrayado curvo del logotipo. Tenerlo en un
+ * componente es lo que mantiene los cinco apartados iguales sin repetir el marcado.
+ *
+ * El halo es lo único que no es texto: un degradado oscuro detrás del bloque. Va aquí y
+ * no en el CSS del panel porque su opacidad depende de lo claro que salga el fotograma
+ * de debajo, y así se puede subir apartado a apartado sin tocar los demás.
+ */
+interface Props {
+  /** Titular del apartado. */
+  titulo: string;
+  /** Texto aprobado. Se escribe tal cual, sin resumir ni adornar. */
+  texto?: string;
+  /** El subrayado curvo del logotipo bajo el titular. */
+  subrayado?: boolean;
+  /** Más oscuro el halo: para fotogramas con mucha luz detrás. */
+  halo?: boolean;
+}
+
+const { titulo, texto, subrayado = false, halo = true } = Astro.props;
+---
+
+<div class="apartado">
+  {halo && <span class="apartado__halo" aria-hidden="true"></span>}
+
+  <h2 class="apartado__titulo">{titulo}</h2>
+
+  {subrayado && (
+    <svg
+      class="apartado__subrayado"
+      viewBox="0 0 220 16"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* La misma curva del logotipo: sube a la izquierda y baja a la derecha. */}
+      <path
+        d="M3 11.5C45 11.5 88 3.5 131 5.5C160 6.8 186 9.4 217 6.5"
+        stroke="currentColor"
+        stroke-width="3.5"
+        stroke-linecap="round"
+      />
+    </svg>
+  )}
+
+  {texto && <p class="apartado__texto">{texto}</p>}
+
+  <slot />
+</div>

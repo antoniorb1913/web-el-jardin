@@ -15,7 +15,7 @@
 | 1 · Scrollytelling | **T4** · Análisis del vídeo y troceado en escenas | ✅ Completada | T2 |
 | 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ✅ Completada | T4 |
 | 2 · Contenido | **T6** · Layout base: header, navegación y footer | ✅ Completada | T3 |
-| 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ⏳ Pendiente | T6 |
+| 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ✅ Completada | T6 |
 | 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ⏳ Pendiente | T7 |
 | 2 · Contenido | **T9** · Galería de fotos del bar | ⏳ Pendiente · ⚠️ necesita fotos | T8 |
 | 2 · Contenido | **T10** · Ubicación + horario + estado «Abierto ahora» | ⏳ Pendiente | T8 |
@@ -199,13 +199,25 @@
 
 ---
 
-### T7 · Sección «¿Quiénes Somos?» — ⏳
+### T7 · Sección «¿Quiénes Somos?» — ✅
 
 **Objetivo:** el texto aprobado del bar (ambiente agradable, relajado, alegre, rodeado de naturaleza) con tratamiento visual sobre el fondo vegetal.
 
-**Archivos:** `src/components/Seccion.astro`, `src/pages/index.astro`.
+**Archivos:** `src/components/Seccion.astro`, `src/pages/index.astro`, `src/styles/global.css`, `src/scripts/app.js`, `public/fonts/chorus.woff2`.
 
-**Verificación:** leer el texto en móvil y escritorio comprobando que contrasta sobre el fondo (ratio ≥ 4.5:1).
+**Lo que quedó:**
+- **Portada**: la foto entera, sin bandas, y un **bloque pequeño** abajo a la izquierda sobre una línea fina: nombre, titular y párrafo. La foto manda y la tipografía susurra. El bloque mide lo que mide el texto, para que la línea acabe donde acaba el párrafo.
+- **Titular aprobado**: «Un paraíso en Bolnuevo», en dos líneas, la segunda en peso 300 y un punto más apagada.
+- **Caligráfica de la carta**: TeX Gyre Chorus (clon libre de la cancilleresca del menú impreso) en los cinco títulos de apartado, con trazo de 0,3 px. Autoalojada, 14 KB.
+- **Zona de agarre**: 160 px de scroll en cada apartado sin que se mueva nada; el texto se funde después a lo largo de otros 300.
+- **Menos scroll**: las secciones pasan de 300dvh a 250dvh (de 12 a 10 pantallas), y el recorrido termina al 96 % de la página para que el final no dé un salto al tocar fondo.
+- **El cierre** ya no se ve doble: la foto de la estatua entra con el desenfoque a tope y el último tramo no se abre hasta que la cámara llega al fotograma 239.
+
+**Verificación:**
+1. Contraste medido sobre la foto: nombre 5,1:1 · titular 11,9:1 · párrafo 8,3:1 · pie 4,8:1.
+2. El bloque no se descuadra en móvil (390 px) ni en escritorio (1440 px).
+3. Los cinco títulos de apartado se ven en la caligráfica.
+4. Bajar hasta el final: la estatua queda nítida y los últimos 360 px no cambian nada.
 
 ---
 
