@@ -6,8 +6,12 @@
  * mueve con las flechas, con el arrastre o con el desplazamiento lateral del trackpad, y
  * la barra de abajo dice por dónde vas.
  *
- * Lo que no tiene foto —«Pasión de la casa»— mantiene su tarjeta, con el verde de la
- * marca y la «J» del logotipo.
+ * Al pulsar una foto se abre en grande en un `<dialog>` del navegador, que trae el foco
+ * atrapado y el Escape sin escribirlos.
+ *
+ * Si alguna pieza se queda sin foto, su tarjeta mantiene el sitio con el verde de la
+ * marca y la «J» del logotipo, y no es pulsable: se lee como una decisión y no como una
+ * imagen rota. Ahora mismo las ocho tienen foto.
  */
 interface Pieza {
   nombre: string;
@@ -36,8 +40,13 @@ const { id, titulo, piezas, nota } = Astro.props;
         {
           piezas.map((pieza, indice) => (
             <li class="tira__pieza">
-              <div class:list={['tira__marco', pieza.foto ? '' : 'tira__marco--hueco']}>
-                {pieza.foto ? (
+              {pieza.foto ? (
+                <button
+                  type="button"
+                  class="tira__marco"
+                  data-abrir={indice}
+                  aria-label={`Ver ${pieza.nombre} en grande`}
+                >
                   <img
                     class="tira__foto"
                     src={`/productos/${pieza.foto}-pequena.webp`}
@@ -49,12 +58,14 @@ const { id, titulo, piezas, nota } = Astro.props;
                     loading={indice < 3 ? 'eager' : 'lazy'}
                     decoding="async"
                   />
-                ) : (
+                </button>
+              ) : (
+                <div class="tira__marco tira__marco--hueco">
                   <span class="tira__sinfoto" aria-hidden="true">
                     J
                   </span>
-                )}
-              </div>
+                </div>
+              )}
               <p class="tira__nombre">{pieza.nombre}</p>
             </li>
           ))
@@ -77,6 +88,27 @@ const { id, titulo, piezas, nota } = Astro.props;
       </div>
     </div>
   </div>
+
+  {/* Visor de la foto ampliada. */}
+  <dialog class="visor-grande" data-visor aria-label={`${titulo}: foto ampliada`}>
+    <div class="visor-grande__caja">
+      <img class="visor-grande__foto" data-visor-foto alt="" width="860" height="1147" />
+      <p class="visor-grande__nombre" data-visor-nombre></p>
+    </div>
+
+    <button type="button" class="visor-grande__cerrar" data-visor-cerrar aria-label="Cerrar">
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="visor-grande__mandos">
+      <button type="button" class="visor-grande__flecha" data-visor-anterior aria-label="Foto anterior">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button type="button" class="visor-grande__flecha" data-visor-siguiente aria-label="Foto siguiente">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+  </dialog>
 </section>
 
 <script>

@@ -112,6 +112,18 @@ export function iniciarCartas() {
 
       // Cuando no hay nada que desplazar —la comida son tres piezas— la tira se centra.
       tira.dataset.llena = recorrido <= 2 ? 'si' : 'no';
+
+      // El título, la nota, la barra y las flechas comparten el ancho que ocupan las
+      // fotos. Se mide de la primera a la última tarjeta, no con `scrollWidth`: ese
+      // devuelve como mínimo el ancho visible y dejaba la cabecera más ancha que las
+      // fotos cuando la tira cabía entera.
+      const primera = piezas[0];
+      const ultima = piezas[piezas.length - 1];
+      const anchoFotos = Math.min(
+        ultima.offsetLeft + ultima.offsetWidth - primera.offsetLeft,
+        tira.clientWidth,
+      );
+      carta.style.setProperty('--ancho-tira', `${Math.round(anchoFotos)}px`);
     }
 
     anterior?.addEventListener('click', () => mover(-1));
@@ -128,32 +140,192 @@ export function iniciarCartas() {
       }
     });
 
-    // Arrastre con el ratón: en escritorio el carril no se puede arrastrar solo.
+    /*
+     * Arrastre con el ratón.
+     *
+     * El puntero NO se captura al pulsar: si se captura, el `click` acaba en el carril y
+     * la tarjeta nunca se enteraba — por eso no se abría la foto en grande. Se captura
+     * solo cuando el ratón ya se ha movido más de 6 px, que es cuando deja de ser un clic
+     * y pasa a ser un arrastre.
+     */
+    const UMBRAL_ARRASTRE = 6;
+    let pulsado = false;
     let arrastrando = false;
     let inicioX = 0;
     let inicioScroll = 0;
 
     tira.addEventListener('pointerdown', (evento) => {
       if (evento.pointerType !== 'mouse' || animando) return;
-      arrastrando = true;
+      pulsado = true;
+      arrastrando = false;
       inicioX = evento.clientX;
       inicioScroll = tira.scrollLeft;
-      tira.setPointerCapture(evento.pointerId);
     });
 
     tira.addEventListener('pointermove', (evento) => {
-      if (!arrastrando) return;
-      tira.scrollLeft = inicioScroll - (evento.clientX - inicioX);
+      if (!pulsado) return;
+      const recorrido = evento.clientX - inicioX;
+
+      if (!arrastrando && Math.abs(recorrido) > UMBRAL_ARRASTRE) {
+        arrastrando = true;
+        tira.style.cursor = 'grabbing';
+        tira.setPointerCapture(evento.pointerId);
+      }
+
+      if (arrastrando) tira.scrollLeft = inicioScroll - recorrido;
     });
 
-    tira.addEventListener('pointerup', (evento) => {
-      arrastrando = false;
-      tira.releasePointerCapture?.(evento.pointerId);
-    });
+    function soltar(evento) {
+      pulsado = false;
+      tira.style.cursor = '';
+      if (arrastrando) {
+        arrastrando = false;
+        tira.releasePointerCapture?.(evento.pointerId);
+      }
+    }
+
+    tira.addEventListener('pointerup', soltar);
+    tira.addEventListener('pointercancel', soltar);
+
+    // Si hubo arrastre, el clic que viene detrás no debe abrir la foto.
+    tira.addEventListener(
+      'click',
+      (evento) => {
+        if (!arrastrando) return;
+        evento.stopPropagation();
+        evento.preventDefault();
+      },
+      true,
+    );
 
     tira.addEventListener('scroll', pintarProgreso, { passive: true });
     window.addEventListener('resize', pintarProgreso);
 
     pintarProgreso();
+    iniciarVisor(carta, piezas);
+  });
+}
+
+/**
+ * Visor de la foto ampliada.
+ *
+ * Usa un `<dialog>` del navegador, que ya trae lo difícil: el foco se queda dentro, el
+ * Escape cierra y el fondo no se puede tocar. Aquí solo se pone la foto, se pasan las
+ * flechas y se devuelve el foco a la tarjeta al cerrar.
+ */
+function iniciarVisor(carta, piezas) {
+  // El visor de ESTE apartado. Con `document.querySelector` los dos apartados
+  // compartían el primero y abrir la comida cambiaba la foto de las bebidas.
+  const seccion = carta.closest('section');
+  const visor = seccion ? seccion.querySelector('[data-visor]') : null;
+  if (!visor) return;
+
+  const foto = visor.querySelector('[data-visor-foto]');
+  const nombre = visor.querySelector('[data-visor-nombre]');
+  const cerrar = visor.querySelector('[data-visor-cerrar]');
+  const anterior = visor.querySelector('[data-visor-anterior]');
+  const siguiente = visor.querySelector('[data-visor-siguiente]');
+
+  // Solo las piezas con foto: la de «Pasión» no se puede abrir.
+  const ampliables = Array.from(carta.querySelectorAll('[data-abrir]'));
+  if (ampliables.length === 0) return;
+
+  let actual = 0;
+  let devolverFoco = null;
+
+  let cambioPendiente = null;
+
+  /**
+   * Cambia la foto del visor con un cruce: la que estaba se apaga, se cambia la fuente y
+   * la nueva entra. Sin esto, la imagen cambia de golpe y parece un fallo.
+   */
+  function mostrar(indice) {
+    actual = (indice + ampliables.length) % ampliables.length;
+    const boton = ampliables[actual];
+    const imagen = boton.querySelector('img');
+    const titulo = boton.getAttribute('aria-label') || '';
+    const texto = imagen?.alt || titulo.replace(/^Ver /, '').replace(/ en grande$/, '');
+
+    window.clearTimeout(cambioPendiente);
+
+    if (!visor.open) {
+      // Aún cerrado: se pone la foto y ya entrará con la animación de apertura.
+      if (foto && imagen) {
+        foto.src = imagen.currentSrc || imagen.src;
+        foto.alt = texto;
+      }
+      if (nombre) nombre.textContent = texto;
+      return;
+    }
+
+    if (foto) foto.dataset.cambiando = 'si';
+    if (nombre) nombre.dataset.cambiando = 'si';
+
+    cambioPendiente = window.setTimeout(() => {
+      if (foto && imagen) {
+        foto.src = imagen.currentSrc || imagen.src;
+        foto.alt = texto;
+        delete foto.dataset.cambiando;
+      }
+      if (nombre) {
+        nombre.textContent = texto;
+        delete nombre.dataset.cambiando;
+      }
+    }, 150);
+  }
+
+  function abrir(indice, boton) {
+    devolverFoco = boton;
+    mostrar(indice);
+    if (typeof visor.showModal === 'function') visor.showModal();
+    else visor.setAttribute('open', '');
+
+    // Un fotograma después de abrir se enciende: así el navegador tiene de dónde
+    // transicionar y la entrada se ve fundida en vez de plantada.
+    delete visor.dataset.visible;
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        visor.dataset.visible = 'si';
+      });
+    });
+  }
+
+  function cerrarVisor() {
+    // Se apaga, y cuando termina el fundido se cierra de verdad.
+    delete visor.dataset.visible;
+    window.setTimeout(() => {
+      if (typeof visor.close === 'function') visor.close();
+      else visor.removeAttribute('open');
+    }, 280);
+  }
+
+  ampliables.forEach((boton, indice) => {
+    boton.addEventListener('click', () => abrir(indice, boton));
+  });
+
+  cerrar?.addEventListener('click', cerrarVisor);
+  anterior?.addEventListener('click', () => mostrar(actual - 1));
+  siguiente?.addEventListener('click', () => mostrar(actual + 1));
+
+  // Flechas dentro del visor.
+  visor.addEventListener('keydown', (evento) => {
+    if (evento.key === 'ArrowLeft') {
+      evento.preventDefault();
+      mostrar(actual - 1);
+    }
+    if (evento.key === 'ArrowRight') {
+      evento.preventDefault();
+      mostrar(actual + 1);
+    }
+  });
+
+  // Al cerrarse por cualquier vía —Escape incluido— el foco vuelve a su tarjeta.
+  visor.addEventListener('close', () => {
+    devolverFoco?.focus();
+  });
+
+  // Un clic fuera de la foto también cierra.
+  visor.addEventListener('click', (evento) => {
+    if (evento.target === visor) cerrarVisor();
   });
 }

@@ -10,10 +10,10 @@
 
 export const bebidas = [
   { nombre: 'Kiwi de la casa', foto: 'kiwi' },
-  { nombre: 'Pasión de la casa', foto: null },
+  { nombre: 'Pasión de la casa', foto: 'pasion' },
   { nombre: 'Drácula', foto: 'dracula' },
   { nombre: 'Aperol', foto: 'aperol' },
-  { nombre: 'Gin Tonic', foto: 'gin-tonic' },
+  { nombre: 'Gin Tonic especial con frutas', foto: 'gin-tonic' },
 ];
 
 export const platos = [
