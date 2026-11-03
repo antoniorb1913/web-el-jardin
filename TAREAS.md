@@ -16,7 +16,7 @@
 | 1 · Scrollytelling | **T5** · Motor de scrollytelling (sticky + escenas + fallbacks) | ✅ Completada | T4 |
 | 2 · Contenido | **T6** · Layout base: header, navegación y footer | ✅ Completada | T3 |
 | 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ✅ Completada | T6 |
-| 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ⏳ Pendiente | T7 |
+| 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ✅ Completada | T7 |
 | 2 · Contenido | **T9** · Galería de fotos del bar | ⏳ Pendiente · ⚠️ necesita fotos | T8 |
 | 2 · Contenido | **T10** · Ubicación + horario + estado «Abierto ahora» | ⏳ Pendiente | T8 |
 | 3 · Legal y SEO | **T11** · Aviso legal, privacidad y consentimiento del mapa | ⏳ Pendiente | T10 |
@@ -221,13 +221,37 @@
 
 ---
 
-### T8 · Secciones «Especialidades» y «Nuestra comida» — ⏳
+### T8 · Secciones «Especialidades» y «Nuestra comida» — ✅
 
-**Objetivo:** tarjetas con las **4 bebidas de la casa** (Kiwi de la casa, Pasión de la casa, Drácula, Aperol) y los **3 platos**, **sin precios**, con nota de que la carta está en el bar. Cada tarjeta con su foto: `kiwi.jpg`, `aperol.png`, `dracula.heic` (convertir), `bratwurst.png`, `currywurst.png`, `tabla_jamon.png`. «Pasión de la casa» se maqueta con un hueco reservado hasta tener su foto.
+**Objetivo:** la carta del bar —**5 bebidas** y **3 platos**, sin precios— con sus fotos.
 
-**Archivos:** `src/data/especialidades.js`, `src/components/TarjetaEspecialidad.astro`, `src/assets/`, `src/pages/index.astro`.
+**Archivos:** `src/data/carta.js`, `src/components/Carta.astro`, `src/scripts/carrusel.js`,
+`src/styles/global.css`, `src/pages/index.astro`, `public/productos/`.
 
-**Verificación:** los **7** elementos aparecen con el texto exacto aprobado, cada uno con su imagen, y en ningún sitio se ve un precio.
+**Lo que quedó:**
+- **Una tira horizontal** por apartado: el título arriba, las tarjetas en medio (se ven tres y
+  pico) y abajo la barra de progreso con las flechas.
+- **El bloque entero mide lo mismo**: título, tira y barra van de la primera foto a la
+  última; nada ocupa la pantalla de lado a lado.
+- **Se arrastra, se mueve con las flechas** (660 ms con curva de entrada y salida) **y con el
+  trackpad**; el enganche se apaga mientras dura el movimiento.
+- **Al pasar el cursor** crece el cuadrado (+4 % en 0,8 s), la foto se acerca dentro (+7 % en
+  1,6 s), sube un velo cálido y el nombre se enciende en ámbar con un filete que se dibuja.
+  Con movimiento reducido el cuadrado crece un 2 % y la foto un 3 %: se nota igual.
+- **«Pasión de la casa» sin foto**: su tarjeta lleva el verde de la baldosa y la «J» del
+  logotipo, para que se lea como decisión y no como imagen rota.
+- **Sin precios y sin descripciones inventadas**: solo el nombre y «La carta completa, en el
+  bar.»
+
+**Fotos:** siete a WebP en dos tamaños (860 y 430 px), recortadas a 3:4 por el centro.
+**1,75 MB** las catorce piezas, desde 16,6 MB de PNG originales.
+
+**Verificación:**
+1. Los **8** nombres aparecen escritos igual que en `AGENTS.md`.
+2. `document.body.innerText` no contiene ningún importe: comprobado.
+3. La flecha derecha desplaza una tarjeta con curva suave (medido: 1 → 14 → 48 → 194 → 339 → 373).
+4. La barra de progreso se rellena al 60 % en escritorio (lo que cabe en pantalla).
+5. En móvil las tarjetas miden 62vw y el carril no se sale de la pantalla.
 
 ---
 

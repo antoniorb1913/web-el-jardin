@@ -1,0 +1,85 @@
+---
+/**
+ * Una parada de la carta: título arriba y una tira horizontal de fotos.
+ *
+ * La tira enseña varias piezas a la vez y se desplaza en horizontal, con enganche. Se
+ * mueve con las flechas, con el arrastre o con el desplazamiento lateral del trackpad, y
+ * la barra de abajo dice por dónde vas.
+ *
+ * Lo que no tiene foto —«Pasión de la casa»— mantiene su tarjeta, con el verde de la
+ * marca y la «J» del logotipo.
+ */
+interface Pieza {
+  nombre: string;
+  foto: string | null;
+}
+
+interface Props {
+  id: string;
+  titulo: string;
+  piezas: Pieza[];
+  nota: string;
+}
+
+const { id, titulo, piezas, nota } = Astro.props;
+---
+
+<section id={id} data-seccion={id} class="relative mx-auto max-w-2xl min-h-[250dvh]">
+  <div class="panel panel--carta" data-panel>
+    <div class="carta" data-carta>
+      <div class="carta__cabecera">
+        <h2 class="titulo-apartado carta__titulo">{titulo}</h2>
+        <p class="carta__nota">{nota}</p>
+      </div>
+
+      <ul class="tira" data-tira tabindex="0" aria-label={titulo}>
+        {
+          piezas.map((pieza, indice) => (
+            <li class="tira__pieza">
+              <div class:list={['tira__marco', pieza.foto ? '' : 'tira__marco--hueco']}>
+                {pieza.foto ? (
+                  <img
+                    class="tira__foto"
+                    src={`/productos/${pieza.foto}-pequena.webp`}
+                    srcset={`/productos/${pieza.foto}-pequena.webp 430w, /productos/${pieza.foto}.webp 860w`}
+                    sizes="(max-width: 720px) 62vw, 26vw"
+                    alt={pieza.nombre}
+                    width="860"
+                    height="1147"
+                    loading={indice < 3 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                ) : (
+                  <span class="tira__sinfoto" aria-hidden="true">
+                    J
+                  </span>
+                )}
+              </div>
+              <p class="tira__nombre">{pieza.nombre}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="carta__pie">
+        <div class="progreso" aria-hidden="true">
+          <span class="progreso__relleno" data-progreso></span>
+        </div>
+
+        <div class="carta__mandos">
+          <button type="button" class="carta__flecha" data-anterior aria-label="Fotos anteriores">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button type="button" class="carta__flecha" data-siguiente aria-label="Fotos siguientes">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { iniciarCartas } from '../scripts/carrusel.js';
+  iniciarCartas();
+</script>

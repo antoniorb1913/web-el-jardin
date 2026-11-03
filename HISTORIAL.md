@@ -17,6 +17,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T5 | 2026-11-01 | Motor de scrollytelling | ✅ Completada |
 | T6 | 2026-11-01 | Cabecera, navegación, cierre y cruces entre escenas | ✅ Completada |
 | T7 | 2026-11-03 | Portada «Un paraíso en Bolnuevo» y caligráfica de la carta | ✅ Completada |
+| T8 | 2026-11-03 | La carta: especialidades y comida en tira horizontal | ✅ Completada |
 
 ---
 
@@ -308,3 +309,49 @@ con licencia GUST, que es la misma familia de letra.
 3. Bajar hasta «Nuestras especialidades»: el título va en la caligráfica de la carta.
 4. Pararse en un apartado y dar un golpe de rueda de más: el texto aguanta 160 px.
 5. Bajar del todo: la estatua queda nïtida y los últimos 360 px de página no cambian nada.
+
+---
+
+## 2026-11-03 · T8 — La carta: especialidades y comida en tira horizontal
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t8-carta`
+**Commit:** `feat: la carta en tira horizontal con sus fotos`
+**Archivos:** `src/data/carta.js`, `src/components/Carta.astro`, `src/scripts/carrusel.js`,
+`src/styles/global.css`, `src/pages/index.astro`, `public/productos/`
+
+### 1. ¿Qué he realizado?
+
+Las dos paradas de la carta —las cinco bebidas y los tres platos— con sus fotos, **sin
+precios**. Cada parada es una tira horizontal: el título arriba, las tarjetas en medio con el
+nombre debajo y una barra de progreso con flechas al pie.
+
+### 2. ¿Por qué?
+
+Primero se probaron tarjetas en rejilla, luego un carrusel de una sola foto y después una
+composición en diagonal. Ninguna funcionaba: la rejilla dejaba huecos, el carrusel de una foto
+escondía la carta y ocultaba que hubiera más, y la diagonal separaba el texto de las fotos. La
+tira horizontal **enseña varias piezas a la vez y deja ver que hay más**, que es lo que hace
+que la gente arrastre.
+
+El nombre va en la caligráfica de la carta impresa, que es lo que ata la web con el menú que
+el cliente ya conoce.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/data/carta.js` — los cinco nombres de bebida, los tres platos y la nota.
+- `src/components/Carta.astro` — el apartado completo: título, tira y pie.
+- `src/scripts/carrusel.js` — desplazamiento con curva propia (`DURACION`, `suavizar`), barra
+  de progreso, arrastre y flechas.
+- `src/styles/global.css` — bloque «La carta»: `.carta`, `.tira*`, hover del marco y de la
+  foto, y las reglas de movimiento reducido.
+- `public/productos/` — siete fotos en 860 y 430 px, recortadas a 3:4.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. Bajar al apartado «Especialidades»: se ven tres tarjetas y un cacho de la cuarta.
+2. Pulsar la flecha derecha: la tira se desliza en 660 ms, arrancando despacio y frenando sola.
+3. Arrastrar con el ratón y con el trackpad: la tira sigue y engancha en cada tarjeta.
+4. Pasar el cursor por una tarjeta: crece el cuadrado, la foto se acerca y el nombre se
+   subraya en ámbar.
+5. Comprobar que no hay ningún precio en la página ni en el HTML.

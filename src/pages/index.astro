@@ -13,9 +13,9 @@
 import Base from '../layouts/Base.astro';
 import HeroScrolly from '../components/HeroScrolly.astro';
 import Seccion from '../components/Seccion.astro';
-import logo from '../assets/logo.png';
-import { Image } from 'astro:assets';
+import Carta from '../components/Carta.astro';
 import { direccion, horario, enlaceMapa } from '../data/negocio';
+import { bebidas, platos, notaCarta } from '../data/carta';
 
 const seccion = 'relative mx-auto max-w-2xl min-h-[250dvh]';
 const panel = 'panel';
@@ -48,28 +48,15 @@ const anio = new Date().getFullYear();
     </section>
 
     <!-- ESPECIALIDADES -->
-    <section id="especialidades" data-seccion="especialidades" class={seccion}>
-      <div class={panel} data-panel>
-        <div class={texto}>
-          <h2 class="titulo-apartado">Nuestras especialidades</h2>
-          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
-            Kiwi de la casa · Pasión de la casa · Drácula · Aperol · Gin Tonic
-          </p>
-        </div>
-      </div>
-    </section>
+    <Carta
+      id="especialidades"
+      titulo="Nuestras especialidades"
+      piezas={bebidas}
+      nota={notaCarta}
+    />
 
     <!-- COMIDA -->
-    <section id="comida" data-seccion="comida" class={seccion}>
-      <div class={panel} data-panel>
-        <div class={texto}>
-          <h2 class="titulo-apartado">Nuestra comida</h2>
-          <p class="mt-6 text-lg leading-relaxed text-crema-50/85">
-            Salchicha bratwurst · Salchicha currywurst · Tabla de jamón serrano de Teruel
-          </p>
-        </div>
-      </div>
-    </section>
+    <Carta id="comida" titulo="Nuestra comida" piezas={platos} nota={notaCarta} />
 
     <!-- FOTOS -->
     <section id="fotos" data-seccion="fotos" class={seccion}>
