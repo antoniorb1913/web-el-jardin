@@ -21,10 +21,13 @@ Eres el agente que construye la web de un **bar familiar**. Trabajas **una tarea
 | Horario | Domingo a jueves: **16:00 – 23:00** · Viernes y sábado: **16:00 – 00:00** |
 | Zona horaria | `Europe/Madrid` (fijar explícitamente, nunca la del navegador) |
 
-**Especialidades (bebidas de la casa):** Kiwi de la casa · Pasión de la casa · **Drácula** · **Aperol** · **Gin Tonic**.
+**Especialidades (bebidas de la casa):** Kiwi de la casa · Pasión de la casa · **Drácula** · **Aperol** · **Gin Tonic especial con frutas**.
 
 > Respuestas del usuario (2026-11-01): el nombre del sitio es **«Bar El Jardín»** —el rótulo del vídeo dice «Bar Café JARDIN», que es el cartel del local, no el nombre que usamos en la web—; la especialidad se llama **«Aperol»**, no «Aperol Spritz»; se añade **Gin Tonic** como quinta especialidad; y «Especial Jardín» pasó a llamarse **Drácula**.
-> Fotos: hay de kiwi, Drácula, Aperol, gintonic y los tres platos. **«Pasión de la casa» se queda sin foto por decisión del usuario** (2026-11-01): la añadirá más adelante si quiere. Su tarjeta se maqueta sin imagen, no con un hueco vacío.
+> Fotos: hay de kiwi, Drácula, Aperol, gintonic y los tres platos. **«Pasión de la casa» se queda sin foto por decisión del usuario** (2026-11-01): la añadirá más adelante si quiere. Su tarjeta se maqueta sin imagen, no con un hueco vacío. **Corregido el 03-11: ya hay foto de
+> Pasión de la casa** (`pasion.png`), así que las cinco bebidas llevan imagen.
+> El 03-11 «Gin Tonic» pasó a llamarse **«Gin Tonic especial con frutas»**: ahora lleva fruta
+> y el usuario pidió el nombre completo.
 
 **Comida:** Salchicha bratwurst · Salchicha currywurst · Tabla de jamón serrano de Teruel.
 
