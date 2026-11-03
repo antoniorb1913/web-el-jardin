@@ -133,19 +133,18 @@
       rgb(5 18 11 / calc(var(--velo-suelo, 0) * 0.55)) 38%,
       transparent 68%
     ),
-    /* Luz calida de atardecer: aclara la portada, que es un jardin de flores y no una
-       sala a oscuras. Va en modo `screen`, asi que suma luz en vez de tapar. */
-    radial-gradient(
-      120% 90% at 78% 8%,
-      rgb(255 178 60 / var(--luz-portada, 0)) 0%,
-      rgb(255 178 60 / 0) 62%
-    ),
     linear-gradient(
       to bottom,
       rgb(22 36 28 / calc(var(--fuerza-velo, 0.3) * 0.6)),
       rgb(22 36 28 / var(--fuerza-velo, 0.3))
     );
-  background-blend-mode: screen, normal, normal;
+
+  /*
+   * Aquí había una capa de luz cálida en modo `screen`. Se retiró: su variable estaba
+   * fija a 0 —nunca se encendía— y el modo de fusión obligaba al navegador a mezclar
+   * una capa a pantalla completa en cada fotograma del recorrido. En un portátil no se
+   * notaba; en un monitor grande sí.
+   */
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1402,4 +1401,19 @@ button.tira__marco {
   .visor-grande__foto[data-cambiando='si'] {
     transform: none;
   }
+}
+
+/* El lienzo, en su propia capa de composición.
+
+   Sin esto, cada repintado obliga al navegador a recomponer toda la pila de capas de
+   encima —los degradados del velo y sus modos de fusión— a resolución de pantalla. En un
+   portátil se nota poco; en un monitor grande es la diferencia entre ir fino y ir a
+   tirones. `translateZ(0)` lo aísla y `backface-visibility` evita que el navegador
+   recalcule el texto de atrás. */
+[data-lienzo] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  /* Que no se interpole al estirarlo: el lienzo pinta a 1600 px y el CSS lo agranda. */
+  image-rendering: auto;
 }

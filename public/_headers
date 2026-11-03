@@ -1,0 +1,29 @@
+# Cabeceras del sitio (se publican tal cual en Netlify).
+#
+# Lo importante aquí es el caché. Los archivos de `public/` —los 240 fotogramas, las
+# fotos y las fuentes— no cambian de nombre al cambiar de contenido, así que sin esto
+# Netlify los sirve con `max-age=0` y cada visita vuelve a preguntar por los 240
+# fotogramas: respuestas pequeñas, pero 240 peticiones por visita.
+#
+# Con un año de caché, la segunda visita no pide nada.
+
+/fondo/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/escenas/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/productos/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# El HTML sí se comprueba siempre: es lo que cambia al publicar.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Y un mínimo de seguridad, aunque las completas llegan en T15.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
