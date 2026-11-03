@@ -13,5 +13,11 @@ siempre que se conserve esta nota de licencia.
    Diseñada por Erik Kennedy. https://github.com/erikdkennedy/figtree
    Licencia: SIL Open Font License 1.1 — https://openfontlicense.org
 
+3. TeX Gyre Chorus
+   Es la caligráfica de la carta del bar. Diseñada por Bogusław Jackowski y
+   Janusz M. Nowacki, a partir de la cancilleresca de URW.
+   Licencia: GUST Font License (libre, permite usarla y redistribuirla).
+   Texto completo en `LICENCIA-chorus.txt`.
+
 Los archivos .woff2 de esta carpeta son el subconjunto latino de cada fuente,
 descargados del servicio Google Fonts y convertidos a formato woff2.

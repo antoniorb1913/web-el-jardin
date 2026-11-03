@@ -23,6 +23,17 @@
   font-display: swap;
 }
 
+/* Caligráfica de la carta. Es TeX Gyre Chorus, el clon libre de la cancilleresca
+   que usa el bar en su carta impresa (ITC Zapf Chancery es de pago). Licencia GUST,
+   ver `public/fonts/LICENCIA-chorus.txt`. Solo trae un peso: no hay negrita. */
+@font-face {
+  font-family: "Chorus";
+  src: url("/fonts/chorus.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ---------------------------------------------------------------------------
    Tokens del sistema de diseño (T3).
    Los cinco colores de marca están MEDIDOS sobre `fotos/logo.png`, no elegidos a
@@ -33,6 +44,7 @@
 @theme {
   --font-display: "Fredoka", ui-rounded, "Segoe UI Variable", system-ui, sans-serif;
   --font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-caligrafica: "Chorus", "Zapf Chancery", "Apple Chancery", cursive;
 
   /* Colores de marca */
   --color-jardin-rojo: #fc0000; /* la J y la A */
@@ -113,19 +125,20 @@
 
 .portada__velo {
   background:
+    /* Degradado de suelo: oscurece la parte baja donde van los créditos, como en un
+       cartel de cine. Es lo que evita que el texto se apoye en la acera clara. */
+    linear-gradient(
+      to top,
+      rgb(5 18 11 / var(--velo-suelo, 0)) 0%,
+      rgb(5 18 11 / calc(var(--velo-suelo, 0) * 0.55)) 38%,
+      transparent 68%
+    ),
     /* Luz calida de atardecer: aclara la portada, que es un jardin de flores y no una
        sala a oscuras. Va en modo `screen`, asi que suma luz en vez de tapar. */
     radial-gradient(
       120% 90% at 78% 8%,
       rgb(255 178 60 / var(--luz-portada, 0)) 0%,
       rgb(255 178 60 / 0) 62%
-    ),
-    /* Sombra suave solo sobre el rotulo pintado, para que no se lean dos «JARDIN». */
-    linear-gradient(
-      to left,
-      rgb(30 22 8 / var(--velo-lado, 0)) 0%,
-      rgb(30 22 8 / calc(var(--velo-lado, 0) * 0.62)) 44%,
-      transparent 74%
     ),
     linear-gradient(
       to bottom,
@@ -644,4 +657,177 @@
 
 .portal[data-visible='si'] {
   opacity: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   Contenido de un apartado
+
+   El titular, el subrayado curvo del logotipo y el texto aprobado. El halo es un
+   degradado oscuro detrás del bloque: el texto va sobre foto y el contraste no puede
+   depender de lo que pase a salir en el fotograma.
+
+   Nada de cajas ni bordes: el fondo se apaga, no se enmarca.
+   --------------------------------------------------------------------------- */
+
+.apartado {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  max-width: 34rem;
+  text-align: center;
+}
+
+.apartado__halo {
+  position: absolute;
+  inset: -22% -18%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(8 24 14 / 0.72), rgb(8 24 14 / 0));
+  pointer-events: none;
+}
+
+.apartado__titulo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.85rem, 1.2rem + 2.6vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  color: var(--color-crema-50);
+  /* El titular va sobre foto: la sombra evita que se pierda en las zonas claras. */
+  text-shadow: 0 1px 18px rgb(6 22 14 / 0.55);
+}
+
+.apartado__subrayado {
+  width: clamp(9rem, 40%, 13rem);
+  height: auto;
+  color: var(--color-jardin-ambar);
+  filter: drop-shadow(0 1px 8px rgb(6 22 14 / 0.45));
+}
+
+.apartado__texto {
+  max-width: 30rem;
+  font-size: clamp(1rem, 0.95rem + 0.35vw, 1.22rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+  color: rgb(253 250 244 / 0.9);
+  text-shadow: 0 1px 14px rgb(6 22 14 / 0.5);
+}
+
+.apartado__pie {
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  color: rgb(253 250 244 / 0.6);
+}
+
+
+
+
+/* ---------------------------------------------------------------------------
+   La cubierta
+
+   Todo el mundo pone un titular enorme sobre la foto. Aquí al revés: **la foto ocupa la
+   pantalla y el texto se pone pequeño**, apoyado en una línea fina, como el pie de una
+   fotografía de revista.
+
+   El bloque mide lo que mide el texto y nada más: la línea superior y el párrafo
+   comparten ancho, así que la composición tiene un solo eje y un solo borde. Es lo que
+   separa una portada compuesta de un texto suelto encima de una foto.
+
+   La foto va entera, sin bandas ni desenfoques; sólo un degradado de suelo para que el
+   texto no se apoye en la acera clara.
+   --------------------------------------------------------------------------- */
+
+.panel--cubierta {
+  place-items: end start;
+  padding: clamp(1.5rem, 5vw, 4.5rem);
+  padding-bottom: clamp(2.2rem, 9vh, 5.5rem);
+}
+
+.susurro {
+  display: flex;
+  flex-direction: column;
+  /* El ancho lo fija el párrafo, no el contenedor: así la línea de arriba acaba donde
+     acaba el texto. */
+  width: min(100%, 21.5rem);
+  padding-top: 0.95rem;
+  border-top: 1px solid rgb(253 250 244 / 0.32);
+}
+
+.susurro__marca {
+  margin: 0;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: rgb(253 250 244 / 0.66);
+  /* El nombre no lleva sombra: a este tamaño, la sombra lo emborrona. */
+}
+
+.susurro__titular {
+  display: flex;
+  flex-direction: column;
+  margin: 0.8rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 1.1rem + 1.5vw, 2.2rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-crema-50);
+  text-shadow: 0 1px 14px rgb(4 16 9 / 0.45);
+}
+
+/* La segunda línea un punto más apagada: la misma voz, un poco más lejos. */
+.susurro__linea + .susurro__linea {
+  color: rgb(253 250 244 / 0.82);
+}
+
+.susurro__texto {
+  margin: 1rem 0 0;
+  font-size: clamp(0.86rem, 0.84rem + 0.12vw, 0.92rem);
+  line-height: 1.72;
+  letter-spacing: 0.002em;
+  text-wrap: pretty;
+  color: rgb(253 250 244 / 0.76);
+}
+
+.susurro__pie {
+  margin: 1.35rem 0 0;
+  font-size: 0.63rem;
+  letter-spacing: 0.15em;
+  color: rgb(253 250 244 / 0.52);
+}
+
+@media (max-width: 720px) {
+  .susurro {
+    width: 100%;
+  }
+
+  .susurro__titular {
+    font-size: clamp(1.45rem, 1.2rem + 1.1vw, 1.75rem);
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Títulos de los apartados, en la caligráfica de la carta
+
+   La letra del bar manda en los cinco títulos. Va con un trazo de 0,3 px porque la
+   cancilleresca es más fina que la de la carta impresa; sin él, a tamaño grande se
+   queda escuálida y parece otra cosa.
+   --------------------------------------------------------------------------- */
+
+.titulo-apartado {
+  font-family: var(--font-caligrafica);
+  font-size: clamp(2.6rem, 1.4rem + 4.6vw, 5.4rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0.005em;
+  /* Una sola palabra puede llevar acento y la caligráfica lo dibuja alto: se le da aire
+     arriba para que no se corte. */
+  padding-top: 0.14em;
+  -webkit-text-stroke: 0.3px currentColor;
+  text-wrap: balance;
 }

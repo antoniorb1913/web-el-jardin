@@ -16,6 +16,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T4 | 2026-11-01 | Análisis del vídeo y troceado en escenas | ✅ Completada |
 | T5 | 2026-11-01 | Motor de scrollytelling | ✅ Completada |
 | T6 | 2026-11-01 | Cabecera, navegación, cierre y cruces entre escenas | ✅ Completada |
+| T7 | 2026-11-03 | Portada «Un paraíso en Bolnuevo» y caligráfica de la carta | ✅ Completada |
 
 ---
 
@@ -262,3 +263,48 @@ Coste y decisiones que se aprendieron por el camino:
 5. Pulsar «Comida» desde arriba: el fondo se desenfoca, salta y abre despacio con el texto ya entrando desenfocado. Tarda unos 1,7 s y se ve un solo apartado.
 
 ---
+
+---
+
+## 2026-11-03 · T7 — Portada «Un paraíso en Bolnuevo» y caligráfica de la carta
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t7-quienes-somos`
+**Commit:** `feat: portada «Un paraíso en Bolnuevo» y caligráfica de la carta`
+**Archivos:** `src/pages/index.astro`, `src/components/Seccion.astro`, `src/styles/global.css`,
+`src/scripts/app.js`, `public/fonts/chorus.woff2`, `public/fonts/LICENCIAS.txt`
+
+### 1. ¿Qué he realizado?
+
+La portada del sitio, con el texto aprobado del bar y el nombre «Un paraíso en Bolnuevo».
+La foto ocupa la pantalla entera y el texto va pequeño abajo a la izquierda, apoyado en una
+línea fina, como el pie de una fotografía de revista. Además, la caligráfica de la carta
+impresa del bar (TeX Gyre Chorus, clon libre) pasa a los cinco títulos de apartado.
+
+### 2. ¿Por qué?
+
+El texto del bar es una sola frase larga y en la portada no había jerarquía. Se probaron
+siete composiciones (étiqueta de crema, letras rellenas con la foto, ventana recortada en el
+papel, desenfoque de campo…). Todas competían con la foto de la fachada, que ya tiene mucho
+que decir. La que funciona es la que **no compite**: la foto entera y el texto
+pequeño, que se lee con más atención que un titular enorme.
+
+La caligráfica viene de la carta del bar: es la letra que el cliente ya reconoce en el local.
+La de la carta impresa es ITC Zapf Chancery, de pago; se usa TeX Gyre Chorus, su clon libre
+con licencia GUST, que es la misma familia de letra.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/pages/index.astro` — la sección `#portada` y el bloque `.susurro`.
+- `src/styles/global.css` — bloque «La cubierta» (`.panel--cubierta`, `.susurro*`), el
+  `@font-face` de Chorus, el token `--font-caligrafica` y `.titulo-apartado`.
+- `src/scripts/app.js` — `AGARRE_APARTADO`, `FUNDIDO_APARTADO`, `TOPE_FINAL` y `avanceDeScroll()`.
+- `public/fonts/chorus.woff2` — 14 KB, subconjunto latino con acentos y «» ¿¡.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. Abrir la portada: se ve la fachada entera y, abajo a la izquierda, el bloque de texto.
+2. Medir el contraste: nombre 5,1:1 · titular 11,9:1 · párrafo 8,3:1 (mínimo 4,5).
+3. Bajar hasta «Nuestras especialidades»: el título va en la caligráfica de la carta.
+4. Pararse en un apartado y dar un golpe de rueda de más: el texto aguanta 160 px.
+5. Bajar del todo: la estatua queda nïtida y los últimos 360 px de página no cambian nada.
