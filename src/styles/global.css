@@ -240,10 +240,7 @@
   inset-inline: 0;
   top: 0;
   z-index: 60;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  padding: 0.85rem clamp(1rem, 3.5vw, 2.5rem);
+  padding: 0.85rem 0;
   color: var(--color-crema-50);
   /* Velo propio: sin él, el texto se pierde cuando debajo pasa una zona clara. */
   background: linear-gradient(to bottom, rgb(8 26 16 / 0.62), rgb(8 26 16 / 0));
@@ -257,6 +254,16 @@
   opacity: 0;
   transform: translateY(-100%);
   pointer-events: none;
+}
+
+.encabezado__contenido {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.2rem, 4vw, 3.4rem);
 }
 
 .encabezado__marca {
@@ -406,7 +413,7 @@
   display: block;
   padding-block: 0.55rem;
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 6vw, 2.1rem);
+  font-size: clamp(1.4rem, 5.4vmin, 2.1rem);
   color: var(--color-tinta-900);
   text-decoration: none;
 }
@@ -534,13 +541,13 @@
 .cierre__titulo {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(1.8rem, 5.4vmin, 3.5rem);
   line-height: 1.05;
 }
 
 .cierre__direccion {
   margin: 0;
-  font-size: clamp(1rem, 2.4vw, 1.25rem);
+  font-size: clamp(0.95rem, 2.2vmin, 1.25rem);
   line-height: 1.45;
 }
 
@@ -691,7 +698,7 @@
 .apartado__titulo {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(1.85rem, 1.2rem + 2.6vw, 3.25rem);
+  font-size: clamp(1.6rem, 4.6vmin, 3.25rem);
   line-height: 1.08;
   letter-spacing: -0.015em;
   text-wrap: balance;
@@ -709,7 +716,7 @@
 
 .apartado__texto {
   max-width: 30rem;
-  font-size: clamp(1rem, 0.95rem + 0.35vw, 1.22rem);
+  font-size: clamp(0.95rem, 2.1vmin, 1.22rem);
   line-height: 1.65;
   text-wrap: pretty;
   color: rgb(253 250 244 / 0.9);
@@ -751,14 +758,14 @@
   flex-direction: column;
   /* El ancho lo fija el párrafo, no el contenedor: así la línea de arriba acaba donde
      acaba el texto. */
-  width: min(100%, 21.5rem);
+  width: min(100%, 22rem);
   padding-top: 0.95rem;
   border-top: 1px solid rgb(253 250 244 / 0.32);
 }
 
 .susurro__marca {
   margin: 0;
-  font-size: 0.66rem;
+  font-size: clamp(0.7rem, 0.45rem + 0.45vmin, 0.9rem);
   font-weight: 500;
   letter-spacing: 0.17em;
   text-transform: uppercase;
@@ -771,7 +778,7 @@
   flex-direction: column;
   margin: 0.8rem 0 0;
   font-family: var(--font-display);
-  font-size: clamp(1.55rem, 1.1rem + 1.5vw, 2.2rem);
+  font-size: clamp(1.6rem, 1rem + 2.3vmin, 3rem);
   font-weight: 300;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -786,7 +793,7 @@
 
 .susurro__texto {
   margin: 1rem 0 0;
-  font-size: clamp(0.86rem, 0.84rem + 0.12vw, 0.92rem);
+  font-size: clamp(0.9rem, 0.62rem + 0.75vmin, 1.15rem);
   line-height: 1.72;
   letter-spacing: 0.002em;
   text-wrap: pretty;
@@ -795,7 +802,7 @@
 
 .susurro__pie {
   margin: 1.35rem 0 0;
-  font-size: 0.63rem;
+  font-size: clamp(0.66rem, 0.5rem + 0.28vmin, 0.8rem);
   letter-spacing: 0.15em;
   color: rgb(253 250 244 / 0.52);
 }
@@ -821,7 +828,7 @@
 
 .titulo-apartado {
   font-family: var(--font-caligrafica);
-  font-size: clamp(2.6rem, 1.4rem + 4.6vw, 5.4rem);
+  font-size: clamp(2.2rem, 6.6vmin, 5.4rem);
   font-weight: 400;
   line-height: 1.05;
   letter-spacing: 0.005em;
@@ -889,10 +896,14 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 1.5rem;
+  /* El ancho lo pone la tira: así el título arranca donde arranca la primera foto y la
+     nota acaba donde acaba la última. */
+  width: var(--ancho-tira, 100%);
+  margin-inline: auto;
 }
 
 .carta__titulo {
-  font-size: clamp(1.9rem, 1.1rem + 3vw, 3.6rem);
+  font-size: clamp(1.6rem, 4.4vmin, 3.6rem);
   color: var(--color-crema-50);
   text-align: left;
   text-shadow: 0 1px 22px rgb(4 16 9 / 0.45);
@@ -950,7 +961,10 @@
   flex-direction: column;
   gap: 0.7rem;
   /* Tres tarjetas y un cacho de la cuarta: se ve que hay más. */
-  flex: 0 0 clamp(11rem, 26vw, 22rem);
+  /* Tres topes: el ancho de la ventana, el alto disponible y un maximo en rem. El de rem
+     es el que evita que en un monitor grande las fotos se coman la pantalla: a partir de
+     21 rem la tarjeta ya no crece, por mucho que sobre sitio. */
+  flex: 0 0 min(26vw, calc(50vh * 3 / 4), 21rem);
   scroll-snap-align: start;
   min-height: 0;
   /* En reposo no se mueve nada; al pasar por encima crece el conjunto entero. */
@@ -1026,7 +1040,7 @@
 
 .tira__sinfoto {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 6rem);
+  font-size: clamp(2.4rem, 7vmin, 6rem);
   font-weight: 600;
   line-height: 1;
   color: color-mix(in oklab, var(--color-crema-50) 38%, transparent);
@@ -1036,7 +1050,7 @@
   position: relative;
   flex: none;
   font-family: var(--font-caligrafica);
-  font-size: clamp(1rem, 0.85rem + 0.5vw, 1.3rem);
+  font-size: clamp(0.95rem, 2.5vmin, 1.3rem);
   line-height: 1.15;
   color: var(--color-crema-50);
   text-shadow: 0 1px 16px rgb(4 16 9 / 0.6);
@@ -1073,6 +1087,8 @@
   display: flex;
   align-items: center;
   gap: clamp(1rem, 3vw, 2rem);
+  width: var(--ancho-tira, 100%);
+  margin-inline: auto;
 }
 
 .progreso {
@@ -1192,5 +1208,198 @@
 
   .tira {
     scroll-behavior: auto;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Visor de la foto ampliada
+
+   `<dialog>` del navegador: se abre al pulsar una tarjeta y se cierra con Escape, con la
+   X o pulsando fuera. El fondo se apaga casi del todo porque lo que importa es la foto.
+
+   La foto se limita por alto y por ancho a la vez, así que en un móvil vertical sale
+   entera y en un monitor grande no se sale de la pantalla.
+   --------------------------------------------------------------------------- */
+
+.visor-grande {
+  padding: 0;
+  border: 0;
+  background: none;
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.visor-grande::backdrop {
+  background: rgb(3 12 7 / 0.94);
+}
+
+.visor-grande__caja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+  padding: clamp(1.2rem, 4vw, 3rem);
+}
+
+.visor-grande__foto {
+  max-width: min(92vw, 62rem);
+  max-height: 76vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.visor-grande__nombre {
+  font-family: var(--font-caligrafica);
+  font-size: clamp(1.1rem, 2.6vmin, 1.7rem);
+  color: var(--color-crema-50);
+  text-align: center;
+  -webkit-text-stroke: 0.2px currentColor;
+}
+
+.visor-grande__cerrar {
+  position: absolute;
+  top: clamp(0.8rem, 2.4vh, 1.6rem);
+  right: clamp(0.8rem, 2.4vw, 1.8rem);
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid rgb(253 250 244 / 0.4);
+  background: none;
+  color: var(--color-crema-50);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.visor-grande__cerrar:hover,
+.visor-grande__cerrar:focus-visible {
+  border-color: var(--color-jardin-ambar);
+  color: var(--color-jardin-ambar);
+}
+
+.visor-grande__cerrar:focus-visible,
+.visor-grande__flecha:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 2px;
+}
+
+.visor-grande__mandos {
+  position: absolute;
+  bottom: clamp(0.9rem, 3vh, 2rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.6rem;
+}
+
+.visor-grande__flecha {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid rgb(253 250 244 / 0.4);
+  background: none;
+  color: var(--color-crema-50);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.visor-grande__flecha:hover {
+  border-color: var(--color-jardin-ambar);
+  color: var(--color-jardin-ambar);
+}
+
+/* La tarjeta pulsable: es un botón, así que hay que quitarle el aspecto de botón. */
+button.tira__marco {
+  display: block;
+  padding: 0;
+  border: 0;
+  cursor: zoom-in;
+  font: inherit;
+  color: inherit;
+}
+
+/* Entrada y salida del visor, y cruce entre fotos.
+
+   Todo con transiciones, no con `animation`: las animaciones con `both` se quedan
+   mandando mientras el diálogo está abierto y luego impiden que la salida se vea.
+
+   El script enciende `data-visible` un fotograma después de abrir, y lo apaga antes de
+   cerrar: así el navegador tiene de dónde a dónde transicionar en los dos sentidos. */
+
+.visor-grande__caja {
+  opacity: 0;
+  transform: scale(0.97);
+  transition:
+    opacity 260ms ease-out,
+    transform 420ms cubic-bezier(0.22, 0.75, 0.25, 1);
+}
+
+.visor-grande[data-visible='si'] .visor-grande__caja {
+  opacity: 1;
+  transform: none;
+}
+
+/* El velo, igual. */
+.visor-grande::backdrop {
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+
+.visor-grande[data-visible='si']::backdrop {
+  opacity: 1;
+}
+
+/* La foto y el nombre, con su propio cruce. */
+.visor-grande__foto,
+.visor-grande__nombre {
+  opacity: 1;
+  transition:
+    opacity 200ms ease-out,
+    transform 420ms cubic-bezier(0.22, 0.75, 0.25, 1);
+}
+
+.visor-grande__foto {
+  transform: scale(1);
+}
+
+/* Mientras se cambia de foto: se apaga y se encoge un pelín. */
+.visor-grande__foto[data-cambiando='si'],
+.visor-grande__nombre[data-cambiando='si'] {
+  opacity: 0;
+}
+
+.visor-grande__foto[data-cambiando='si'] {
+  transform: scale(0.985);
+}
+
+/* Con movimiento reducido se queda el fundido y se va el asentamiento: lo que marea es
+   el movimiento, no el cambio de luz. */
+@media (prefers-reduced-motion: reduce) {
+  .visor-grande__caja {
+    transform: none;
+    transition: opacity 220ms ease-out;
+  }
+
+  .visor-grande__foto,
+  .visor-grande__nombre {
+    transform: none;
+    transition: opacity 180ms ease-out;
+  }
+
+  .visor-grande__foto[data-cambiando='si'] {
+    transform: none;
   }
 }
