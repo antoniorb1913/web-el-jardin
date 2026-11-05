@@ -1,0 +1,100 @@
+---
+/**
+ * Una foto cada vez.
+ *
+ * Lo mínimo: la foto en el centro, con aire alrededor, su nombre debajo y dos flechas.
+ * Sin tira, sin miniaturas, sin barra, sin contador grande. El número y el nombre van
+ * sobre una línea fina, como el pie de una lámina.
+ *
+ * Cambiar de foto es un cruce corto: la que entra aparece mientras la anterior se apaga,
+ * y sube cuatro píxeles. Nada más se mueve.
+ */
+import { fotos } from '../data/galeria.js';
+
+const pies = [
+  'La entrada',
+  'El patio',
+  'La terraza',
+  'La barra',
+  'La estatua',
+  'Las mesas',
+  'Bolnuevo',
+];
+---
+
+<div class="lamina" data-galeria data-lamina>
+  <h2 class="lamina__titulo">Fotos del bar</h2>
+
+  <figure class="lamina__marco">
+    {
+      fotos.map((foto, indice) => (
+        <button
+          type="button"
+          class="lamina__pase"
+          data-pase
+          data-abrir-foto={indice}
+          aria-label={`Ver en grande: ${foto.alt}`}
+        >
+          <img
+            class="lamina__imagen"
+            src={`/galeria/${foto.foto}-pequena.webp`}
+            srcset={`/galeria/${foto.foto}-pequena.webp 800w, /galeria/${foto.foto}.webp 1600w`}
+            sizes="(max-width: 900px) 92vw, 58vw"
+            alt={foto.alt}
+            width="800"
+            height="600"
+            loading={indice < 2 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        </button>
+      ))
+    }
+  </figure>
+
+  <div class="lamina__pie">
+    <p class="lamina__rotulo">
+      <span class="lamina__numero" data-numero>01</span>
+      <span class="lamina__nombre" data-nombre>{pies[0]}</span>
+      <span class="lamina__total">/ 07</span>
+    </p>
+
+    <div class="lamina__flechas">
+      <button type="button" class="lamina__flecha" data-anterior aria-label="Foto anterior">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button type="button" class="lamina__flecha" data-siguiente aria-label="Foto siguiente">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+  </div>
+
+  <dialog class="visor-foto" data-visor-galeria aria-label="Foto del bar en grande">
+    <div class="visor-foto__caja">
+      <img class="visor-foto__imagen" data-visor-imagen alt="" width="1600" height="1200" />
+      <p class="visor-foto__pie" data-visor-pie></p>
+    </div>
+
+    <button type="button" class="visor-foto__cerrar" data-visor-cerrar aria-label="Cerrar">
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="visor-foto__mandos">
+      <button type="button" class="visor-foto__flecha" data-visor-anterior aria-label="Foto anterior">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button type="button" class="visor-foto__flecha" data-visor-siguiente aria-label="Foto siguiente">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+  </dialog>
+
+  <p class="solo-lectores" data-anuncio aria-live="polite"></p>
+</div>
+
+<script>
+  import { iniciarLamina } from '../scripts/lamina.js';
+  import { iniciarGaleria } from '../scripts/galeria.js';
+
+  iniciarLamina();
+  iniciarGaleria();
+</script>

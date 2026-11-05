@@ -1,0 +1,290 @@
+/* ---------------------------------------------------------------------------
+   El carrete: fotos del bar
+
+   Las fotos montadas como un negativo: una tira oscura con perforaciones arriba y abajo,
+   los fotogramas dentro y su número escrito debajo, como en una hoja de contactos.
+
+   No es una rejilla de tarjetas: es un objeto, y por eso no se lee como una plantilla. La
+   tira se arrastra, se desplaza con la rueda y con el teclado.
+   --------------------------------------------------------------------------- */
+
+.panel.panel--carrete {
+  place-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  padding: clamp(4.6rem, 11vh, 6rem) 0 clamp(1.2rem, 3vh, 2rem);
+}
+
+.panel.panel--carrete::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(4 16 9 / 0.68) 0%,
+    rgb(4 16 9 / 0.3) 46%,
+    rgb(4 16 9 / 0.68) 100%
+  );
+  pointer-events: none;
+}
+
+.carrete {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(1rem, 3vh, 1.8rem);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.carrete__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.2rem, 4vw, 3.4rem);
+}
+
+.carrete__titulo {
+  font-size: clamp(1.6rem, 4.2vmin, 3rem);
+  color: var(--color-crema-50);
+}
+
+.carrete__nota {
+  margin: 0;
+  font-size: clamp(0.7rem, 1.6vmin, 0.82rem);
+  letter-spacing: 0.06em;
+  color: rgb(253 250 244 / 0.5);
+}
+
+/* ---- La tira ----------------------------------------------------------- */
+
+/* El negativo: fondo casi negro, un filo cálido arriba y abajo, y las perforaciones. */
+.carrete__tira {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2.6rem clamp(1.2rem, 4vw, 3.4rem);
+  background: linear-gradient(to bottom, #17181a, #0e0f10 40%, #0e0f10 60%, #17181a);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    inset 0 -1px 0 rgb(255 255 255 / 0.06),
+    0 22px 60px rgb(4 16 9 / 0.55);
+  scrollbar-width: none;
+  cursor: grab;
+  scroll-snap-type: x proximity;
+}
+
+.carrete__tira::-webkit-scrollbar {
+  display: none;
+}
+
+.carrete__tira:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: -4px;
+}
+
+/* Las perforaciones, repetidas como las de un negativo de 35 mm. */
+.carrete__perforaciones {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.1rem;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgb(253 250 244 / 0.32) 0 0.62rem,
+    transparent 0.62rem 1.35rem
+  );
+  /* El redondeo de los agujeros se hace con una máscara de puntos repetida. */
+  mask-image: repeating-linear-gradient(to right, #000 0 0.62rem, transparent 0.62rem 1.35rem);
+  border-radius: 2px;
+}
+
+.carrete__perforaciones--arriba {
+  top: 0.55rem;
+}
+
+.carrete__perforaciones--abajo {
+  bottom: 0.55rem;
+}
+
+/* ---- Los fotogramas ----------------------------------------------------- */
+
+.carrete__fotogramas {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.5rem, 1.2vw, 0.9rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carrete__fotograma {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+.carrete__marco {
+  display: block;
+  width: clamp(13rem, 24vw, 20rem);
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 0;
+  /* Un filo de un pelo: el fotograma está montado sobre el negativo, no flotando. */
+  outline: 1px solid rgb(253 250 244 / 0.14);
+  outline-offset: 0;
+  overflow: hidden;
+  background: #000;
+  cursor: zoom-in;
+}
+
+.carrete__foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* El negativo está apagado; el fotograma se enciende al pasar por encima. */
+  filter: brightness(0.86) saturate(0.94);
+  transform: scale(1);
+  transition:
+    filter 420ms ease-out,
+    transform 620ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carrete__marco:hover .carrete__foto {
+    filter: brightness(1.04) saturate(1);
+    transform: scale(1.02);
+  }
+
+  .carrete__marco:hover {
+    outline-color: rgb(253 250 244 / 0.5);
+  }
+}
+
+.carrete__marco:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 2px;
+}
+
+/* La leyenda, escrita como se anota un negativo. */
+.carrete__leyenda {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+}
+
+.carrete__numero {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  color: rgb(253 250 244 / 0.42);
+}
+
+.carrete__nombre {
+  font-family: var(--font-caligrafica);
+  font-size: clamp(0.9rem, 2.1vmin, 1.15rem);
+  line-height: 1;
+  color: rgb(253 250 244 / 0.8);
+}
+
+/* ---- El vídeo ----------------------------------------------------------- */
+
+.carrete__marco--video {
+  position: relative;
+  cursor: default;
+}
+
+.carrete__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(253 250 244 / 0.92);
+  color: var(--color-tinta-900);
+  cursor: pointer;
+  transition:
+    background 200ms ease,
+    transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carrete__play:hover {
+    background: var(--color-jardin-ambar);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+.carrete__play:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 3px;
+}
+
+/* ---- En el móvil -------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .panel.panel--carrete {
+    padding-top: clamp(3.6rem, 12vh, 5rem);
+  }
+
+  .carrete__nota {
+    display: none;
+  }
+
+  .carrete__marco {
+    width: 62vw;
+  }
+
+  .carrete__tira {
+    padding-block: 2.2rem;
+  }
+
+  .carrete__perforaciones {
+    height: 0.9rem;
+    background-image: repeating-linear-gradient(
+      to right,
+      rgb(253 250 244 / 0.3) 0 0.5rem,
+      transparent 0.5rem 1.1rem
+    );
+    mask-image: repeating-linear-gradient(to right, #000 0 0.5rem, transparent 0.5rem 1.1rem);
+  }
+
+  .carrete__perforaciones--arriba {
+    top: 0.45rem;
+  }
+
+  .carrete__perforaciones--abajo {
+    bottom: 0.45rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carrete__foto,
+  .carrete__play {
+    transition: none;
+  }
+
+  .carrete__marco:hover .carrete__foto {
+    transform: none;
+  }
+}

@@ -1,0 +1,100 @@
+---
+/**
+ * Una parada de la carta en profundidad: bebidas o platos.
+ *
+ * Es el mismo mirador que el de las fotos, con el nombre de la casa y la nota de la carta
+ * debajo. La pieza de delante se abre en grande; las demás se traen al frente al pulsarlas.
+ *
+ * Lo usan Especialidades y Comida, así que las tres paradas comparten el mismo gesto.
+ */
+interface Pieza {
+  nombre: string;
+  foto: string | null;
+}
+
+interface Props {
+  id: string;
+  titulo: string;
+  piezas: Pieza[];
+  nota: string;
+}
+
+const { id, titulo, piezas, nota } = Astro.props;
+const pieces = piezas.filter((pieza) => pieza.foto);
+---
+
+<section id={id} data-seccion={id} class="relative mx-auto max-w-2xl min-h-[250dvh]">
+  <div class="panel panel--mirador" data-panel>
+    <div class="mirador mirador--vertical" data-mirador data-galeria>
+      <h2 class="titulo-apartado mirador__titulo">{titulo}</h2>
+
+      <div class="mirador__escena">
+        <div class="mirador__pista">
+          {
+            pieces.map((pieza, indice) => (
+              <button
+                type="button"
+                class="mirador__foto"
+                data-abrir-foto={indice}
+                data-foto={indice}
+                data-pie={pieza.nombre}
+                aria-label={`Ver ${pieza.nombre} en grande`}
+              >
+                <img
+                  src={`/productos/${pieza.foto}-pequena.webp`}
+                  srcset={`/productos/${pieza.foto}-pequena.webp 430w, /productos/${pieza.foto}.webp 860w`}
+                  sizes="(max-width: 900px) 74vw, 42vw"
+                  alt={pieza.nombre}
+                  width="860"
+                  height="1147"
+                  loading={indice < 2 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              </button>
+            ))
+          }
+        </div>
+
+        <button type="button" class="mirador__flecha mirador__flecha--atras" data-anterior aria-label="Anterior">
+          <span aria-hidden="true">‹</span>
+        </button>
+        <button type="button" class="mirador__flecha mirador__flecha--delante" data-siguiente aria-label="Siguiente">
+          <span aria-hidden="true">›</span>
+        </button>
+      </div>
+
+      <p class="mirador__pie">
+        <span class="mirador__nombre" data-nombre>{pieces[0].nombre}</span>
+        <span class="mirador__nota">{nota}</span>
+      </p>
+
+      <dialog class="visor-foto" data-visor-galeria aria-label={`${titulo} en grande`}>
+        <div class="visor-foto__caja">
+          <img class="visor-foto__imagen" data-visor-imagen alt="" width="860" height="1147" />
+          <p class="visor-foto__pie" data-visor-pie></p>
+        </div>
+
+        <button type="button" class="visor-foto__cerrar" data-visor-cerrar aria-label="Cerrar">
+          <span aria-hidden="true">×</span>
+        </button>
+
+        <div class="visor-foto__mandos">
+          <button type="button" class="visor-foto__flecha" data-visor-anterior aria-label="Anterior">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button type="button" class="visor-foto__flecha" data-visor-siguiente aria-label="Siguiente">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </dialog>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { iniciarMirador } from '../scripts/mirador.js';
+  import { iniciarGaleria } from '../scripts/galeria.js';
+
+  iniciarMirador();
+  iniciarGaleria();
+</script>

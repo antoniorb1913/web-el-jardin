@@ -1,0 +1,170 @@
+---
+/**
+ * La marquesina del bar.
+ *
+ * Dos filas de fotos que se deslizan despacio, cada una en un sentido. El movimiento es
+ * continuo, constante y muy lento: no hay que hacer nada, solo mirar. Al pasar el ratón la
+ * fila se para, y al pulsar una foto se abre.
+ *
+ * Cada fila lleva la lista dos veces: cuando el carril ha recorrido la mitad, lo que se ve
+ * es exactamente el principio otra vez, así que el bucle no tiene costura.
+ */
+import { fotos, videos } from '../data/galeria.js';
+
+const idioma = Astro.currentLocale?.split('-')[0] || 'es';
+const video = videos[idioma] || videos.es;
+
+const primeraFila = fotos.slice(0, 4);
+const segundaFila = [
+  ...fotos.slice(4).map((foto) => ({ ...foto, video: false })),
+  { foto: null, alt: video.alt, video: true },
+];
+---
+
+<div class="marquesina" data-galeria>
+  <div class="marquesina__cabecera">
+    <h2 class="titulo-apartado marquesina__titulo">Fotos del bar</h2>
+    <p class="marquesina__nota">Desliza con la mirada.</p>
+  </div>
+
+  {/* Fila 1: va hacia la izquierda. */}
+  <div class="marquesina__fila" data-fila-marquesina>
+    <div class="marquesina__carril">
+      {
+        [0, 1].map((copia) =>
+          primeraFila.map((foto, indice) => (
+            <button
+              type="button"
+              class="marquesina__pieza"
+              data-abrir-foto={indice}
+              aria-hidden={copia === 1 ? 'true' : undefined}
+              tabindex={copia === 1 ? -1 : undefined}
+              aria-label={`Ver en grande: ${foto.alt}`}
+            >
+              <img
+                class="marquesina__foto"
+                src={`/galeria/${foto.foto}-pequena.webp`}
+                srcset={`/galeria/${foto.foto}-pequena.webp 800w, /galeria/${foto.foto}.webp 1600w`}
+                sizes="(max-width: 900px) 58vw, 22vw"
+                alt={copia === 0 ? foto.alt : ''}
+                width="800"
+                height="600"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+          )),
+        )
+      }
+    </div>
+  </div>
+
+  {/* Fila 2: va hacia la derecha, y lleva el vídeo. */}
+  <div class="marquesina__fila marquesina__fila--reves" data-fila-marquesina>
+    <div class="marquesina__carril">
+      {
+        [0, 1].map((copia) =>
+          segundaFila.map((pieza, indice) =>
+            pieza.video ? (
+              <div
+                class="marquesina__pieza marquesina__pieza--video"
+                data-video
+                data-archivo={video.archivo}
+                aria-hidden={copia === 1 ? 'true' : undefined}
+              >
+                <img
+                  class="marquesina__foto"
+                  src={video.poster}
+                  alt=""
+                  width="720"
+                  height="1280"
+                  loading="lazy"
+                  decoding="async"
+                />
+
+                <button
+                  type="button"
+                  class="marquesina__play"
+                  data-video-abrir
+                  tabindex={copia === 1 ? -1 : undefined}
+                  aria-label="Ver el vídeo del bar"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" focusable="false" aria-hidden="true">
+                    <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+                  </svg>
+                </button>
+
+                {copia === 0 && (
+                  <dialog class="visor-video" data-visor-video aria-label={video.alt}>
+                    <video
+                      class="visor-video__player"
+                      data-video-player
+                      controls
+                      playsinline
+                      preload="none"
+                      poster={video.poster}
+                      aria-label={video.alt}
+                    ></video>
+
+                    <button type="button" class="visor-video__cerrar" data-video-cerrar aria-label="Cerrar">
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </dialog>
+                )}
+              </div>
+            ) : (
+              <button
+                type="button"
+                class="marquesina__pieza"
+                data-abrir-foto={indice + 4}
+                aria-hidden={copia === 1 ? 'true' : undefined}
+                tabindex={copia === 1 ? -1 : undefined}
+                aria-label={`Ver en grande: ${pieza.alt}`}
+              >
+                <img
+                  class="marquesina__foto"
+                  src={`/galeria/${pieza.foto}-pequena.webp`}
+                  srcset={`/galeria/${pieza.foto}-pequena.webp 800w, /galeria/${pieza.foto}.webp 1600w`}
+                  sizes="(max-width: 900px) 58vw, 22vw"
+                  alt={copia === 0 ? pieza.alt : ''}
+                  width="800"
+                  height="600"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+            ),
+          ),
+        )
+      }
+    </div>
+  </div>
+
+  <dialog class="visor-foto" data-visor-galeria aria-label="Foto del bar en grande">
+    <div class="visor-foto__caja">
+      <img class="visor-foto__imagen" data-visor-imagen alt="" width="1600" height="1200" />
+      <p class="visor-foto__pie" data-visor-pie></p>
+    </div>
+
+    <button type="button" class="visor-foto__cerrar" data-visor-cerrar aria-label="Cerrar">
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="visor-foto__mandos">
+      <button type="button" class="visor-foto__flecha" data-visor-anterior aria-label="Foto anterior">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button type="button" class="visor-foto__flecha" data-visor-siguiente aria-label="Foto siguiente">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  import { iniciarGaleria } from '../scripts/galeria.js';
+  import { iniciarVideo } from '../scripts/video.js';
+
+  iniciarGaleria();
+  iniciarVideo();
+</script>

@@ -1,0 +1,237 @@
+/* ---------------------------------------------------------------------------
+   La cinta: fotos del bar
+
+   Dos filas de fotos pequeñas que se deslizan en sentidos opuestos, centradas en el
+   apartado y con aire alrededor. Es la pared de antes, pero en pequeño: la sección no
+   llena la pantalla, la cinta pasa y ya está.
+
+   Cada carril lleva la lista dos veces y salta media anchura: el bucle no tiene costura.
+   Al pasar el ratón, la fila se para. Con «reducir movimiento» no hay cinta, salvo que se
+   pida con `?animar`.
+   --------------------------------------------------------------------------- */
+
+.panel.panel--marquesina {
+  place-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  padding: clamp(4.8rem, 11.5vh, 6.2rem) 0 clamp(1.4rem, 3.4vh, 2.2rem);
+}
+
+.panel.panel--marquesina::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(4 16 9 / 0.78) 0%,
+    rgb(4 16 9 / 0.42) 48%,
+    rgb(4 16 9 / 0.78) 100%
+  );
+  pointer-events: none;
+}
+
+.marquesina {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(0.5rem, 1.8vh, 1rem);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.marquesina__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.2rem, 4vw, 3.4rem);
+  /* La cabecera no va pegada a las cintas: el aire es lo que hace que se lean como un
+     bloque pequeño y no como una pared. */
+  margin-bottom: clamp(1.4rem, 5vh, 2.6rem);
+}
+
+.marquesina__titulo {
+  font-size: clamp(1.5rem, 3.8vmin, 2.6rem);
+  color: var(--color-crema-50);
+}
+
+.marquesina__nota {
+  margin: 0;
+  font-size: clamp(0.72rem, 1.7vmin, 0.85rem);
+  letter-spacing: 0.05em;
+  color: rgb(253 250 244 / 0.55);
+}
+
+/* ---- Las cintas --------------------------------------------------------- */
+
+.marquesina__fila {
+  flex: none;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquesina__carril {
+  display: flex;
+  gap: clamp(0.3rem, 0.8vw, 0.55rem);
+  width: max-content;
+  animation: cinta-izquierda 46s linear infinite;
+}
+
+.marquesina__fila--reves .marquesina__carril {
+  animation-name: cinta-derecha;
+  animation-duration: 54s;
+}
+
+@keyframes cinta-izquierda {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes cinta-derecha {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ---- Las piezas: pequeñas ---------------------------------------------- */
+
+.marquesina__pieza {
+  position: relative;
+  flex: none;
+  width: clamp(7.5rem, 11vw, 10.5rem);
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-tinta-900);
+  cursor: zoom-in;
+  transition: transform 460ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.marquesina__foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 460ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .marquesina__fila:hover .marquesina__carril {
+    animation-play-state: paused;
+  }
+
+  .marquesina__pieza:hover {
+    transform: scale(1.04);
+  }
+
+  .marquesina__pieza:hover .marquesina__foto {
+    filter: brightness(1.1);
+  }
+}
+
+.marquesina__pieza:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 3px;
+}
+
+/* ---- El vídeo ----------------------------------------------------------- */
+
+.marquesina__pieza--video {
+  cursor: default;
+}
+
+.marquesina__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: clamp(1.5rem, 3.6vh, 1.9rem);
+  height: clamp(1.5rem, 3.6vh, 1.9rem);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(253 250 244 / 0.92);
+  color: var(--color-jardin-verde);
+  cursor: pointer;
+  transition:
+    background 200ms ease,
+    transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .marquesina__play:hover {
+    background: var(--color-jardin-ambar);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+.marquesina__play:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 3px;
+}
+
+/* ---- En el móvil -------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .panel.panel--marquesina {
+    padding-top: clamp(3.6rem, 12vh, 5rem);
+  }
+
+  .marquesina__nota {
+    display: none;
+  }
+
+  .marquesina__cabecera {
+    margin-bottom: clamp(1rem, 4vh, 1.8rem);
+  }
+
+  .marquesina__pieza {
+    width: 32vw;
+  }
+
+  .marquesina__carril {
+    animation-duration: 38s;
+  }
+
+  .marquesina__fila--reves .marquesina__carril {
+    animation-duration: 44s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-animar='si']) .marquesina__carril {
+    animation: none;
+  }
+
+  html:not([data-animar='si']) .marquesina__fila {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  html:not([data-animar='si']) .marquesina__fila::-webkit-scrollbar {
+    display: none;
+  }
+
+  .marquesina__pieza {
+    transition: none;
+  }
+}
