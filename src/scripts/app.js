@@ -701,6 +701,15 @@ export function iniciarNavegacion() {
   }
 }
 
+/*
+ * `?animar` fuerza las animaciones aunque el sistema pida menos movimiento. Se marca en
+ * el `<html>` porque las animaciones de CSS no pueden leer la dirección de la página: así
+ * el CSS puede preguntar si toca animar.
+ */
+if (new URLSearchParams(window.location.search).has('animar')) {
+  document.documentElement.dataset.animar = 'si';
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener(
     'DOMContentLoaded',

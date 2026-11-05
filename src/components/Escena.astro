@@ -1,0 +1,117 @@
+---
+/**
+ * El escenario del bar.
+ *
+ * Copia la composición de la referencia: un número enorme de fondo, el titular en dos
+ * líneas grandes a la izquierda, y la foto delante tapando parte del titular. Abajo, una
+ * fila de rayas y el nombre de la foto que se está viendo.
+ *
+ * El titular va en la redonda de la casa (Fredoka) porque así lo pide la composición: la
+ * caligráfica se queda para el nombre pequeño del pie.
+ */
+import { fotos } from '../data/galeria.js';
+
+const pies = [
+  'La entrada',
+  'La terraza',
+  'La barra',
+  'La estatua',
+  'Las mesas',
+  'Bolnuevo',
+];
+
+// El titular se parte en dos líneas cuando hay espacio: «La / entrada».
+function enDosLineas(texto) {
+  const palabras = texto.split(' ');
+  if (palabras.length === 1) return [palabras[0], ''];
+  const medio = Math.ceil(palabras.length / 2);
+  return [palabras.slice(0, medio).join(' '), palabras.slice(medio).join(' ')];
+}
+
+const lineas = pies.map(enDosLineas);
+---
+
+<div class="escena" data-escena data-galeria>
+  <span class="escena__numero">Podras disfrutar de algunas de nuestras terrazas</span>
+
+  <h2 class="escena__titulo">
+    <span data-linea-1>{lineas[0][0]}</span>
+    <span data-linea-2>{lineas[0][1]}</span>
+  </h2>
+
+  <a class="escena__enlace" href="#" data-abrir-actual>Ver en grande</a>
+
+  <div class="escena__rayas" role="group" aria-label="Elegir foto">
+    {
+      pies.map((pie, indice) => (
+        <button type="button" class="escena__raya" data-raya={indice} aria-label={`Ir a ${pie}`}>
+          <span aria-hidden="true"></span>
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="escena__flechas">
+    <button type="button" class="escena__flecha" data-anterior aria-label="Foto anterior">
+      <span aria-hidden="true">‹</span>
+    </button>
+    <button type="button" class="escena__flecha" data-siguiente aria-label="Foto siguiente">
+      <span aria-hidden="true">›</span>
+    </button>
+  </div>
+
+  <div class="escena__fotos">
+    {
+      fotos.map((foto, indice) => (
+        <button
+          type="button"
+          class="escena__foto"
+          data-pase
+          data-abrir-foto={indice}
+          aria-label={`Ver en grande: ${foto.alt}`}
+        >
+          <img
+            src={`/galeria/${foto.foto}-pequena.webp`}
+            srcset={`/galeria/${foto.foto}-pequena.webp 800w, /galeria/${foto.foto}.webp 1600w`}
+            sizes="(max-width: 900px) 82vw, 46vw"
+            alt={foto.alt}
+            width="800"
+            height="600"
+            loading={indice < 3 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        </button>
+      ))
+    }
+  </div>
+
+  <dialog class="visor-foto" data-visor-galeria aria-label="Foto del bar en grande">
+    <div class="visor-foto__caja">
+      <img class="visor-foto__imagen" data-visor-imagen alt="" width="1600" height="1200" />
+      <p class="visor-foto__pie" data-visor-pie></p>
+    </div>
+
+    <button type="button" class="visor-foto__cerrar" data-visor-cerrar aria-label="Cerrar">
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="visor-foto__mandos">
+      <button type="button" class="visor-foto__flecha" data-visor-anterior aria-label="Foto anterior">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button type="button" class="visor-foto__flecha" data-visor-siguiente aria-label="Foto siguiente">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+  </dialog>
+
+  <p class="solo-lectores" data-anuncio aria-live="polite"></p>
+</div>
+
+<script>
+  import { iniciarEscena } from '../scripts/escena.js';
+  import { iniciarGaleria } from '../scripts/galeria.js';
+
+  iniciarEscena();
+  iniciarGaleria();
+</script>

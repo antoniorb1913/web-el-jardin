@@ -1,0 +1,66 @@
+---
+/**
+ * El vídeo del bar.
+ *
+ * Va en una fila corta debajo de la tira: miniatura vertical, nombre, duración y play.
+ * No compite con las fotos por el ancho, y se ve que hay un vídeo sin que ocupe media
+ * pantalla.
+ *
+ * En la página solo hay una miniatura: **el vídeo no se descarga hasta que alguien lo
+ * pulsa**. Al pulsar se abre en grande en un `<dialog>`, con controles nativos y sonido.
+ *
+ * El archivo lo elige el idioma de la página: ahora solo hay español.
+ */
+import { videos } from '../data/galeria.js';
+
+const idioma = Astro.currentLocale?.split('-')[0] || 'es';
+const video = videos[idioma] || videos.es;
+---
+
+<div class="video-fila" data-video data-archivo={video.archivo}>
+  <button type="button" class="video-fila__boton" data-video-abrir>
+    <span class="video-fila__marco">
+      <img
+        class="video-fila__miniatura"
+        src={video.poster}
+        alt=""
+        width="720"
+        height="1280"
+        loading="lazy"
+        decoding="async"
+      />
+
+      <span class="video-fila__play" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="12" height="12" focusable="false">
+          <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+        </svg>
+      </span>
+    </span>
+
+    <span class="video-fila__texto">
+      <span class="video-fila__titulo">El bar en vídeo</span>
+      <span class="video-fila__duracion">{video.duracion}</span>
+    </span>
+  </button>
+
+  <dialog class="visor-video" data-visor-video aria-label={video.alt}>
+    <video
+      class="visor-video__player"
+      data-video-player
+      controls
+      playsinline
+      preload="none"
+      poster={video.poster}
+      aria-label={video.alt}
+    ></video>
+
+    <button type="button" class="visor-video__cerrar" data-video-cerrar aria-label="Cerrar">
+      <span aria-hidden="true">×</span>
+    </button>
+  </dialog>
+</div>
+
+<script>
+  import { iniciarVideo } from '../scripts/video.js';
+  iniciarVideo();
+</script>

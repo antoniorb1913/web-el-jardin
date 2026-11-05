@@ -1,0 +1,72 @@
+---
+/**
+ * La vitrina del bar.
+ *
+ * Una retícula de columnas con las fotos a distinta altura, como un tablero de corcho: no
+ * hay dos iguales y ninguna lleva pie. Se lee de un vistazo y no se maneja: se pulsa una y
+ * se abre.
+ *
+ * Ocupa algo más de media pantalla, no la llena. Sin pies sobre las fotos: el título del
+ * apartado arriba y las fotos a lo suyo.
+ */
+import { fotos } from '../data/galeria.js';
+
+// Una proporción distinta por foto: vertical, cuadrada y apaisada, alternando.
+const proporciones = ['3 / 4', '1 / 1', '4 / 3', '1 / 1', '3 / 4', '4 / 3', '1 / 1'];
+
+---
+
+<div class="vitrina" data-galeria>
+  <h2 class="titulo-apartado vitrina__titulo">Fotos del bar</h2>
+
+  <div class="vitrina__pared">
+    {
+      fotos.map((foto, indice) => (
+        <button
+          type="button"
+          class="vitrina__pieza"
+          data-abrir-foto={indice}
+          style={`--proporcion: ${proporciones[indice]}`}
+          aria-label={`Ver en grande: ${foto.alt}`}
+        >
+          <img
+            class="vitrina__foto"
+            src={`/galeria/${foto.foto}-pequena.webp`}
+            srcset={`/galeria/${foto.foto}-pequena.webp 800w, /galeria/${foto.foto}.webp 1600w`}
+            sizes="(max-width: 720px) 46vw, 24vw"
+            alt={foto.alt}
+            width="800"
+            height="600"
+            loading={indice < 4 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        </button>
+      ))
+    }
+  </div>
+
+  <dialog class="visor-foto" data-visor-galeria aria-label="Foto del bar en grande">
+    <div class="visor-foto__caja">
+      <img class="visor-foto__imagen" data-visor-imagen alt="" width="1600" height="1200" />
+      <p class="visor-foto__pie" data-visor-pie></p>
+    </div>
+
+    <button type="button" class="visor-foto__cerrar" data-visor-cerrar aria-label="Cerrar">
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="visor-foto__mandos">
+      <button type="button" class="visor-foto__flecha" data-visor-anterior aria-label="Foto anterior">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button type="button" class="visor-foto__flecha" data-visor-siguiente aria-label="Foto siguiente">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  import { iniciarGaleria } from '../scripts/galeria.js';
+  iniciarGaleria();
+</script>

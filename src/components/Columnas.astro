@@ -1,0 +1,142 @@
+---
+/**
+ * Las fotos como columnas que suben y bajan.
+ *
+ * Tres columnas de fotos que se deslizan en vertical, cada una a su velocidad y dos de
+ * ellas en sentido contrario. La pared nunca está quieta y nunca hay que tocarla.
+ *
+ * Igual que en la marquesina, cada columna lleva su lista dos veces y se desplaza media
+ * altura: el bucle no tiene costura.
+ */
+import { fotos, videos } from '../data/galeria.js';
+
+const idioma = Astro.currentLocale?.split('-')[0] || 'es';
+const video = videos[idioma] || videos.es;
+
+// Cuatro columnas de dos piezas: con ocho fotos, la pared queda tupida y las piezas no
+// se hacen gigantes. Los sentidos alternan y el vídeo va en la última.
+const columnas = [
+  { piezas: [fotos[0], fotos[4]], sentido: 'sube' },
+  { piezas: [fotos[1], fotos[5]], sentido: 'baja' },
+  { piezas: [fotos[2], fotos[6]], sentido: 'sube' },
+  { piezas: [fotos[3], { foto: null, alt: video.alt, video: true }], sentido: 'baja' },
+];
+---
+
+<div class="columnas" data-galeria>
+  <div class="columnas__cabecera">
+    <h2 class="titulo-apartado columnas__titulo">Fotos del bar</h2>
+    <p class="columnas__nota">La pared, en movimiento.</p>
+  </div>
+
+  <div class="columnas__pared">
+    {
+      columnas.map((columna, indiceColumna) => (
+        <div class={`columnas__columna columnas__columna--${columna.sentido}`} style={`--turno: ${indiceColumna}`}>
+          <div class="columnas__carril">
+            {[0, 1, 2].map((copia) =>
+              columna.piezas.map((pieza) =>
+                pieza.video ? (
+                  <div
+                    class="columnas__pieza columnas__pieza--video"
+                    data-video
+                    data-archivo={video.archivo}
+                    aria-hidden={copia > 0 ? 'true' : undefined}
+                  >
+                    <img
+                      class="columnas__foto"
+                      src={video.poster}
+                      alt=""
+                      width="720"
+                      height="1280"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <button
+                      type="button"
+                      class="columnas__play"
+                      data-video-abrir
+                      tabindex={copia > 0 ? -1 : undefined}
+                      aria-label="Ver el vídeo del bar"
+                    >
+                      <svg viewBox="0 0 24 24" width="16" height="16" focusable="false" aria-hidden="true">
+                        <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+                      </svg>
+                    </button>
+
+                    {copia === 0 && (
+                      <dialog class="visor-video" data-visor-video aria-label={video.alt}>
+                        <video
+                          class="visor-video__player"
+                          data-video-player
+                          controls
+                          playsinline
+                          preload="none"
+                          poster={video.poster}
+                          aria-label={video.alt}
+                        ></video>
+
+                        <button type="button" class="visor-video__cerrar" data-video-cerrar aria-label="Cerrar">
+                          <span aria-hidden="true">×</span>
+                        </button>
+                      </dialog>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    class="columnas__pieza"
+                    data-abrir-foto={fotos.indexOf(pieza)}
+                    aria-hidden={copia > 0 ? 'true' : undefined}
+                    tabindex={copia > 0 ? -1 : undefined}
+                    aria-label={`Ver en grande: ${pieza.alt}`}
+                  >
+                    <img
+                      class="columnas__foto"
+                      src={`/galeria/${pieza.foto}-pequena.webp`}
+                      srcset={`/galeria/${pieza.foto}-pequena.webp 800w, /galeria/${pieza.foto}.webp 1600w`}
+                      sizes="(max-width: 900px) 46vw, 30vw"
+                      alt={copia === 0 ? pieza.alt : ''}
+                      width="800"
+                      height="600"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                ),
+              ),
+            )}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <dialog class="visor-foto" data-visor-galeria aria-label="Foto del bar en grande">
+    <div class="visor-foto__caja">
+      <img class="visor-foto__imagen" data-visor-imagen alt="" width="1600" height="1200" />
+      <p class="visor-foto__pie" data-visor-pie></p>
+    </div>
+
+    <button type="button" class="visor-foto__cerrar" data-visor-cerrar aria-label="Cerrar">
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="visor-foto__mandos">
+      <button type="button" class="visor-foto__flecha" data-visor-anterior aria-label="Foto anterior">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button type="button" class="visor-foto__flecha" data-visor-siguiente aria-label="Foto siguiente">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  import { iniciarGaleria } from '../scripts/galeria.js';
+  import { iniciarVideo } from '../scripts/video.js';
+
+  iniciarGaleria();
+  iniciarVideo();
+</script>

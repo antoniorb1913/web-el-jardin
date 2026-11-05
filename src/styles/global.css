@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./escena.css";
 
 /* ---------------------------------------------------------------------------
    Tipografías autoalojadas (subconjunto latino en woff2, licencia SIL OFL).
@@ -901,8 +902,15 @@
   margin-inline: auto;
 }
 
+/* Prueba: el título de Especialidades y Comida con la redonda y el tamaño del rótulo de
+   la foto grande. Solo el título del apartado; los nombres de las bebidas y los platos no
+   se tocan. */
 .carta__titulo {
-  font-size: clamp(1.6rem, 4.4vmin, 3.6rem);
+  font-family: var(--font-display);
+  font-size: clamp(5rem, min(5vh, 4vw), 20rem);
+  font-weight: 600;
+  line-height: 0.82;
+  letter-spacing: -0.06em;
   color: var(--color-crema-50);
   text-align: left;
   text-shadow: 0 1px 22px rgb(4 16 9 / 0.45);
@@ -915,7 +923,6 @@
   color: rgb(253 250 244 / 0.58);
 }
 
-/* ---- La tira ------------------------------------------------------------ */
 
 .tira {
   display: flex;
@@ -926,7 +933,8 @@
   max-width: 100%;
   gap: clamp(0.7rem, 1.6vw, 1.3rem);
   margin: 0;
-  /* Aire arriba y abajo: si el cuadrado crece y no hay hueco, el carril lo recorta. */
+  /* Aire arriba y, sobre todo, abajo: la tarjeta que se señala crece hacia el rótulo y
+     el carril no la puede recortar. */
   padding: 0.9rem 0;
   list-style: none;
   overflow-x: auto;
@@ -963,7 +971,7 @@
   /* Tres topes: el ancho de la ventana, el alto disponible y un maximo en rem. El de rem
      es el que evita que en un monitor grande las fotos se coman la pantalla: a partir de
      21 rem la tarjeta ya no crece, por mucho que sobre sitio. */
-  flex: 0 0 min(26vw, calc(50vh * 3 / 4), 21rem);
+  flex: 0 0 min(25vw, calc(46vh * 3 / 4), 21rem);
   scroll-snap-align: start;
   min-height: 0;
   /* En reposo no se mueve nada; al pasar por encima crece el conjunto entero. */
@@ -979,6 +987,7 @@
   transform: scale(1.035);
   z-index: 2;
 }
+
 
 .tira__marco {
   position: relative;
@@ -1082,14 +1091,6 @@
 
 /* ---- Pie: progreso y flechas ------------------------------------------- */
 
-.carta__pie {
-  display: flex;
-  align-items: center;
-  gap: clamp(1rem, 3vw, 2rem);
-  width: var(--ancho-tira, 100%);
-  margin-inline: auto;
-}
-
 .progreso {
   position: relative;
   flex: 1 1 auto;
@@ -1099,11 +1100,20 @@
 }
 
 .progreso__relleno {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 25%;
-  background: var(--color-crema-50);
-  transition: transform 120ms linear, width 240ms ease-out;
+  display: block;
+  height: 100%;
+  width: 30%;
+  background: var(--color-crema-100);
+  transition: width 240ms ease-out, transform 240ms ease-out;
+}
+
+.carta__pie {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(1rem, 3vw, 2rem);
+  width: var(--ancho-tira, 100%);
+  margin-inline: auto;
 }
 
 .carta__mandos {
@@ -1113,6 +1123,7 @@
 }
 
 .carta__flecha {
+  background: rgb(4 16 9 / 0.45);
   display: grid;
   place-items: center;
   width: 2.3rem;
@@ -1416,4 +1427,194 @@ button.tira__marco {
   backface-visibility: hidden;
   /* Que no se interpole al estirarlo: el lienzo pinta a 1600 px y el CSS lo agranda. */
   image-rendering: auto;
+}
+
+
+
+/* ---------------------------------------------------------------------------
+   La galería: fotos del bar
+
+   Se comporta como las otras dos paradas: título y nota en la cabecera, la tira a todo el
+   ancho y la barra con las flechas al pie. Lo único propio son las fotos —apaisadas, no
+   verticales— y la fila del vídeo, que va entre la tira y el pie.
+   --------------------------------------------------------------------------- */
+
+.panel--galeria {
+  place-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  padding: clamp(3.2rem, 8vh, 4.6rem) 0 clamp(1.2rem, 3.2vh, 2rem);
+}
+
+/* La cortina, como en las otras dos paradas: el fondo se apaga y las fotos respiran. */
+.panel--galeria::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(4 16 9 / 0.74) 0%,
+    rgb(4 16 9 / 0.38) 45%,
+    rgb(4 16 9 / 0.7) 100%
+  );
+  pointer-events: none;
+}
+
+/* Las fotos del bar son apaisadas (4:3), no verticales como las de la carta. */
+.panel--galeria .tira__marco {
+  aspect-ratio: 4 / 3;
+}
+
+/* ---- Visor de la foto grande ------------------------------------------- */
+
+.visor-foto,
+.visor-video {
+  padding: 0;
+  border: 0;
+  background: none;
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.visor-foto::backdrop,
+.visor-video::backdrop {
+  background: rgb(3 12 7 / 0.975);
+}
+
+.visor-foto__caja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  width: 100%;
+  height: 100%;
+  padding: clamp(1.2rem, 4vw, 3rem);
+  opacity: 0;
+  transform: scale(0.97);
+  transition:
+    opacity 260ms ease-out,
+    transform 420ms cubic-bezier(0.22, 0.75, 0.25, 1);
+}
+
+.visor-foto[data-visible='si'] .visor-foto__caja {
+  opacity: 1;
+  transform: none;
+}
+
+.visor-foto__imagen {
+  max-width: min(94vw, 74rem);
+  max-height: 74vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transition:
+    opacity 200ms ease-out,
+    transform 420ms cubic-bezier(0.22, 0.75, 0.25, 1);
+}
+
+.visor-foto__imagen[data-cambiando='si'] {
+  opacity: 0;
+  transform: scale(0.99);
+}
+
+.visor-foto__pie {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: rgb(253 250 244 / 0.82);
+  transition: opacity 200ms ease-out;
+}
+
+.visor-foto__pie[data-cambiando='si'] {
+  opacity: 0;
+}
+
+.visor-foto__cerrar,
+.visor-foto__flecha,
+.visor-video__cerrar {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid rgb(253 250 244 / 0.4);
+  background: none;
+  color: var(--color-crema-50);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.visor-foto__cerrar,
+.visor-video__cerrar {
+  position: absolute;
+  top: clamp(0.8rem, 2.4vh, 1.6rem);
+  right: clamp(0.8rem, 2.4vw, 1.8rem);
+  font-size: 1.6rem;
+}
+
+.visor-foto__cerrar:hover,
+.visor-foto__flecha:hover,
+.visor-video__cerrar:hover {
+  border-color: var(--color-jardin-ambar);
+  color: var(--color-jardin-ambar);
+}
+
+.visor-foto__cerrar:focus-visible,
+.visor-foto__flecha:focus-visible,
+.visor-video__cerrar:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 2px;
+}
+
+.visor-foto__mandos {
+  position: absolute;
+  bottom: clamp(0.9rem, 3vh, 2rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.6rem;
+}
+
+/* ---- Visor del vídeo ---------------------------------------------------- */
+
+.visor-video__player {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: min(88vh, 100%);
+  max-width: 94vw;
+  aspect-ratio: 9 / 16;
+  background: #000;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+
+.visor-video[data-visible='si'] .visor-video__player {
+  opacity: 1;
+}
+
+/* ---- Galería en el móvil -------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .panel--galeria {
+    padding-top: clamp(3.4rem, 12vh, 5rem);
+  }
+
+  /* Una tarjeta y un cacho de la siguiente: se entiende que la tira sigue. */
+  .panel--galeria .tira {
+    --ancho-tarjeta: 68vw;
+  }
+
+  .panel--galeria .tira__nombre {
+    font-size: 1.05rem;
+  }
 }

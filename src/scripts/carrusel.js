@@ -18,14 +18,21 @@ function suavizar(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - ((-2 * t + 2) ** 3) / 2;
 }
 
-export function iniciarCartas() {
-  document.querySelectorAll('[data-carta]').forEach((carta) => {
+/**
+ * El carrusel de una carta: la tira, la tarjeta destacada y las flechas.
+ *
+ * Vale para cualquier bloque con `[data-carta]`, tenga cartas de la carta o fotos de la
+ * galería. Se marca como iniciada para que no se enganchen los manejadores dos veces
+ * cuando la página tiene varios de estos bloques.
+ */
+export function iniciarTira(carta) {
     const tira = carta.querySelector('[data-tira]');
-    if (!tira) return;
+    if (!tira || carta.dataset.iniciada === 'si') return;
+    carta.dataset.iniciada = 'si';
 
-    const relleno = carta.querySelector('[data-progreso]');
-    const anterior = carta.querySelector('[data-anterior]');
+        const anterior = carta.querySelector('[data-anterior]');
     const siguiente = carta.querySelector('[data-siguiente]');
+    const relleno = carta.querySelector('[data-progreso]');
     const piezas = Array.from(tira.querySelectorAll('.tira__pieza'));
     if (piezas.length === 0) return;
 
@@ -95,7 +102,7 @@ export function iniciarCartas() {
       desplazarA(destino ?? (direccion > 0 ? tira.scrollWidth : 0));
     }
 
-    /** La barra de progreso y el estado de las flechas. */
+    /** La barra de progreso, el estado de las flechas y el ancho del bloque. */
     function pintarProgreso() {
       const recorrido = tira.scrollWidth - tira.clientWidth;
       const avance = recorrido > 0 ? tira.scrollLeft / recorrido : 1;
@@ -106,6 +113,7 @@ export function iniciarCartas() {
         relleno.style.width = `${ancho}%`;
         relleno.style.transform = `translateX(${recorrido > 0 ? (avance * (100 - ancho)) / Math.max(visible, 0.12) : 0}%)`;
       }
+
 
       if (anterior) anterior.disabled = tira.scrollLeft <= 2;
       if (siguiente) siguiente.disabled = tira.scrollLeft >= recorrido - 2;
@@ -124,10 +132,31 @@ export function iniciarCartas() {
         tira.clientWidth,
       );
       carta.style.setProperty('--ancho-tira', `${Math.round(anchoFotos)}px`);
+
     }
 
-    anterior?.addEventListener('click', () => mover(-1));
-    siguiente?.addEventListener('click', () => mover(1));
+    /*
+     * Las flechas responden al `pointerup`, no solo al `click`.
+     *
+     * Dentro del panel del recorrido, el navegador recibe el `pointerdown` y el
+     * `pointerup` de la flecha pero **no llega a emitir el `click`**, así que la flecha
+     * se quedaba muerta al ratón —aunque funcionaba con el teclado y al llamarla desde
+     * consola—. Se escuchan los dos gestos con un cerrojo de 300 ms para que, cuando el
+     * `click` sí llega, no se mueva dos veces.
+     */
+    let ultimoMover = 0;
+
+    function pedirMover(direccion) {
+      const ahora = Date.now();
+      if (ahora - ultimoMover < 300) return;
+      ultimoMover = ahora;
+      mover(direccion);
+    }
+
+    anterior?.addEventListener('click', () => pedirMover(-1));
+    anterior?.addEventListener('pointerup', () => pedirMover(-1));
+    siguiente?.addEventListener('click', () => pedirMover(1));
+    siguiente?.addEventListener('pointerup', () => pedirMover(1));
 
     tira.addEventListener('keydown', (evento) => {
       if (evento.key === 'ArrowLeft') {
@@ -202,7 +231,14 @@ export function iniciarCartas() {
     window.addEventListener('resize', pintarProgreso);
 
     pintarProgreso();
-    iniciarVisor(carta, piezas);
+}
+
+/** Recorre todos los bloques de carta de la página. */
+export function iniciarCartas() {
+  document.querySelectorAll('[data-carta]').forEach((carta) => {
+    iniciarTira(carta);
+    const piezas = Array.from(carta.querySelectorAll('[data-abrir]'));
+    if (piezas.length > 0) iniciarVisor(carta, piezas);
   });
 }
 
