@@ -17,7 +17,7 @@
 | 2 · Contenido | **T6** · Layout base: header, navegación y footer | ✅ Completada | T3 |
 | 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ✅ Completada | T6 |
 | 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ✅ Completada | T7 |
-| 2 · Contenido | **T9** · Galería de fotos del bar | ⏳ Pendiente · ⚠️ necesita fotos | T8 |
+| 2 · Contenido | **T9** · Galería de fotos del bar | 🔧 En curso | T8 |
 | 2 · Contenido | **T10** · Ubicación + horario + estado «Abierto ahora» | ⏳ Pendiente | T8 |
 | 3 · Legal y SEO | **T11** · Aviso legal, privacidad y consentimiento del mapa | ⏳ Pendiente | T10 |
 | 3 · Legal y SEO | **T12** · SEO: metas, Open Graph, JSON-LD `BarOrPub`, sitemap, robots | ⏳ Pendiente | T11 |
@@ -255,7 +255,7 @@
 
 ---
 
-### T9 · Galería de fotos del bar — ⏳ ⚠️ bloqueada hasta tener fotos
+### T9 · Galería de fotos del bar — 🔧 En curso
 
 **Objetivo:** galería con las fotos del local (`bar1.jpg` y `bar2.heic`, esta última hay que convertirla), optimizadas a WebP/AVIF y varios tamaños, con lightbox accesible (teclado, Escape, foco atrapado) y `width`/`height` para evitar saltos.
 
