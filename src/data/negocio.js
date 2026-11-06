@@ -25,6 +25,20 @@ export const horario = [
 ];
 
 /**
+ * Los mismos dos tramos, pero en números, para saber si el bar está abierto ahora.
+ *
+ * `dias` con 0 = domingo. `hasta: '24:00'` es medianoche del mismo día: el viernes cierra
+ * a las 00:00, que es el final de su día, no el principio del sábado.
+ *
+ * Si algún día el horario cambia en verano, se añade otro tramo aquí y la web entera —el
+ * rótulo de abierto y el JSON-LD del SEO— se actualiza sola.
+ */
+export const tramos = [
+  { dias: [0, 1, 2, 3, 4], desde: '16:00', hasta: '23:00' },
+  { dias: [5, 6], desde: '16:00', hasta: '24:00' },
+];
+
+/**
  * Enlace a Google Maps por búsqueda de la dirección.
  * No se inventan coordenadas ni un identificador de sitio: es una búsqueda.
  */

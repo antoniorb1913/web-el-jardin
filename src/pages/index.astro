@@ -97,6 +97,12 @@ const anio = new Date().getFullYear();
             {direccion.poblacion} ({direccion.provincia})
           </p>
 
+          {/* Lo enciende `horario.js`: dice si está abierto y a qué hora cierra. */}
+          <p class="cierre__estado" data-estado-bar>
+            <span class="cierre__punto" aria-hidden="true"></span>
+            <span data-estado-texto>…</span>
+          </p>
+
           <dl class="cierre__horario">
             {horario.map((tramo) => (
               <div>
@@ -118,3 +124,10 @@ const anio = new Date().getFullYear();
     </section>
   </HeroScrolly>
 </Base>
+
+<script>
+  import { iniciarEstadoBar } from '../scripts/horario.js';
+  import { tramos } from '../data/negocio.js';
+
+  iniciarEstadoBar(tramos);
+</script>

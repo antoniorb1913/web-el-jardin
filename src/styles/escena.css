@@ -59,11 +59,22 @@
 
 /* ---- El titular --------------------------------------------------------- */
 
-.escena__titulo {
+/* El bloque del texto: titular y enlace juntos, uno debajo del otro. Es lo que hace que
+   un titular de tres líneas no tape el enlace. */
+.escena__texto {
   position: absolute;
   top: 50%;
   left: clamp(2.6rem, 7vw, 8rem);
   transform: translateY(-58%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.7rem, 1.6vh, 1.1rem);
+}
+
+.escena__titulo {
+  position: static;
   /* Por delante de la foto: las letras se le montan encima. */
   z-index: 3;
   display: flex;
@@ -171,10 +182,8 @@
 /* ---- El enlace ---------------------------------------------------------- */
 
 .escena__enlace {
-  position: absolute;
-  top: calc(50% + clamp(3.6rem, 9vh, 6rem));
-  left: clamp(2.6rem, 7vw, 8rem);
-  z-index: 3;
+  position: static;
+  white-space: nowrap;
   font-family: var(--font-sans);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
@@ -336,8 +345,14 @@
     font-size: clamp(2.7rem, 5vw, 9rem);
   }
 
-  /* En vertical el titular va arriba y la foto debajo: no hay ancho para la
-     superposición. */
+  /* En vertical el bloque entero va en el flujo: titular, enlace y foto, uno tras otro. */
+  .escena__texto {
+    position: static;
+    transform: none;
+    max-width: none;
+    gap: 0.4rem;
+  }
+
   .escena__titulo {
     position: relative;   /* ← antes ponía static */
     top: 1.5rem;
