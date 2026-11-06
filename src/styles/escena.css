@@ -52,7 +52,7 @@
   line-height: 0.72;
   max-width: 100%;
   letter-spacing: -0.06em;
-  color: rgb(253 250 244 / 0.25);
+  color: rgb(253 250 244 / 0.60);
   pointer-events: none;
   user-select: none;
 }
@@ -86,7 +86,7 @@
 
 .escena__fotos {
   position: absolute;
-  top: 50%;
+  top: 53%;
   left: 55%;
   transform: translate(-50%, -50%);
   z-index: 2;
@@ -126,6 +126,46 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Las mismas curvas que las fotos de Especialidades y Comida. */
+  transform: scale(1);
+  transition:
+    transform 1200ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 700ms ease-out;
+}
+
+/* Un ámbar suave por abajo, como el de las otras dos paradas. */
+.escena__foto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, rgb(255 160 0 / 0.18), rgb(255 160 0 / 0) 62%);
+  opacity: 0;
+  transition: opacity 900ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* El mismo gesto que en los otros apartados: la foto se acerca, se aclara y se enciende
+     el ámbar de abajo. Solo la que se está viendo, que es la que tiene el ratón. */
+  .escena__foto[data-activa='si']:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.06);
+  }
+
+  .escena__foto[data-activa='si']:hover::after {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-animar='si']) .escena__foto img,
+  html:not([data-animar='si']) .escena__foto::after {
+    transition: none;
+  }
+
+  html:not([data-animar='si']) .escena__foto[data-activa='si']:hover img {
+    transform: none;
+  }
 }
 
 /* ---- El enlace ---------------------------------------------------------- */
@@ -167,7 +207,7 @@
   left: clamp(2.6rem, 7vw, 8rem);
   /* La foto mide 49vw de ancho; su media altura es 18,4vw. El tope evita que la barra se
      despegue en pantallas muy anchas, donde la foto deja de crecer. */
-  top: calc(52% + min(18.4vw, 17.5rem) + 0.45rem);
+  top: calc(54% + min(18.4vw, 17.5rem) + 0.45rem);
   z-index: 4;
   display: flex;
   gap: 0.15rem;
@@ -215,7 +255,7 @@
 .escena__flechas {
   position: absolute;
   right: clamp(12rem, 4vw, 3.4rem);
-  top: calc(52% + min(18.4vw, 17.5rem) + 0.1rem);
+  top: calc(53% + min(18.4vw, 17.5rem) + 0.1rem);
   z-index: 4;
   display: flex;
   align-items: center;
@@ -284,22 +324,24 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-top: clamp(3.6rem, 10vh, 4.6rem);
+    padding-top: clamp(7rem, 10vh, 4.6rem);
   }
 
   /* En vertical no hay sitio a la izquierda del titular: el número se va a la derecha,
      detrás del texto. */
   .escena__numero {
-    top: clamp(9.7rem, 8vh, 4.6rem);
+    top: clamp(6rem, 8vh, 4.6rem);
     left: 1rem;
     right: 1rem;
-    font-size: clamp(3rem, 5vw, 9rem);
+    font-size: clamp(2.7rem, 5vw, 9rem);
   }
 
   /* En vertical el titular va arriba y la foto debajo: no hay ancho para la
      superposición. */
   .escena__titulo {
-    position: static;
+    position: relative;   /* ← antes ponía static */
+    top: 1.5rem;
+    left: 0;
     transform: none;
     margin-bottom: 1rem;
     font-size: clamp(2rem, 9vw, 3rem);

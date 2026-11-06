@@ -23,18 +23,30 @@ interface Props {
   titulo: string;
   piezas: Pieza[];
   nota: string;
+  /** Texto descriptivo de la columna izquierda. Opcional: si no viene, no ocupa sitio. */
+  texto?: string;
 }
 
-const { id, titulo, piezas, nota } = Astro.props;
+const { id, titulo, piezas, nota, texto } = Astro.props;
+
+// El titular se parte por la mitad, pero solo en el móvil: un <br> que en escritorio no
+// se muestra deja «Nuestra» / «comida» en dos líneas sin tocar el tamaño ni el texto.
+const palabras = titulo.split(' ');
+const primera = palabras[0];
+const resto = palabras.slice(1).join(' ');
 ---
 
 <section id={id} data-seccion={id} class="relative mx-auto max-w-2xl min-h-[250dvh]">
   <div class="panel panel--carta" data-panel>
     <div class="carta" data-carta>
       <div class="carta__cabecera">
-        <h2 class="titulo-apartado carta__titulo">{titulo}</h2>
+        <h2 class="titulo-apartado carta__titulo">
+          {primera}{' '}{resto && <><br class="salto-movil" />{resto}</>}
+        </h2>
         <p class="carta__nota">{nota}</p>
       </div>
+
+      {texto && <p class="carta__texto">{texto}</p>}
 
       <ul class="tira" data-tira tabindex="0" aria-label={titulo}>
         {
@@ -73,8 +85,20 @@ const { id, titulo, piezas, nota } = Astro.props;
       </ul>
 
       <div class="carta__pie">
-        <div class="progreso" aria-hidden="true">
-          <span class="progreso__relleno" data-progreso></span>
+        {/* Una raya por pieza, como en el apartado de fotos: la que toca, en ámbar. */}
+        <div class="carta__rayas" role="group" aria-label="Ir a una foto">
+          {
+            piezas.map((pieza, indice) => (
+              <button
+                type="button"
+                class="carta__raya"
+                data-raya={indice}
+                aria-label={`Ir a ${pieza.nombre}`}
+              >
+                <span aria-hidden="true"></span>
+              </button>
+            ))
+          }
         </div>
 
         <div class="carta__mandos">

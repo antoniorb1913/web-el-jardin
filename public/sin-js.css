@@ -1,0 +1,145 @@
+/* ---------------------------------------------------------------------------
+   Sin JavaScript.
+
+   Esta hoja solo se carga dentro de un <noscript>, así que únicamente entra en juego
+   cuando el navegador no ejecuta scripts. La web normal monta los cinco apartados como
+   capas fijas que el script enciende una a una; aquí no hay script que las encienda, así
+   que se apilan en columna y se ven todas de arriba abajo.
+
+   El criterio: sin recorrido de cámara, sin velos y sin composiciones absolutas. Es una
+   página de lectura —fondo verde liso, apartados separados por una línea fina y el texto
+   legible—. Completa antes que elegante: quien llegue aquí viene de un navegador sin
+   guion y necesita leer el horario y la dirección.
+
+   Los `!important` son a propósito: este archivo se carga en un <link> aparte y el orden
+   frente a la hoja principal no está garantizado. Es una red de seguridad, no diseño.
+
+   Se enlaza desde el <head> con <noscript><link rel="stylesheet" href="/sin-js.css"></noscript>;
+   un <link> dentro de un <noscript> es HTML válido y no choca con una CSP estricta.
+   --------------------------------------------------------------------------- */
+
+body {
+  /* Sin el lienzo del recorrido, el fondo es verde: el texto es crema y tiene que leerse. */
+  background-color: var(--color-jardin-verde) !important;
+}
+
+/* El recorrido de cámara, el velo de la portada y el portal del cruce no pintan nada. */
+.fondo,
+.portal,
+.portada__velo,
+.fondo__capa,
+.fondo__lienzo,
+.foto {
+  display: none !important;
+}
+
+/* Los apartados dejan de ser capas superpuestas: uno detrás de otro, en el flujo. */
+[data-seccion] {
+  min-height: 0 !important;
+}
+
+.panel::before,
+.panel::after {
+  content: none !important;
+}
+
+.panel {
+  position: static !important;
+  inset: auto !important;
+  display: block !important;
+  min-height: auto !important;
+  padding: clamp(3rem, 7vh, 4.5rem) clamp(1.25rem, 4vw, 2.5rem) !important;
+  opacity: 1 !important;
+  filter: none !important;
+  pointer-events: auto !important;
+}
+
+/* Una línea fina entre apartados, que es todo lo que hace falta para separarlos. */
+[data-seccion] + [data-seccion] {
+  border-top: 1px solid rgb(253 250 244 / 0.14);
+}
+
+/* La portada deja sitio al encabezado fijo. */
+.panel--cubierta {
+  padding-block: clamp(5rem, 12vh, 7rem) clamp(3rem, 7vh, 4.5rem) !important;
+}
+
+.susurro {
+  width: min(100%, 30rem);
+  margin: 0;
+  padding-top: 1rem;
+}
+
+/* ---- Especialidades y Comida ------------------------------------------- */
+
+.carta {
+  height: auto !important;
+  max-width: 62rem;
+  padding-inline: 0;
+}
+
+.carta__cabecera,
+.carta__pie {
+  width: 100%;
+}
+
+/* La tira se reparte en fila y, cuando no cabe, baja: sin desplazamiento lateral. */
+.tira {
+  flex-wrap: wrap;
+  overflow: visible !important;
+  padding: 0.5rem 0 1rem;
+}
+
+.tira__pieza {
+  flex: 0 0 min(38vw, 14rem);
+}
+
+/* ---- Fotos del bar ------------------------------------------------------ */
+
+.escena {
+  display: flex !important;
+  flex-direction: column;
+  gap: 1rem;
+  height: auto !important;
+  max-width: 62rem;
+  padding: 0;
+}
+
+/* La etiqueta grande, el enlace, las rayas y las flechas pertenecen al recorrido: aquí
+   solo hay fotos que se ven todas a la vez. */
+.escena__numero,
+.escena__titulo,
+.escena__enlace,
+.escena__rayas,
+.escena__flechas {
+  display: none !important;
+}
+
+.escena__fotos {
+  position: static !important;
+  transform: none !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 4 / 3;
+}
+
+/* La primera foto, que es la que se pinta sin guion. */
+.escena__foto {
+  position: static !important;
+  transform: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.escena__foto + .escena__foto {
+  display: none;
+}
+
+/* ---- Dónde estamos ------------------------------------------------------ */
+
+.cierre {
+  text-align: left;
+  align-items: flex-start;
+  justify-items: start;
+  max-width: 34rem;
+}

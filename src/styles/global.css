@@ -177,6 +177,19 @@
   pointer-events: auto;
 }
 
+/*
+ * Un apartado que no se está viendo no debe recibir clics de ninguna manera.
+ *
+ * `pointer-events: none` en el panel no basta: un descendiente con `pointer-events: auto`
+ * —las fotos del apartado de fotos, sin ir más lejos— sigue siendo clicable aunque su
+ * padre no lo sea. Y como los cinco apartados están apilados a pantalla completa, las
+ * fotos invisibles de uno tapaban los botones de otro: en Comida, pulsar un plato no
+ * abría nada porque el clic se lo comía una foto del apartado de fotos.
+ */
+.panel:not([data-visible='si']) * {
+  pointer-events: none;
+}
+
 /* Texto directo sobre la foto: sin recuadro. La sombra es lo que lo hace legible
    cuando debajo pasa una zona clara del vídeo. */
 .texto-foto {
@@ -800,11 +813,62 @@
   color: rgb(253 250 244 / 0.76);
 }
 
-.susurro__pie {
-  margin: 1.35rem 0 0;
-  font-size: clamp(0.66rem, 0.5rem + 0.28vmin, 0.8rem);
-  letter-spacing: 0.15em;
-  color: rgb(253 250 244 / 0.52);
+/* La bajada: una flecha, no una frase. Respira hacia abajo cada dos segundos y medio,
+   lo justo para que el ojo la encuentre sin que distraiga. */
+.susurro__baja {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  margin: 1rem 0 0 -0.6rem;
+  padding-inline: 0.6rem;
+  color: rgb(253 250 244 / 0.68);
+  text-decoration: none;
+  transition: color 260ms ease-out;
+}
+
+/* La etiqueta, en la misma voz que la marca de arriba: versalitas espaciadas, pequeñas
+   pero por encima del mínimo legible. */
+.susurro__bajatexto {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.susurro__baja svg {
+  animation: susurro-baja 2600ms cubic-bezier(0.45, 0, 0.35, 1) infinite;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .susurro__baja:hover {
+    color: var(--color-crema-50);
+  }
+}
+
+.susurro__baja:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 2px;
+}
+
+@keyframes susurro-baja {
+  0%,
+  62%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.62;
+  }
+  30% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-animar='si']) .susurro__baja svg {
+    animation: none;
+  }
 }
 
 @media (max-width: 720px) {
@@ -898,13 +962,17 @@
   gap: 1.5rem;
   /* El ancho lo pone la tira: así el título arranca donde arranca la primera foto y la
      nota acaba donde acaba la última. */
-  width: var(--ancho-tira, 100%);
-  margin-inline: auto;
+  width: 100%;
+  margin-inline: 0;
 }
 
 /* Prueba: el título de Especialidades y Comida con la redonda y el tamaño del rótulo de
    la foto grande. Solo el título del apartado; los nombres de las bebidas y los platos no
    se tocan. */
+.salto-movil {
+  display: none;
+}
+
 .carta__titulo {
   font-family: var(--font-display);
   font-size: clamp(5rem, min(5vh, 4vw), 20rem);
@@ -928,11 +996,15 @@
   display: flex;
   /* Sin esto el carril se estira hasta el ancho de su contenido y no hay nada que
      desplazar: `min-width: auto` de un flex item. */
-  width: 100%;
+  /* El ancho de una tarjeta y cuántas caben. `--asoma: 1` deja una justa; 1,45 deja ver
+     media de la siguiente. Todo el carrusel sale de estos dos números. */
+  --tarjeta: min(25vw, calc(46vh * 3 / 4), 21rem);
+  --asoma: 2;
+  width: calc(var(--tarjeta) * var(--asoma) + 1.3rem);
   min-width: 0;
   max-width: 100%;
   gap: clamp(0.7rem, 1.6vw, 1.3rem);
-  margin: 0;
+  margin-inline: auto 0;
   /* Aire arriba y, sobre todo, abajo: la tarjeta que se señala crece hacia el rótulo y
      el carril no la puede recortar. */
   padding: 0.9rem 0;
@@ -971,7 +1043,7 @@
   /* Tres topes: el ancho de la ventana, el alto disponible y un maximo en rem. El de rem
      es el que evita que en un monitor grande las fotos se coman la pantalla: a partir de
      21 rem la tarjeta ya no crece, por mucho que sobre sitio. */
-  flex: 0 0 min(25vw, calc(46vh * 3 / 4), 21rem);
+  flex: 0 0 var(--tarjeta, min(25vw, calc(46vh * 3 / 4), 21rem));
   scroll-snap-align: start;
   min-height: 0;
   /* En reposo no se mueve nada; al pasar por encima crece el conjunto entero. */
@@ -1091,20 +1163,47 @@
 
 /* ---- Pie: progreso y flechas ------------------------------------------- */
 
-.progreso {
-  position: relative;
+/* La barra, igual que la del apartado de fotos: una raya por pieza y la que toca en
+   ámbar. Se puede pulsar cualquier raya para ir a esa foto. */
+.carta__rayas {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
   flex: 1 1 auto;
-  height: 2px;
-  background: rgb(4 16 9 / 0.55);
-  overflow: hidden;
 }
 
-.progreso__relleno {
+.carta__raya {
   display: block;
-  height: 100%;
-  width: 30%;
-  background: var(--color-crema-100);
-  transition: width 240ms ease-out, transform 240ms ease-out;
+  flex: 1 1 0;
+  max-width: 2.6rem;
+  height: 14px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.carta__raya span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: rgb(253 250 244 / 0.24);
+  transition: background 300ms ease-out;
+}
+
+.carta__raya[data-activa='si'] span {
+  background: var(--color-jardin-ambar);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carta__raya:hover span {
+    background: rgb(253 250 244 / 0.6);
+  }
+}
+
+.carta__raya:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 2px;
 }
 
 .carta__pie {
@@ -1113,7 +1212,7 @@
   justify-content: flex-end;
   gap: clamp(1rem, 3vw, 2rem);
   width: var(--ancho-tira, 100%);
-  margin-inline: auto;
+  margin-inline: auto 0;
 }
 
 .carta__mandos {
@@ -1123,25 +1222,29 @@
 }
 
 .carta__flecha {
-  background: rgb(4 16 9 / 0.45);
   display: grid;
   place-items: center;
-  width: 2.3rem;
-  height: 2.3rem;
+  width: 2.2rem;
+  height: 2.2rem;
   padding: 0;
-  border: 1px solid rgb(253 250 244 / 0.4);
+  border: 0;
   background: none;
-  color: var(--color-crema-50);
-  font-size: 1.4rem;
+  color: rgb(253 250 244 / 0.65);
+  font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
-  transition: border-color 160ms ease-out, color 160ms ease-out, opacity 160ms ease-out;
+  transition: color 260ms ease-out, transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.carta__flecha:hover:not(:disabled),
+@media (hover: hover) and (pointer: fine) {
+  .carta__flecha:hover:not(:disabled) {
+    color: var(--color-crema-50);
+    transform: scale(1.12);
+  }
+}
+
 .carta__flecha:focus-visible {
-  border-color: var(--color-jardin-ambar);
-  color: var(--color-jardin-ambar);
+  color: var(--color-crema-50);
 }
 
 .carta__flecha:focus-visible {
@@ -1154,6 +1257,27 @@
   cursor: default;
 }
 
+
+/* ---- El texto de la izquierda ------------------------------------------ */
+
+/* Va suelto sobre el hueco que deja el carrusel, centrado con la foto. No empuja nada:
+   el título, la tira y la barra siguen donde estaban. */
+.carta__texto {
+  position: absolute;
+  left: clamp(1.2rem, 4vw, 3.4rem);
+  /* El guion mide dónde empieza la primera foto y lo escribe aquí. El 30 % es solo el
+     valor de emergencia mientras el guion no ha corrido. */
+  top: var(--texto-top, 30%);
+  transform: none;
+  width: min(23rem, 30vw);
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(1.1rem, 2.35vmin, 1.45rem);
+  line-height: 1.7;
+  color: rgb(253 250 244 / 0.86);
+  text-wrap: pretty;
+}
+
 @media (max-width: 720px) {
   .panel--carta {
     padding-top: clamp(3.4rem, 12vh, 5rem);
@@ -1163,6 +1287,25 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.35rem;
+  }
+
+  /* El titular se parte en dos líneas justo por la mitad, sin cambiar el cuerpo. */
+  .salto-movil {
+    display: inline;
+  }
+
+  .carta__titulo {
+    font-size: clamp(3.5rem, 8.4vw, 2.6rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .carta__texto {
+    position: static;
+    transform: none;
+    width: auto;
+    margin-top: 0.8rem;
+    font-size: 0.95rem;
   }
 
   .tira__pieza {

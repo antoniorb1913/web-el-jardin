@@ -58,6 +58,12 @@ const {
       type="font/woff2"
       crossorigin
     />
+
+    <!-- Sin JavaScript la web monta los apartados en capas que nadie enciende: esta hoja
+         los pone en columna para que el texto se lea igual. Solo se descarga sin guion. -->
+    <noscript>
+      <link rel="stylesheet" href="/sin-js.css" />
+    </noscript>
   </head>
   <body>
     <a class="saltar" href="#contenido">Saltar al contenido</a>

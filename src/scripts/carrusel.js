@@ -25,6 +25,27 @@ function suavizar(t) {
  * galería. Se marca como iniciada para que no se enganchen los manejadores dos veces
  * cuando la página tiene varios de estos bloques.
  */
+/**
+ * Engancha una acción al `click` **y** al `pointerup`.
+ *
+ * Dentro del panel del recorrido el navegador entrega el `pointerdown` y el `pointerup`
+ * pero no siempre emite el `click` con ratón —lo descubrimos con las flechas del
+ * carrusel—, así que un botón enganchado solo al `click` parece muerto. Se escuchan los
+ * dos con un cerrojo corto para que, cuando el `click` sí llega, no se ejecute dos veces.
+ */
+function alPulsar(elemento, accion) {
+  if (!elemento) return;
+  let ultima = 0;
+  const lanzar = (evento) => {
+    const ahora = Date.now();
+    if (ahora - ultima < 300) return;
+    ultima = ahora;
+    accion(evento);
+  };
+  elemento.addEventListener('click', lanzar);
+  elemento.addEventListener('pointerup', lanzar);
+}
+
 export function iniciarTira(carta) {
     const tira = carta.querySelector('[data-tira]');
     if (!tira || carta.dataset.iniciada === 'si') return;
@@ -32,7 +53,7 @@ export function iniciarTira(carta) {
 
         const anterior = carta.querySelector('[data-anterior]');
     const siguiente = carta.querySelector('[data-siguiente]');
-    const relleno = carta.querySelector('[data-progreso]');
+    const rayas = Array.from(carta.querySelectorAll('[data-raya]'));
     const piezas = Array.from(tira.querySelectorAll('.tira__pieza'));
     if (piezas.length === 0) return;
 
@@ -44,11 +65,32 @@ export function iniciarTira(carta) {
       return piezas.map((pieza) => pieza.offsetLeft - tira.offsetLeft - margen);
     }
 
-    /** La tarjeta que está más cerca del borde izquierdo ahora mismo. */
+    /**
+     * Las paradas de verdad: cada tarjeta al borde izquierdo, pero sin pasarse del final
+     * del carril. Las últimas tarjetas comparten parada con el tope, y esas se descartan.
+     *
+     * Sin esto, con un ancho de una tarjeta y media, el carril tiene dos posiciones para
+     * tres fotos y las flechas se saltaban una: `indiceActual` decía «voy por la segunda»
+     * cuando el carril ya estaba al final.
+     */
+    function paradas() {
+      const tope = Math.max(0, tira.scrollWidth - tira.clientWidth);
+      const lista = [];
+      posiciones().forEach((punto) => {
+        const destino = Math.min(Math.max(punto, 0), tope);
+        if (lista.length === 0 || Math.abs(destino - lista[lista.length - 1]) > 2) {
+          lista.push(destino);
+        }
+      });
+      return lista;
+    }
+
+    /** La parada más cercana a la posición actual del carril. */
     function indiceActual() {
+      const lista = paradas();
       let mejor = 0;
       let distancia = Infinity;
-      posiciones().forEach((punto, i) => {
+      lista.forEach((punto, i) => {
         const diferencia = Math.abs(punto - tira.scrollLeft);
         if (diferencia < distancia) {
           distancia = diferencia;
@@ -97,22 +139,27 @@ export function iniciarTira(carta) {
     }
 
     function mover(direccion) {
-      const puntos = posiciones();
-      const destino = puntos[indiceActual() + direccion];
-      desplazarA(destino ?? (direccion > 0 ? tira.scrollWidth : 0));
+      const lista = paradas();
+      const destino = lista[indiceActual() + direccion];
+      // Si no hay parada en esa dirección, la flecha no hace nada (y ya está deshabilitada).
+      if (destino === undefined) return;
+      desplazarA(destino);
     }
 
     /** La barra de progreso, el estado de las flechas y el ancho del bloque. */
     function pintarProgreso() {
       const recorrido = tira.scrollWidth - tira.clientWidth;
-      const avance = recorrido > 0 ? tira.scrollLeft / recorrido : 1;
-      const visible = tira.scrollWidth > 0 ? tira.clientWidth / tira.scrollWidth : 1;
 
-      if (relleno) {
-        const ancho = Math.max(visible, 0.12) * 100;
-        relleno.style.width = `${ancho}%`;
-        relleno.style.transform = `translateX(${recorrido > 0 ? (avance * (100 - ancho)) / Math.max(visible, 0.12) : 0}%)`;
-      }
+      // Una raya por parada: se enciende la de la posición que manda en el carril. Si
+      // caben dos fotos a la vez hay una parada menos que fotos, y la raya que sobra se
+      // oculta en vez de quedarse muerta.
+      const total = paradas().length;
+      const activa = indiceActual();
+      rayas.forEach((raya, i) => {
+        raya.hidden = i >= total;
+        if (i === activa) raya.dataset.activa = 'si';
+        else delete raya.dataset.activa;
+      });
 
 
       if (anterior) anterior.disabled = tira.scrollLeft <= 2;
@@ -133,6 +180,11 @@ export function iniciarTira(carta) {
       );
       carta.style.setProperty('--ancho-tira', `${Math.round(anchoFotos)}px`);
 
+      // El texto de la izquierda se alinea con la primera foto, no con un porcentaje de
+      // la pantalla: se mide dónde empieza la tira y se le pasa al CSS en píxeles. Con un
+      // valor fijo, en un monitor se ve bien y en el otro no.
+      const aire = parseFloat(getComputedStyle(tira).paddingTop) || 0;
+      carta.style.setProperty('--texto-top', `${Math.round(tira.offsetTop + aire)}px`);
     }
 
     /*
@@ -144,6 +196,14 @@ export function iniciarTira(carta) {
      * consola—. Se escuchan los dos gestos con un cerrojo de 300 ms para que, cuando el
      * `click` sí llega, no se mueva dos veces.
      */
+    // Pulsar una raya lleva a su pieza. Se usa el mismo desplazamiento que las flechas.
+    rayas.forEach((raya, indice) => {
+      raya.addEventListener('click', () => {
+        const destino = paradas()[indice];
+        if (destino !== undefined) desplazarA(destino);
+      });
+    });
+
     let ultimoMover = 0;
 
     function pedirMover(direccion) {
@@ -228,6 +288,13 @@ export function iniciarTira(carta) {
     );
 
     tira.addEventListener('scroll', pintarProgreso, { passive: true });
+    window.addEventListener('resize', pintarProgreso, { passive: true });
+
+    // La tipografía cambia de alto al cargar y mueve la tira: se vuelve a medir cuando
+    // las fuentes están listas, si no el texto se queda unos píxeles arriba.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => pintarProgreso());
+    }
     window.addEventListener('resize', pintarProgreso);
 
     pintarProgreso();
@@ -336,12 +403,12 @@ function iniciarVisor(carta, piezas) {
   }
 
   ampliables.forEach((boton, indice) => {
-    boton.addEventListener('click', () => abrir(indice, boton));
+    alPulsar(boton, () => abrir(indice, boton));
   });
 
-  cerrar?.addEventListener('click', cerrarVisor);
-  anterior?.addEventListener('click', () => mostrar(actual - 1));
-  siguiente?.addEventListener('click', () => mostrar(actual + 1));
+  alPulsar(cerrar, cerrarVisor);
+  alPulsar(anterior, () => mostrar(actual - 1));
+  alPulsar(siguiente, () => mostrar(actual + 1));
 
   // Flechas dentro del visor.
   visor.addEventListener('keydown', (evento) => {
@@ -360,8 +427,9 @@ function iniciarVisor(carta, piezas) {
     devolverFoco?.focus();
   });
 
-  // Un clic fuera de la foto también cierra.
+  // Un clic fuera de la foto también cierra, aunque caiga en la caja que la envuelve.
   visor.addEventListener('click', (evento) => {
-    if (evento.target === visor) cerrarVisor();
+    if (evento.target.closest('img, button, a')) return;
+    cerrarVisor();
   });
 }

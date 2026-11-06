@@ -43,7 +43,20 @@ const anio = new Date().getFullYear();
             agradable, relajado, sin dejar de lado pasar un rato alegre y rodeado de naturaleza.
           </p>
 
-          <p class="susurro__pie">Baja para entrar</p>
+          {/* La bajada: flecha y etiqueta. La flecha dice cómo se sigue; la etiqueta,
+              qué pasa si se pulsa. La zona pulsable mide 44 px de alto. */}
+          <a class="susurro__baja" href="#especialidades">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden="true">
+              <path
+                d="M12 4v14M6 13l6 6 6-6"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span class="susurro__bajatexto">Baja y entra</span>
+          </a>
         </div>
       </div>
     </section>
@@ -54,10 +67,17 @@ const anio = new Date().getFullYear();
       titulo="Nuestras especialidades"
       piezas={bebidas}
       nota={notaCarta}
+      texto="Creaciones de autor, combinados clásicos y batidos pensados para detener el tiempo. Elige tu copa, busca tu rincón y déjate llevar por la atmósfera del Jardín."
     />
 
     <!-- COMIDA -->
-    <Carta id="comida" titulo="Nuestra comida" piezas={platos} nota={notaCarta} />
+    <Carta
+      id="comida"
+      titulo="Nuestra comida"
+      piezas={platos}
+      nota={notaCarta}
+      texto="Bocados pensados para compartir y disfrutar sin prisas. Desde la auténtica tradición alemana con nuestras Bratwurst y Currywurst, hasta la exquisitez de una tabla de Jamón Serrano de Teruel."
+    />
 
     <!-- FOTOS -->
     <section id="fotos" data-seccion="fotos" class={seccion}>

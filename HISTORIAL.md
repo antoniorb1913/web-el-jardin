@@ -355,3 +355,64 @@ el cliente ya conoce.
 4. Pasar el cursor por una tarjeta: crece el cuadrado, la foto se acerca y el nombre se
    subraya en ámbar.
 5. Comprobar que no hay ningún precio en la página ni en el HTML.
+
+---
+
+## 2026-11-06 · T9 — Galería de fotos del bar
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t9-apartado-fotos`
+**Commit:** `feat: apartado de fotos con escena, rayas por parada y textos de la carta`
+**Archivos:** `src/components/Escena.astro`, `src/scripts/escena.js`,
+`src/scripts/galeria.js`, `src/scripts/carrusel.js`, `src/styles/escena.css`,
+`src/styles/global.css`, `src/data/galeria.js`, `src/components/Carta.astro`,
+`src/pages/index.astro`, `src/layouts/Base.astro`, `public/galeria/`, `public/sin-js.css`
+
+### 1. ¿Qué he realizado?
+
+El apartado de fotos del bar es una escena: la foto grande a la derecha con el titular en
+caligráfica montado encima, una frase de fondo, la barra de rayas pegada al borde inferior de
+la foto y las flechas a su derecha. Seis fotos del local en WebP, en dos tamaños.
+
+Además, en esta misma vuelta: los párrafos descriptivos de Especialidades y Comida en una
+columna a la izquierda, las rayas del carrusel de la carta (una por parada), el arreglo de los
+visores —que se abrían pero no se cerraban— y una hoja para cuando no hay JavaScript.
+
+### 2. ¿Por qué?
+
+El apartado pasó por siete diseños distintos: rejilla, muestrario con miniaturas, mosaico
+escalonado, ficha editorial, tres variantes en movimiento y una composición en 3D. La que
+cuajó es la escena, porque deja la foto como protagonista y el texto como pie de foto grande.
+
+El fallo de los visores no era del visor: los cinco apartados están apilados a pantalla
+completa y `pointer-events: none` no alcanza a los hijos, así que las fotos invisibles del
+apartado de fotos se comían los clics de los demás. Sin JavaScript, la web era una página en
+blanco: el texto está en el HTML, pero el CSS lo esconde hasta que el guion lo enciende.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/components/Escena.astro` — el apartado completo; el titular se parte en dos líneas solo
+  en móvil con `<br class="salto-movil">`.
+- `src/scripts/escena.js` — cambio de foto, rayas, flechas y apertura del visor.
+- `src/scripts/galeria.js` — el visor grande: abrir, cerrar con la ×, con el fondo y con Escape.
+- `src/scripts/carrusel.js` — `paradas()`: cada flecha salta a una posición real del carril, no
+  a una foto; con dos fotos a la vez hay una parada menos que fotos.
+- `src/styles/escena.css` — la composición, el hover de la foto y las reglas de móvil.
+- `src/styles/global.css` — `.panel:not([data-visible='si']) *` (el arreglo de los clics),
+  `.carta__texto` (la columna del texto) y las rayas del carrusel.
+- `public/sin-js.css` — la web entera en columna cuando el navegador no ejecuta JavaScript.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. Abrir el apartado «Fotos del bar»: la foto grande a la derecha, el titular encima y las
+   rayas debajo, en la línea de la foto.
+2. Pulsar una foto: se abre en grande. Cerrarla de las tres maneras — la ×, Escape y un clic
+   en el fondo negro.
+3. Pasar las flechas de «Especialidades» y «Comida»: cada paso enseña dos fotos enteras y la
+   raya que se enciende es la parada, no la foto.
+4. Pulsar un plato: se abre en grande (antes no hacía nada, porque el clic se lo comía otro
+   apartado).
+5. Estrechar la ventana hasta el móvil: el titular se parte en dos líneas, la barra baja
+   debajo de la foto y el texto descriptivo pasa al flujo.
+6. Desactivar JavaScript y recargar: se ven los cinco apartados en columna, con horario y
+   dirección.

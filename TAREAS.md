@@ -17,8 +17,8 @@
 | 2 · Contenido | **T6** · Layout base: header, navegación y footer | ✅ Completada | T3 |
 | 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ✅ Completada | T6 |
 | 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ✅ Completada | T7 |
-| 2 · Contenido | **T9** · Galería de fotos del bar | 🔧 En curso | T8 |
-| 2 · Contenido | **T10** · Ubicación + horario + estado «Abierto ahora» | ⏳ Pendiente | T8 |
+| 2 · Contenido | **T9** · Galería de fotos del bar | ✅ Completada | T8 |
+| 2 · Contenido | **T10** · Ubicación + horario + estado «Abierto ahora» | 🔧 En curso | T8 |
 | 3 · Legal y SEO | **T11** · Aviso legal, privacidad y consentimiento del mapa | ⏳ Pendiente | T10 |
 | 3 · Legal y SEO | **T12** · SEO: metas, Open Graph, JSON-LD `BarOrPub`, sitemap, robots | ⏳ Pendiente | T11 |
 | 4 · Calidad | **T13** · Accesibilidad y responsive (auditoría) | ⏳ Pendiente | T12 |
@@ -255,17 +255,24 @@
 
 ---
 
-### T9 · Galería de fotos del bar — 🔧 En curso
+### T9 · Galería de fotos del bar — ✅ Completada (2026-11-06)
 
-**Objetivo:** galería con las fotos del local (`bar1.jpg` y `bar2.heic`, esta última hay que convertirla), optimizadas a WebP/AVIF y varios tamaños, con lightbox accesible (teclado, Escape, foco atrapado) y `width`/`height` para evitar saltos.
+**Objetivo final (lo que se construyó):** el apartado de fotos como una escena —número o
+frase de fondo, titular en caligráfica montado sobre la imagen, barra de rayas debajo y
+flechas—, con seis fotos del local en WebP (grande y pequeña), visor con teclado y Escape,
+y adaptado a móvil.
 
-**Archivos:** `src/components/Galeria.astro`, `src/assets/`, `src/data/galeria.js`.
+**Archivos:** `src/components/Escena.astro`, `src/scripts/escena.js`,
+`src/scripts/galeria.js`, `src/styles/escena.css`, `src/data/galeria.js`,
+`public/galeria/`.
 
-**Verificación:** abrir 3 fotos, navegar con las flechas del teclado y cerrar con Escape; comprobar que al cargar no salta el layout.
+**Verificación:** abrir una foto con el ratón y cerrarla con la ×, con Escape y pulsando el
+fondo; cambiar de foto con las rayas y con las flechas; probar en móvil que la barra y las
+flechas caen debajo de la imagen.
 
 ---
 
-### T10 · Ubicación + horario + «Abierto ahora» — ⏳
+### T10 · Ubicación + horario + «Abierto ahora» — 🔧 En curso
 
 **Objetivo:** dirección, mapa con fachada (imagen + enlace a Google Maps) y horario legible; `horario.js` con `calcularEstadoBar()` que calcule si está abierto en `Europe/Madrid` (ojo: «00:00» de viernes/sábado es el final del día).
 
