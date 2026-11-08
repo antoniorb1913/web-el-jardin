@@ -43,11 +43,11 @@
 
 .escena__numero {
   position: absolute;
-  top: calc(45% - min(18.4vw, 17.25rem) - 5vh);
+  top: calc(48% - min(18.4vw, 17.25rem) - 5vh);
   left: clamp(2.6rem, 7vw, 8rem);
   z-index: 0;
   font-family: var(--font-display);
-  font-size: clamp(5rem, min(5vh, 4vw), 20rem);
+  font-size: clamp(4.6rem, min(5vh, 4vw), 20rem);
   font-weight: 600;
   line-height: 0.72;
   max-width: 100%;
@@ -63,7 +63,7 @@
    un titular de tres líneas no tape el enlace. */
 .escena__texto {
   position: absolute;
-  top: 50%;
+  top: 55%;
   left: clamp(2.6rem, 7vw, 8rem);
   transform: translateY(-58%);
   z-index: 3;
@@ -97,7 +97,7 @@
 
 .escena__fotos {
   position: absolute;
-  top: 53%;
+  top: 60%;
   left: 55%;
   transform: translate(-50%, -50%);
   z-index: 2;
@@ -216,7 +216,7 @@
   left: clamp(2.6rem, 7vw, 8rem);
   /* La foto mide 49vw de ancho; su media altura es 18,4vw. El tope evita que la barra se
      despegue en pantallas muy anchas, donde la foto deja de crecer. */
-  top: calc(54% + min(18.4vw, 17.5rem) + 0.45rem);
+  top: calc(61% + min(18.4vw, 17.5rem) + 0.45rem);
   z-index: 4;
   display: flex;
   gap: 0.15rem;
@@ -264,7 +264,7 @@
 .escena__flechas {
   position: absolute;
   right: clamp(12rem, 4vw, 3.4rem);
-  top: calc(53% + min(18.4vw, 17.5rem) + 0.1rem);
+  top: calc(60% + min(18.4vw, 17.5rem) + 0.1rem);
   z-index: 4;
   display: flex;
   align-items: center;
