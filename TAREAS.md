@@ -18,7 +18,7 @@
 | 2 · Contenido | **T7** · Sección «¿Quiénes Somos?» | ✅ Completada | T6 |
 | 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ✅ Completada | T7 |
 | 2 · Contenido | **T9** · Galería de fotos del bar | ✅ Completada | T8 |
-| 2 · Contenido | **T10** · Ubicación + horario + estado «Abierto ahora» | 🔧 En curso | T8 |
+| 2 · Contenido | **T10** · Ubicación + horario + estado «Abierto ahora» | ✅ Completada | T8 |
 | 3 · Legal y SEO | **T11** · Aviso legal, privacidad y consentimiento del mapa | ⏳ Pendiente | T10 |
 | 3 · Legal y SEO | **T12** · SEO: metas, Open Graph, JSON-LD `BarOrPub`, sitemap, robots | ⏳ Pendiente | T11 |
 | 4 · Calidad | **T13** · Accesibilidad y responsive (auditoría) | ⏳ Pendiente | T12 |
@@ -272,23 +272,23 @@ flechas caen debajo de la imagen.
 
 ---
 
-### T10 · Ubicación + horario + «Abierto ahora» — 🔧 En curso
+### T10 · Ubicación + horario + «Abierto ahora» — ✅ Completada
 
-**Objetivo:** dirección, mapa con fachada (imagen + enlace a Google Maps) y horario legible; `horario.js` con `calcularEstadoBar()` que calcule si está abierto en `Europe/Madrid` (ojo: «00:00» de viernes/sábado es el final del día).
+**Objetivo:** dirección, horario legible, estado de apertura en directo y mapa. `horario.js` con `estadoEn()` calcula si está abierto en `Europe/Madrid` (ojo: «00:00» de viernes/sábado es el final del día). El mapa se incrusta directamente con `output=embed`, sin clave de API, y ocupa todo el ancho de la cuadrícula debajo del texto; las redes del bar van a la derecha en tipografía, con sus iconos en `currentColor`.
 
-**Archivos:** `src/scripts/horario.js`, `src/data/negocio.js`, `src/components/Seccion.astro`, `src/pages/index.astro`.
+**Archivos:** `src/scripts/horario.js`, `src/data/negocio.js`, `src/pages/index.astro`, `src/styles/global.css`, `AGENTS.md`.
 
-**Verificación:** el estado mostrado coincide con la hora real; probar cambiando la hora del sistema a las 15:59, 16:00, 22:59 y 23:59 en un día laborable y en viernes.
+**Verificación:** el estado mostrado coincide con la hora real; probar cambiando la hora del sistema a las 15:59, 16:00, 22:59 y 23:59 en un día laborable y en viernes. El titular «Dónde estamos» va en una línea a cualquier ancho; el mapa empieza a la altura del titular y acaba a la del copyright.
 
 ---
 
 ### T11 · Aviso legal, privacidad y consentimiento del mapa — ⏳
 
-**Objetivo:** páginas de aviso legal y privacidad con datos reales del titular (pendientes de recibir) y fachada del mapa que no carga nada de Google hasta que el usuario lo pide.
+**Objetivo:** páginas de aviso legal y privacidad con datos reales del titular (pendientes de recibir) y **aviso de cookies** para el mapa incrustado, que ya pone cookies de Google al cargar (decisión del 2026-11-10, ver `AGENTS.md` §3).
 
-**Archivos:** `src/pages/aviso-legal.astro`, `src/pages/privacidad.astro`, `src/components/MapaFacade.astro`.
+**Archivos:** `src/pages/aviso-legal.astro`, `src/pages/privacidad.astro`, `src/components/AvisoCookies.astro`, enlaces en `Footer.astro`.
 
-**Verificación:** con la pestaña de red abierta, al cargar la página **no** hay peticiones a `google.com`; tras pulsar el mapa, sí.
+**Verificación:** con la pestaña de red abierta, el mapa pone cookies de terceros; el aviso aparece antes o junto a él y enlaza con la política; los enlaces del pie llevan a las dos páginas.
 
 ---
 

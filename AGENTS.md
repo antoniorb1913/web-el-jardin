@@ -55,7 +55,7 @@ Eres el agente que construye la web de un **bar familiar**. Trabajas **una tarea
 | Contenido | Archivos de datos en `src/data/*.js` | Cambiar un horario o un plato = editar un archivo |
 | Hosting | **Netlify** (plan gratuito) | Deploy estático automático, `_headers`, HTTPS y CDN gratis |
 | Vídeo | **ffmpeg** para análisis y troceado en escenas | El original (`transicion.mp4`) no es apto para web tal cual |
-| Mapas | **Fachada con imagen + enlace**, no iframe directo | Sin cookies de terceros antes del consentimiento (AEPD/LOPDGDD) ni coste de LCP |
+| Mapas | **Mapa de Google incrustado** (`output=embed`, sin clave de API) — cambio pedido por el usuario el 2026-11-10 | Se ve el mapa como en cualquier web; a cambio, Google pone sus cookies al cargar. El aviso de consentimiento se monta en T11 |
 
 **Descartado y por qué:** Angular / React / Next → convierten la web en una aplicación: 120-200 KB de JS mínimo, HTML vacío en el primer byte, previews pobres al compartir por WhatsApp y mantenimiento de dependencias sin necesidad. Ver `HISTORIAL.md` cuando se registre la decisión.
 

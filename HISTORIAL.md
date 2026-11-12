@@ -18,6 +18,8 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T6 | 2026-11-01 | Cabecera, navegación, cierre y cruces entre escenas | ✅ Completada |
 | T7 | 2026-11-03 | Portada «Un paraíso en Bolnuevo» y caligráfica de la carta | ✅ Completada |
 | T8 | 2026-11-03 | La carta: especialidades y comida en tira horizontal | ✅ Completada |
+| T9 | 2026-11-06 | Galería de fotos del bar | ✅ Completada |
+| T10 | 2026-11-10 | Dónde estamos: estado, mapa y redes | ✅ Completada |
 
 ---
 
@@ -416,3 +418,60 @@ blanco: el texto está en el HTML, pero el CSS lo esconde hasta que el guion lo 
    debajo de la foto y el texto descriptivo pasa al flujo.
 6. Desactivar JavaScript y recargar: se ven los cinco apartados en columna, con horario y
    dirección.
+
+## 2026-11-10 · T10 — Dónde estamos: estado, mapa y redes
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t10-ubicacion-mapa-redes`
+**Commit:** `feat: dónde estamos con estado, mapa y redes`
+**Archivos:** `src/scripts/horario.js`, `src/data/negocio.js`, `src/pages/index.astro`,
+`src/styles/global.css`, `AGENTS.md`
+
+### 1. ¿Qué he realizado?
+
+El último apartado de la película dice dónde está el bar, cuándo abre y cómo llegar. El estado
+(«● Cierra a las 23:00» / «● Abre mañana a las 16:00») se calcula en `Europe/Madrid` y se
+refresca solo cada minuto. Debajo, el mapa de Google incrustado, a todo el ancho de la
+cuadrícula; a la derecha, las tres redes del bar —Facebook, Instagram y la tarjeta digital—
+en tipografía, con iconos dibujados en línea.
+
+### 2. ¿Por qué?
+
+Es la pantalla que resuelve la pregunta práctica de quien ya quiere ir: dónde, a qué hora y
+cómo. El estado de apertura evita el «¿estará abierto?» de las diez de la noche, y el mapa
+ahorra el paso de copiar una dirección a otra aplicación.
+
+El cálculo hubo que hacerlo con cuidado: la hora se lee en Madrid y no en la del visitante,
+las 00:00 del viernes son el final de su día y no el principio del sábado, y el cambio de hora
+de verano entra dentro del mismo cálculo. Se probó a doce horas distintas, incluidos los
+bordes de apertura y cierre.
+
+El mapa acabó incrustado por decisión del usuario, en contra de lo que preveía `AGENTS.md`
+(fachada con enlace, sin cookies hasta el clic). Se dejó escrito en el archivo y el aviso de
+cookies pasa a T11. Las redes se pusieron en texto y no en iconos porque la web no tiene un
+solo icono en ningún sitio; al verlo, el usuario prefirió los iconos y se añadieron en
+`currentColor`, sin colores de marca que rompieran la paleta.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/scripts/horario.js` — `estadoEn()`, `horaEnMadrid()` y `iniciarEstadoBar()`; el rótulo se
+  repinta cada minuto y al volver a la pestaña.
+- `src/data/negocio.js` — `tramos` (el horario en números, con `dias` y `24:00`) y `redes`.
+- `src/pages/index.astro` — la sección `#ubicacion`: titular, dirección, estado, horario,
+  «Cómo llegar», copyright, las redes y el `<iframe>` del mapa.
+- `src/styles/global.css` — `.cierre` es una rejilla de tres filas: titular y texto arriba (con
+  la columna de las redes a la derecha) y el mapa debajo ocupando `1 / -1`.
+- `AGENTS.md` §3 — la fila de mapas, con la decisión y su consecuencia.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. Abrir <http://localhost:4321/?animar=1> y bajar hasta la última parada.
+2. El titular «Dónde estamos» tiene que ir en **una sola línea**, también con la ventana
+   maximizada en un monitor grande.
+3. El mapa empieza a la altura del titular y acaba a la altura del copyright, y se ven la
+   chincheta y el barrio de Bolnuevo.
+4. A las 15:59 el rótulo dice «Abre hoy a las 16:00»; a las 16:00, «Cierra a las 23:00»; a las
+   23:00, «Abre mañana a las 16:00». Un viernes a las 23:59 sigue abierto y a las 00:01 del
+   sábado ya no.
+5. Las tres redes abren en pestaña nueva y el subrayado se vuelve ámbar al pasar el ratón.
+6. Estrechar la ventana: el mapa baja debajo del texto y las redes se alinean a la izquierda.

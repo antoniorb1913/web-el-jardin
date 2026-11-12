@@ -47,6 +47,30 @@ export const enlaceMapa =
   encodeURIComponent('Av. Antonio Segado del Olmo 19, Bolnuevo, Mazarrón, Murcia');
 
 /**
+ * Redes y enlaces del bar. Todos se abren fuera, en otra pestaña.
+ *
+ * El orden es el que se ve en pantalla. `nombre` es lo que se lee; no se traduce ni se
+ * adorna: es el nombre que usa la gente.
+ */
+export const redes = [
+  {
+    nombre: 'Facebook',
+    url: 'https://www.facebook.com/people/Fran-Fran/100009549083892/',
+    icono: 'facebook',
+  },
+  {
+    nombre: 'Instagram',
+    url: 'https://www.instagram.com/clubbareljardin',
+    icono: 'instagram',
+  },
+  {
+    nombre: 'Tarjeta digital',
+    url: 'https://bareljardin-bolnuevo.netlify.app/',
+    icono: 'tarjeta',
+  },
+];
+
+/**
  * Apartados de la portada, en el mismo orden en que aparecen.
  *
  * «Quiénes somos» va con el logo, en la portada: es el mismo sitio y la misma

@@ -15,7 +15,7 @@ import HeroScrolly from '../components/HeroScrolly.astro';
 import Seccion from '../components/Seccion.astro';
 import Carta from '../components/Carta.astro';
 import Escena from '../components/Escena.astro';
-import { direccion, horario, enlaceMapa } from '../data/negocio';
+import { direccion, horario, enlaceMapa, redes } from '../data/negocio';
 import { bebidas, platos, notaCarta } from '../data/carta';
 
 const seccion = 'relative mx-auto max-w-2xl min-h-[250dvh]';
@@ -90,35 +90,94 @@ const anio = new Date().getFullYear();
     <section id="ubicacion" data-seccion="ubicacion" class={seccion}>
       <div class={panel} data-panel>
         <div class="cierre texto-foto">
-          <h2 class="titulo-apartado cierre__titulo">Dónde estamos</h2>
+          <h2 class="cierre__titulo">Dónde estamos</h2>
 
-          <p class="cierre__direccion">
-            {direccion.calle}<br />
-            {direccion.poblacion} ({direccion.provincia})
-          </p>
+          <div class="cierre__texto">
+            <p class="cierre__direccion">
+              {direccion.calle}<br />
+              {direccion.poblacion} ({direccion.provincia})
+            </p>
 
-          {/* Lo enciende `horario.js`: dice si está abierto y a qué hora cierra. */}
-          <p class="cierre__estado" data-estado-bar>
-            <span class="cierre__punto" aria-hidden="true"></span>
-            <span data-estado-texto>…</span>
-          </p>
+            {/* Lo enciende `horario.js`: dice si está abierto y a qué hora cierra. */}
+            <p class="cierre__estado" data-estado-bar>
+              <span class="cierre__punto" aria-hidden="true"></span>
+              <span data-estado-texto>…</span>
+            </p>
 
-          <dl class="cierre__horario">
-            {horario.map((tramo) => (
-              <div>
-                <dt>{tramo.dias}</dt>
-                <dd>{tramo.horas}</dd>
-              </div>
-            ))}
-          </dl>
+            <dl class="cierre__horario">
+              {horario.map((tramo) => (
+                <div>
+                  <dt>{tramo.dias}</dt>
+                  <dd>{tramo.horas}</dd>
+                </div>
+              ))}
+            </dl>
 
-          <p class="cierre__acciones">
-            <a class="cierre__mapa" href={enlaceMapa} target="_blank" rel="noopener noreferrer">
-              Cómo llegar
-            </a>
-          </p>
+            <p class="cierre__acciones">
+              <a class="cierre__mapa" href={enlaceMapa} target="_blank" rel="noopener noreferrer">
+                Cómo llegar
+              </a>
+            </p>
 
-          <p class="cierre__legal">© {anio} Bar El Jardín · Bolnuevo, Mazarrón</p>
+            <p class="cierre__legal">© {anio} Bar El Jardín · Bolnuevo, Mazarrón</p>
+          </div>
+
+          {/* Redes del bar: a la derecha del texto, en texto y no en iconos, como el resto
+              de la web. Todas se abren fuera. */}
+          <nav class="cierre__redes" aria-label="Redes del bar">
+            <p class="cierre__redes-titulo">Síguenos</p>
+            <ul class="cierre__redes-lista">
+              {redes.map((red) => (
+                <li>
+                  <a href={red.url} target="_blank" rel="noopener noreferrer">
+                    {/* Iconos dibujados aquí mismo, sin librerías ni CDN. Heredan el color
+                        del texto, así que no rompen la paleta. */}
+                    {red.icono === 'facebook' && (
+                      <svg class="cierre__red-icono" viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          fill="currentColor"
+                          d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.29-.04-1.3-.13-2.47-.13-2.44 0-4.11 1.49-4.11 4.23v2.36H7.3V13h2.32v8z"
+                        />
+                      </svg>
+                    )}
+                    {red.icono === 'instagram' && (
+                      <svg class="cierre__red-icono" viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          fill="currentColor"
+                          d="M12 4.6c2.4 0 2.7 0 3.6.05.9.04 1.4.19 1.7.31.4.16.7.35 1 .65.3.3.49.6.65 1 .12.3.27.8.31 1.7.04.9.05 1.2.05 3.6s0 2.7-.05 3.6c-.04.9-.19 1.4-.31 1.7-.16.4-.35.7-.65 1-.3.3-.6.49-1 .65-.3.12-.8.27-1.7.31-.9.04-1.2.05-3.6.05s-2.7 0-3.6-.05c-.9-.04-1.4-.19-1.7-.31-.4-.16-.7-.35-1-.65-.3-.3-.49-.6-.65-1-.12-.3-.27-.8-.31-1.7C4.6 14.7 4.6 14.4 4.6 12s0-2.7.05-3.6c.04-.9.19-1.4.31-1.7.16-.4.35-.7.65-1 .3-.3.6-.49 1-.65.3-.12.8-.27 1.7-.31.9-.04 1.2-.05 3.6-.05m0-1.6c-2.45 0-2.76.01-3.72.06-.96.04-1.62.2-2.19.42-.6.23-1.1.54-1.6 1.04-.5.5-.81 1-1.04 1.6-.22.57-.38 1.23-.42 2.19C3.01 9.24 3 9.55 3 12s.01 2.76.06 3.72c.04.96.2 1.62.42 2.19.23.6.54 1.1 1.04 1.6.5.5 1 .81 1.6 1.04.57.22 1.23.38 2.19.42.96.05 1.27.06 3.72.06s2.76-.01 3.72-.06c.96-.04 1.62-.2 2.19-.42.6-.23 1.1-.54 1.6-1.04.5-.5.81-1 1.04-1.6.22-.57.38-1.23.42-2.19.05-.96.06-1.27.06-3.72s-.01-2.76-.06-3.72c-.04-.96-.2-1.62-.42-2.19a4.4 4.4 0 0 0-1.04-1.6c-.5-.5-1-.81-1.6-1.04-.57-.22-1.23-.38-2.19-.42C14.76 3.01 14.45 3 12 3zm0 4.38a4.62 4.62 0 1 0 0 9.24 4.62 4.62 0 0 0 0-9.24zm0 7.62a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm5.88-7.8a1.08 1.08 0 1 0 0-2.16 1.08 1.08 0 0 0 0 2.16z"
+                        />
+                      </svg>
+                    )}
+                    {red.icono === 'tarjeta' && (
+                      <svg class="cierre__red-icono" viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          d="M4 8.2h16v9.6H4zM4 8.2 8.4 6h7.2L20 8.2"
+                        />
+                      </svg>
+                    )}
+                    <span>{red.nombre}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Decisión del usuario (2026-11-10): el mapa se incrusta directamente y ocupa todo
+              el ancho de la cuadrícula, debajo del texto. Aviso: Google pone sus cookies al
+              cargar; el consentimiento se monta en T11. */}
+          <div class="cierre__mapa-caja">
+            <iframe
+              class="cierre__mapa-marco"
+              src={`https://www.google.com/maps?q=${encodeURIComponent(direccion.completa)}&z=16&iwloc=none&output=embed`}
+              title="Mapa con la ubicación del Bar El Jardín"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+          </div>
         </div>
       </div>
     </section>
