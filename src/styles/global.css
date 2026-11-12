@@ -544,71 +544,12 @@
   }
 }
 
-/* ---------------------------------------------------------------------------
-   Cierre de la película (T6): el pie vive dentro del recorrido, como última
-   escena, sobre el fotograma de la estatua. Sin recuadro: el texto va directo
-   sobre la imagen, igual que el resto de apartados.
-   --------------------------------------------------------------------------- */
 
-/* El cierre es una sección a todo el ancho; el contenido lo centra `.cierre__interior`. */
-.cierre__titulo {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 5.4vmin, 3.5rem);
-  line-height: 1.05;
-}
-
-.cierre__direccion {
-  margin: 0;
-  font-size: clamp(0.95rem, 2.2vmin, 1.25rem);
-  line-height: 1.45;
-}
-
-.cierre__horario {
-  width: min(23rem, 100%);
-  margin: 0;
-  padding-top: 1.1rem;
-  border-top: 1px solid rgb(253 250 244 / 0.3);
-  font-size: 0.95rem;
-}
-
-.cierre__horario div {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding-block: 0.2rem;
-}
-
-.cierre__horario dt {
-  color: rgb(253 250 244 / 0.78);
-}
-
-.cierre__horario dd {
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-}
-
-.cierre__acciones {
-  margin: 0;
-}
-
-.cierre__mapa {
-  display: inline-block;
-  padding-bottom: 2px;
-  color: var(--color-crema-50);
-  text-decoration: none;
-  border-bottom: 1px solid var(--color-jardin-ambar);
-}
-
-.cierre__mapa:hover,
-.cierre__mapa:focus-visible {
-  border-bottom-width: 2px;
-}
 
 .cierre__legal {
   margin: 0;
-  font-size: 0.78rem;
-  color: rgb(253 250 244 / 0.55);
+  font-size: 0.84rem;
+  color: rgb(253 250 244 / 0.6);
 }
 
 @media (min-width: 860px) {
@@ -623,14 +564,275 @@
    imagen, igual que el resto de apartados.
    --------------------------------------------------------------------------- */
 
+
+
+/* El rótulo del apartado, en segundo plano: dice dónde estamos sin competir con la calle. */
+
+/* ---- El momento tipográfico: la dirección ------------------------------ */
+
+
+
+/* ---------------------------------------------------------------------------
+   Cierre de la película: la última parada.
+
+   Misma gramática que los demás apartados: titular grande en Fredoka, texto a la
+   izquierda y el elemento gráfico a la derecha. Aquí el elemento es el mapa, que ocupa
+   el sitio de la tira del carrusel.
+   --------------------------------------------------------------------------- */
+
 .cierre {
+  /* Tres filas: titular y texto arriba (con la derecha libre para las redes), y el mapa
+     debajo ocupando todo el ancho de la cuadrícula, sin salirse por ningún lado. */
   display: grid;
-  justify-items: center;
-  gap: 1.25rem;
-  max-width: 34rem;
-  text-align: center;
-  /* Sin esto hereda el color oscuro del documento y desaparece sobre la foto. */
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto;
+  align-items: start;
+  gap: 1rem clamp(2rem, 4vw, 3.5rem);
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.2rem, 4vw, 3.4rem);
+  text-align: left;
   color: var(--color-crema-50);
+}
+
+
+
+.cierre__titulo {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 4.2vw, 4.3rem);
+  font-weight: 600;
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  text-align: left;
+  /* Una sola línea, siempre. En móvil se permite partir (la pantalla es otra cosa). */
+  white-space: nowrap;
+  text-shadow: 0 1px 22px rgb(4 16 9 / 0.45);
+}
+
+
+.cierre__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 23rem) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* ---- Columna de texto --------------------------------------------------- */
+
+.cierre__texto {
+  grid-column: 1;
+  grid-row: 2;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 1rem;
+  max-width: 34rem;
+}
+
+
+
+.cierre__direccion {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(1.2rem, 2.7vmin, 1.55rem);
+  line-height: 1.5;
+}
+
+/* El horario: dos filas con la raya fina arriba, como en la cabecera de la carta. */
+.cierre__horario {
+  width: 100%;
+  margin: 0.1rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgb(253 250 244 / 0.3);
+  font-size: 1.15rem;
+}
+
+.cierre__horario div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.16rem;
+}
+
+.cierre__horario dt {
+  color: rgb(253 250 244 / 0.94);
+  white-space: nowrap;
+}
+
+.cierre__horario dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-crema-50);
+}
+
+/* Los dos enlaces: el mismo subrayado ámbar de la web. */
+.cierre__acciones {
+  margin: 0.2rem 0 0;
+}
+
+.cierre__mapa {
+  display: inline-block;
+  font-size: 1.02rem;
+  padding-bottom: 2px;
+  color: var(--color-crema-50);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-jardin-ambar);
+}
+
+.cierre__mapa:hover,
+.cierre__mapa:focus-visible {
+  border-bottom-width: 2px;
+}
+
+/* ---- El elemento gráfico: el mapa --------------------------------------- */
+
+
+/* ---- Las redes ----------------------------------------------------------
+
+   A la derecha del texto, en tipografía: la misma raya fina y las mismas filas que el
+   horario, para que las dos columnas lean como una sola ficha. Aquí no hay iconos porque
+   no hay ninguno en toda la web.
+   ------------------------------------------------------------------------ */
+
+.cierre__redes {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-self: end;
+  align-self: center;
+  width: min(20rem, 36vw);
+  display: grid;
+  gap: 0.7rem;
+}
+
+.cierre__redes-titulo {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(253 250 244 / 0.62);
+}
+
+.cierre__redes-lista {
+  display: grid;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgb(253 250 244 / 0.3);
+}
+
+.cierre__redes-lista a {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-block: 0.58rem;
+  font-size: 1.36rem;
+  color: var(--color-crema-50);
+  text-decoration: none;
+  /* El subrayado nace del borde, como en «Cómo llegar». */
+  border-bottom: 1px solid rgb(253 250 244 / 0.16);
+  transition: border-color 260ms ease-out, color 260ms ease-out;
+}
+
+.cierre__red-icono {
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  color: rgb(253 250 244 / 0.72);
+  transition: color 260ms ease-out;
+}
+
+.cierre__redes-lista a:hover .cierre__red-icono,
+.cierre__redes-lista a:focus-visible .cierre__red-icono {
+  color: var(--color-jardin-ambar);
+}
+
+.cierre__redes-lista li:last-child a {
+  border-bottom: 0;
+}
+
+.cierre__redes-lista a:hover,
+.cierre__redes-lista a:focus-visible {
+  border-bottom-color: var(--color-jardin-ambar);
+}
+
+.cierre__redes-lista a:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 2px;
+}
+
+.cierre__mapa-caja {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  width: 100%;
+  height: clamp(11rem, 24vh, 16rem);
+  margin-top: clamp(1.4rem, 3.4vh, 2.6rem);
+  overflow: hidden;
+  border-radius: 2px;
+  background: #0b0c0d;
+}
+
+
+
+/* El mapa de Google, directo: sin portada, sin botón y sin marco propio. */
+.cierre__mapa-marco {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* La foto llena el marco; el velo deja legible la etiqueta sin oscurecer la imagen. */
+
+
+
+
+
+
+
+
+
+
+/* La raya: la misma marca que ordena las paradas del carrusel, aquí una sola. */
+
+@media (max-width: 900px) {
+  .cierre {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+  }
+
+  .cierre__titulo,
+  .cierre__texto,
+  .cierre__mapa-caja {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .cierre__titulo {
+    white-space: normal;
+  }
+
+  .cierre__redes {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+    width: 100%;
+    margin-top: 0.4rem;
+  }
+
+  .cierre__mapa-caja {
+    grid-column: 1;
+    grid-row: auto;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    margin-top: 0.5rem;
+  }
 }
 
 /* Vídeo de fondo en bucle: ocupa la pantalla como una imagen, sin controles. */
@@ -1565,8 +1767,6 @@ button.tira__marco {
    tirones. `translateZ(0)` lo aísla y `backface-visibility` evita que el navegador
    recalcule el texto de atrás. */
 [data-lienzo] {
-  will-change: transform;
-  transform: translateZ(0);
   backface-visibility: hidden;
   /* Que no se interpole al estirarlo: el lienzo pinta a 1600 px y el CSS lo agranda. */
   image-rendering: auto;
@@ -1762,6 +1962,20 @@ button.tira__marco {
   }
 }
 
+
+
+
+
+
+
+
+@media (max-width: 900px) {
+  .cierre {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+}
+
 /* ---- El rótulo de abierto -------------------------------------------- */
 
 /* Va encima del horario: un punto y una frase. Encendido en ámbar cuando el bar está
@@ -1772,7 +1986,7 @@ button.tira__marco {
   align-items: center;
   gap: 0.5rem;
   margin: 0;
-  font-size: clamp(0.85rem, 1.9vmin, 1rem);
+  font-size: clamp(0.98rem, 2.1vmin, 1.15rem);
   letter-spacing: 0.02em;
   color: rgb(253 250 244 / 0.62);
 }
