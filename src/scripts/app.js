@@ -37,11 +37,17 @@ const APARECE_EN = [0, 0.25, 0.5, 0.75, 1];
  * foto se apaga, ni crece el desenfoque. Es lo que hace que un poco de scroll de más no
  * se lleve por delante lo que estás leyendo. El valor es generoso a propósito: unos
  * 160 px en una pantalla de 900.
+ *
+ * Se ensanchó a 0,032 / 0,062 para que el texto aguante con trackpad: con 0,015 solo está
+ * entero en 298 px de cada 2160, la séptima parte del hueco entre paradas, y un gesto de
+ * dedo de 400 px cae en zona muerta —fotograma sin texto, sensación de haberse pasado—.
+ * Con 0,032 la franja mide unos 620 px y el corredor de viaje sin texto sigue siendo la
+ * mitad del recorrido.
  */
-const AGARRE_APARTADO = 0.015;
+const AGARRE_APARTADO = 0.032;
 
 /** Donde termina el fundido del texto, también en tanto por uno del recorrido. */
-const FUNDIDO_APARTADO = 0.042;
+const FUNDIDO_APARTADO = 0.062;
 
 /** Fracción del recorrido en la que termina la película: el resto es aterrizaje. */
 const TOPE_FINAL = 0.96;

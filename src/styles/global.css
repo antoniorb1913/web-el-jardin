@@ -1976,6 +1976,28 @@ button.tira__marco {
 
 }
 
+/* En pantallas bajas —un portátil con la barra de marcadores abierta— el bloque entero se
+   reduce en proporción: la misma composición, todo un poco más pequeño, en vez de quedar
+   apretado contra los bordes. `zoom` escala también las tipografías, así que la jerarquía
+   se mantiene intacta. */
+@media (max-height: 880px) {
+  .cierre {
+    zoom: 0.92;
+  }
+}
+
+@media (max-height: 800px) {
+  .cierre {
+    zoom: 0.86;
+  }
+}
+
+@media (max-height: 740px) {
+  .cierre {
+    zoom: 0.8;
+  }
+}
+
 /* ---- El rótulo de abierto -------------------------------------------- */
 
 /* Va encima del horario: un punto y una frase. Encendido en ámbar cuando el bar está

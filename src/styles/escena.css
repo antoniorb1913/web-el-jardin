@@ -216,7 +216,7 @@
   left: clamp(2.6rem, 7vw, 8rem);
   /* La foto mide 49vw de ancho; su media altura es 18,4vw. El tope evita que la barra se
      despegue en pantallas muy anchas, donde la foto deja de crecer. */
-  top: calc(61% + min(18.4vw, 17.5rem) + 0.45rem);
+  top: min(calc(61% + min(18.4vw, 17.5rem) + 0.45rem), calc(100% - 3rem));
   z-index: 4;
   display: flex;
   gap: 0.15rem;
@@ -263,8 +263,12 @@
 
 .escena__flechas {
   position: absolute;
-  right: clamp(12rem, 4vw, 3.4rem);
-  top: calc(60% + min(18.4vw, 17.5rem) + 0.1rem);
+  /* La flecha de la derecha apoya su trazo en el borde de la foto. El botón mide 2,2 rem y
+     el signo va centrado dentro, así que hay que desplazar el bloque esos 0,6 rem de aire
+     que sobran a la derecha: si no, el borde del botón coincide con la foto pero la flecha
+     se queda diez píxeles dentro. */
+  right: calc(45% - min(35vw, 45rem) / 2 - 0.6rem);
+  top: min(calc(60% + min(18.4vw, 17.5rem) + 0.1rem), calc(100% - 3.6rem));
   z-index: 4;
   display: flex;
   align-items: center;
@@ -320,9 +324,13 @@
     font-size: clamp(1.9rem, 4.2vw, 3.4rem);
   }
 
+  /* La frase iba a `30vh`: en una pantalla de 720 px de alto eso son 216 px y se comía
+     media pantalla. Ahora se mide por el ancho, como el resto, y con tope. */
+  /* La frase se mide por el lado corto y con tope: en un portátil de 700 px de alto,
+     `6vw` todavía daba 112 px y la frase se comía el apartado. Aquí manda el alto. */
   .escena__numero {
     top: calc(50% - min(16.5vw, 12.75rem) - 5vh);
-    font-size: clamp(5rem, 30vh, 14rem);
+    font-size: clamp(2.6rem, min(7vh, 3.8vw), 6rem);
   }
 }
 
