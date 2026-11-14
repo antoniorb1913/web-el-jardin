@@ -595,3 +595,39 @@ HTML, el navegador lo bloquea en vez de ejecutarlo. Es el cinturón de seguridad
 3. Bajar al mapa y pulsar «Ver el mapa»: el iframe carga y sigue sin haber violaciones.
 4. `curl -I https://…/` y comprobar que salen `Content-Security-Policy` y
    `X-Frame-Options: DENY`.
+
+## 2026-11-14 · T16 — Versión en inglés: probada y retirada
+
+**Estado:** ❌ Descartada
+**Commits:** `a55788f` (la web en inglés) y `6132b2d` (su reversión)
+
+### 1. ¿Qué pasó?
+
+Se montó la web entera en español e inglés —textos, carta, fotos, cierre, legales, metadatos,
+`hreflang` y un selector `ES · EN` en la cabecera—, con el alemán escrito y sin publicar. Una
+hora después el usuario pidió dejarlo solo en español.
+
+### 2. ¿Por qué?
+
+La web en inglés funcionaba, pero **no había nada publicado donde verla**: el dominio que se
+estaba mirando (`bareljardin-bolnuevo.netlify.app`) es la tarjeta digital antigua, que no es
+este proyecto. Desde ahí, `/en/` da 404 y no hay ni recorrido ni escenas. El resultado fue la
+sensación de que «el inglés va fatal» cuando en realidad eran dos webs distintas.
+
+Con ese ruido encima, la decisión del dueño fue clara: **una sola web, en español**.
+
+### 3. ¿Cómo se retiró?
+
+Con `git revert a55788f`, no con un `reset`: se conserva el commit original en el historial y
+el árbol vuelve exactamente al estado anterior. Si algún día se quiere recuperar, basta con
+`git revert 6132b2d` o copiar los archivos de `a55788f`.
+
+Lo que **se quedó**, porque no era del inglés: el ancla `#fotos` que faltaba en el apartado de
+fotos —el enlace del menú no llevaba a ninguna parte— y las notas de esta entrada.
+
+### 4. ¿Qué hay que saber para el futuro?
+
+- El alemán y el inglés quedan escritos en el commit `a55788f`, no se han perdido.
+- `astro.config.mjs` declara hoy `site: 'https://bareljardin.netlify.app'`, que **no es de este
+  bar**: hay otra web de otro «Bar El Jardín» ahí. Antes de publicar hay que poner el dominio
+  de verdad (T18).
