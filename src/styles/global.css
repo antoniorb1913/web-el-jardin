@@ -256,7 +256,7 @@
   padding: 0.85rem 0;
   color: var(--color-crema-50);
   /* Velo propio: sin él, el texto se pierde cuando debajo pasa una zona clara. */
-  background: linear-gradient(to bottom, rgb(8 26 16 / 0.62), rgb(8 26 16 / 0));
+  background: linear-gradient(to bottom, rgb(8 26 16 / 0.82), rgb(8 26 16 / 0.34) 55%, rgb(8 26 16 / 0));
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
@@ -288,9 +288,19 @@
   display: block;
   width: auto;
   height: 38px;
-  /* Sombra suave: el logotipo tiene partes amarillas y sobre una pared clara se
-     perdería sin ella. */
-  filter: drop-shadow(0 1px 8px rgb(0 0 0 / 0.55));
+  /* El logotipo tiene cinco colores saturados y va sobre una foto que cambia: con una
+     sombra difusa, las letras amarillas y las claras se pierden cuando detrás pasa el
+     cielo o la pared blanca. Un contorno de un píxel en el verde del velo —cuatro sombras
+     duras, una por lado— las separa del fondo sin meter ninguna caja y sin tocar el color.
+     La sombra larga de después lo despega durante los cruces.
+     Se probó también la silueta en crema, que era más elegante pero le quitaba al bar los
+     colores del cartel, y se descartó. */
+  filter:
+    drop-shadow(1px 0 0 rgb(4 16 9))
+    drop-shadow(-1px 0 0 rgb(4 16 9))
+    drop-shadow(0 1px 0 rgb(4 16 9))
+    drop-shadow(0 -1px 0 rgb(4 16 9))
+    drop-shadow(0 3px 12px rgb(0 0 0 / 0.5));
 }
 
 .encabezado__nav {
@@ -554,7 +564,7 @@
 
 @media (min-width: 860px) {
   .encabezado__logo {
-    height: 44px;
+    height: 48px;
   }
 }
 

@@ -8,12 +8,12 @@
  */
 
 const TITULOS = [
+  ['La', 'fachada'],
   ['La', 'entrada'],
   ['La', 'terraza 1'],
   ['La', 'barra'],
   ['David', 'de Miguel Angel'],
   ['La', 'terraza 2'],
-  ['Bolnuevo', ''],
 ];
 
 export function iniciarEscena() {

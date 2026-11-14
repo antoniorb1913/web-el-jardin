@@ -9,12 +9,12 @@
  */
 
 export const fotos = [
-  { foto: 'bar1', alt: 'La entrada de la terraza, entre plantas' },
-  { foto: 'bar3', alt: 'La terraza, con las sillas de colores' },
+  { foto: 'bar1', alt: 'La fachada del bar desde la calle, con el rótulo pintado y las banderas' },
+  { foto: 'bar2', alt: 'La entrada de la terraza, entre plantas' },
+  { foto: 'bar3', alt: 'La terraza, con las sillas de colores y el campo al fondo' },
   { foto: 'bar4', alt: 'La barra, con las banderas de España y Murcia' },
   { foto: 'bar5', alt: 'La estatua dorada junto a la pared de platos' },
-  { foto: 'bar6', alt: 'Las mesas amarillas, con el campo al fondo' },
-  { foto: 'bar7', alt: 'Bolnuevo desde la terraza' },
+  { foto: 'bar6', alt: 'Las mesas amarillas, con las vistas al campo' },
 ];
 
 /**
