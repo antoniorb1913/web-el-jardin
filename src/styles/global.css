@@ -948,8 +948,16 @@
   z-index: 2;
   opacity: 0;
   pointer-events: none;
-  backdrop-filter: blur(calc(var(--desenfoque) * 1px));
+  /*
+   * El prefijado va PRIMERO y el estándar DESPUÉS, y no al revés.
+   *
+   * El minificador que compila este CSS funde las dos declaraciones en una y se queda con
+   * la última: con el estándar delante, publicaba solo `-webkit-backdrop-filter`, que
+   * Chrome ya no usa desde 2019 — y el desenfoque del cruce no se veía en la web. En este
+   * orden, la que sobrevive es la estándar, que es la que entienden todos.
+   */
   -webkit-backdrop-filter: blur(calc(var(--desenfoque) * 1px));
+  backdrop-filter: blur(calc(var(--desenfoque) * 1px));
   mask-image: radial-gradient(
     circle at 50% 46%,
     #000 calc(var(--radio) * 1%),
