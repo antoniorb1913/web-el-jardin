@@ -237,6 +237,21 @@ Formato exacto:
 
 ---
 
+### 8.1 Excepción registrada (2026-11-14)
+
+La versión en inglés se montó (T16), se subió y el usuario pidió retirarla **y que lo hiciera
+el agente**. Como §8 prohíbe ejecutar git, se avisa y se deja escrito aquí:
+
+> **2026-11-14 · petición explícita del usuario.** El agente ejecutó `git revert a55788f`,
+> `git commit` y `git push` sobre `main` para retirar la web bilingüe, y después un commit de
+> corrección. Fue una excepción puntual, pedida en estos términos: «quítame los cambios que
+> subí a GitHub, hazlo tú». La gestión de git vuelve a ser del usuario a partir de aquí.
+
+Se usó `revert` y no `reset` precisamente para no reescribir historia: el commit del inglés
+sigue en el historial y se puede recuperar con `git revert 6132b2d`.
+
+---
+
 ## 9. REGLA 6 — Comprobación obligatoria al recibir «sí» (§7.1)
 
 Cada vez que el usuario responda **«sí»** a «¿Todo OK?», el agente comprueba que todo está bien subido y avisa de lo que falte. **Sin excepciones.** Se revisa, en este orden:
