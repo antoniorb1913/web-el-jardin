@@ -23,7 +23,7 @@
 | 3 · Legal y SEO | **T12** · SEO: metas, Open Graph, JSON-LD `BarOrPub`, sitemap, robots | ⏳ Pendiente | T11 |
 | 4 · Calidad | **T13** · Accesibilidad y responsive (auditoría) | ✅ Completada | T12 |
 | 4 · Calidad | **T14** · Rendimiento y presupuesto de arranque | ✅ Completada | T13 |
-| 4 · Calidad | **T15** · Seguridad: `_headers` y CSP | ⏳ Pendiente | T14 |
+| 4 · Calidad | **T15** · Seguridad: `_headers` y CSP | ✅ Completada | T14 |
 | 5 · Publicación | **T16** · Versión en inglés (**confirmar antes**) | ⏳ Pendiente | T15 |
 | 5 · Publicación | **T17** · Página 404 y detalles finales | ⏳ Pendiente | T15 |
 | 5 · Publicación | **T18** · Publicación en Netlify y dominio | ⏳ Pendiente | T16, T17 |
@@ -322,7 +322,7 @@ flechas caen debajo de la imagen.
 
 ---
 
-### T15 · Seguridad: `_headers` y CSP — ⏳
+### T15 · Seguridad: `_headers` y CSP — ✅
 
 **Objetivo:** cabeceras `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security`, cacheado de estáticos.
 

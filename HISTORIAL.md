@@ -24,6 +24,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T12 | 2026-11-14 | SEO: metas, Open Graph, JSON-LD, sitemap y robots | ✅ Completada |
 | T13 | 2026-11-14 | Accesibilidad y responsive | ✅ Completada |
 | T14 | 2026-11-14 | Rendimiento: peso, imágenes y caché | ✅ Completada |
+| T15 | 2026-11-14 | Seguridad: cabeceras y CSP | ✅ Completada |
 
 ---
 
@@ -559,3 +560,38 @@ aunque cupiera la pequeña. Corregir ese dato ahorró 309 KB sin tocar una sola 
    menos de medio segundo.
 3. `npm run dev` no sirve para esto: mete el cliente de recarga y la barra de Astro, y suma
    más de 2 MB que en producción no existen.
+
+## 2026-11-14 · T15 — Seguridad: cabeceras y CSP
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t15-seguridad`
+**Commit:** `feat: cabeceras de seguridad y CSP cerrada`
+**Archivos:** `public/_headers`
+
+### 1. ¿Qué he realizado?
+
+Una política de seguridad de contenido (CSP) cerrada —`default-src 'self'`— con una sola
+concesión: `frame-src` para el mapa de Google que se carga al pulsar. Y las cabeceras que
+faltaban: `X-Frame-Options: DENY` contra el clickjacking, `Permissions-Policy` apagando
+cámara, micrófono y geolocalización, y `Referrer-Policy` en su versión estricta.
+
+### 2. ¿Por qué?
+
+La web no necesita nada de fuera: fuentes, estilos, guiones e imágenes son propios, no hay
+analítica ni píxeles. Con una política así, si algún día se cuela un guion de terceros en el
+HTML, el navegador lo bloquea en vez de ejecutarlo. Es el cinturón de seguridad del proyecto.
+
+### 3. ¿Dónde verlo en el código?
+
+- `public/_headers` — el bloque de seguridad, con la política comentada directiva a directiva,
+  y un bloque aparte para los XML: si alguien abre el sitemap en el navegador, Chrome lo
+  pinta con su propia hoja de estilos y la política cerrada la bloquearía.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. `npm run build` y servir `dist` con las cabeceras de Netlify (o desplegar en una rama de
+   vista previa).
+2. Abrir la portada con la consola del navegador: **cero** mensajes de «Refused to…».
+3. Bajar al mapa y pulsar «Ver el mapa»: el iframe carga y sigue sin haber violaciones.
+4. `curl -I https://…/` y comprobar que salen `Content-Security-Policy` y
+   `X-Frame-Options: DENY`.

@@ -35,7 +35,30 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# Y un mínimo de seguridad, aunque las completas llegan en T15.
+# ---------------------------------------------------------------------------
+# Seguridad (T15)
+#
+# La política es cerrada porque la web no necesita nada de fuera: las fuentes, los estilos
+# y los guiones son propios; las imágenes, propias; no hay analítica, ni píxeles, ni nada
+# que llame a un tercero al cargar.
+#
+# La única concesión es `frame-src https://www.google.com`: el mapa del último apartado es
+# un iframe de Google, y solo se carga cuando el visitante pulsa «Ver el mapa». Hasta
+# entonces no hay ni una petición.
+#
+# `frame-ancestors 'none'` evita que alguien meta esta web dentro de otra para hacer
+# clickjacking, y `upgrade-insecure-requests` impide que nada se sirva por http.
+# ---------------------------------------------------------------------------
+
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  X-Frame-Options: DENY
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; frame-src https://www.google.com https://maps.google.com; upgrade-insecure-requests
+
+# El sitemap lo abre un buscador, no una persona; pero si alguien lo abre en el navegador,
+# Chrome lo pinta con su propia hoja de estilos y la política cerrada la bloquearía. Se
+# afloja solo para los XML, que no ejecutan nada.
+/*.xml
+  Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'
