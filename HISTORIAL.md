@@ -20,6 +20,9 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T8 | 2026-11-03 | La carta: especialidades y comida en tira horizontal | ✅ Completada |
 | T9 | 2026-11-06 | Galería de fotos del bar | ✅ Completada |
 | T10 | 2026-11-10 | Dónde estamos: estado, mapa y redes | ✅ Completada |
+| T11 | 2026-11-14 | Aviso legal, privacidad y consentimiento del mapa | ✅ Completada |
+| T12 | 2026-11-14 | SEO: metas, Open Graph, JSON-LD, sitemap y robots | ✅ Completada |
+| T13 | 2026-11-14 | Accesibilidad y responsive | ✅ Completada |
 
 ---
 
@@ -475,3 +478,42 @@ solo icono en ningún sitio; al verlo, el usuario prefirió los iconos y se aña
    sábado ya no.
 5. Las tres redes abren en pestaña nueva y el subrayado se vuelve ámbar al pasar el ratón.
 6. Estrechar la ventana: el mapa baja debajo del texto y las redes se alinean a la izquierda.
+
+## 2026-11-14 · T13 — Accesibilidad y responsive
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t13-accesibilidad`
+**Commit:** `fix: accesibilidad — apartados inertes, contraste del pie y zonas del dedo`
+**Archivos:** `src/scripts/app.js`, `src/styles/global.css`
+
+### 1. ¿Qué he realizado?
+
+Auditoría completa con `axe-core` en cuatro vistas —portada, cierre, aviso legal y
+privacidad— y arreglo de todo lo que salió: un contraste que se quedaba en 4,45:1, los cinco
+apartados apilados que se podían tabular aunque estuvieran invisibles, y las zonas pulsables
+del móvil, que llegaban a medir 14 px de alto.
+
+### 2. ¿Por qué?
+
+Los cinco apartados viven a la vez en el HTML, superpuestos. Un lector de pantalla los leía
+todos seguidos y el tabulador recorría los enlaces de cuatro apartados que no se ven: el
+visitante con teclado podía acabar pulsando «Cómo llegar» de una página que no estaba
+mirando. `inert` quita ese subárbol de la navegación y del árbol de accesibilidad.
+
+En el móvil, las rayas del carrusel medían 14 px de alto y las flechas 35: se pulsaban, pero
+había que apuntar. Con `pointer: coarse` crece solo el área del dedo, no el dibujo.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/scripts/app.js` — `actualizarPaneles()`: al panel invisible se le pone `inert` y
+  `aria-hidden`; al visible se le quitan.
+- `src/styles/global.css` — `.pie__legal` sube al 62 % de crema (contraste), y el bloque
+  `@media (pointer: coarse)` con las zonas de 44 px.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. Abrir <http://localhost:4321/?animar=1> y pulsar Tab desde el principio: hay que llegar a
+   «Baja y entra» sin pasar por ningún enlace de otro apartado.
+2. Con el móvil o el modo dispositivo de las herramientas: pulsar las rayas del carrusel y
+   las flechas — se acierta sin apuntar.
+3. `axe-core` sobre la portada, el cierre y las dos páginas legales: cero infracciones.

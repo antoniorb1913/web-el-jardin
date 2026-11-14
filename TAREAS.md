@@ -19,9 +19,9 @@
 | 2 · Contenido | **T8** · Secciones «Especialidades» y «Nuestra comida» | ✅ Completada | T7 |
 | 2 · Contenido | **T9** · Galería de fotos del bar | ✅ Completada | T8 |
 | 2 · Contenido | **T10** · Ubicación + horario + estado «Abierto ahora» | ✅ Completada | T8 |
-| 3 · Legal y SEO | **T11** · Aviso legal, privacidad y consentimiento del mapa | ⏳ Pendiente | T10 |
+| 3 · Legal y SEO | **T11** · Aviso legal, privacidad y consentimiento del mapa | 🔧 En curso | T10 |
 | 3 · Legal y SEO | **T12** · SEO: metas, Open Graph, JSON-LD `BarOrPub`, sitemap, robots | ⏳ Pendiente | T11 |
-| 4 · Calidad | **T13** · Accesibilidad y responsive (auditoría) | ⏳ Pendiente | T12 |
+| 4 · Calidad | **T13** · Accesibilidad y responsive (auditoría) | ✅ Completada | T12 |
 | 4 · Calidad | **T14** · Rendimiento y presupuesto de arranque | ⏳ Pendiente | T13 |
 | 4 · Calidad | **T15** · Seguridad: `_headers` y CSP | ⏳ Pendiente | T14 |
 | 5 · Publicación | **T16** · Versión en inglés (**confirmar antes**) | ⏳ Pendiente | T15 |
@@ -282,7 +282,7 @@ flechas caen debajo de la imagen.
 
 ---
 
-### T11 · Aviso legal, privacidad y consentimiento del mapa — ⏳
+### T11 · Aviso legal, privacidad y consentimiento del mapa — 🔧
 
 **Objetivo:** páginas de aviso legal y privacidad con datos reales del titular (pendientes de recibir) y **aviso de cookies** para el mapa incrustado, que ya pone cookies de Google al cargar (decisión del 2026-11-10, ver `AGENTS.md` §3).
 

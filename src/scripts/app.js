@@ -420,8 +420,26 @@ export function iniciarPortada() {
       if (viajando) opacidad = 0;
 
       panel.style.setProperty('--opacidad-panel', opacidad.toFixed(3));
-      if (opacidad > 0.5) panel.dataset.visible = 'si';
-      else delete panel.dataset.visible;
+
+      /*
+       * Un apartado que no se ve no debe existir para el teclado ni para un lector de
+       * pantalla. Los cinco están apilados en el DOM, así que sin esto se puede tabular
+       * por los enlaces de cuatro apartados invisibles y un lector los lee todos seguidos.
+       *
+       * `inert` quita el subárbol de la navegación y del árbol de accesibilidad, y de paso
+       * refuerza lo que ya hace `pointer-events: none`. Se pone `aria-hidden` también
+       * porque hay navegadores antiguos que conocen uno y no el otro.
+       */
+      const visible = opacidad > 0.5;
+      if (visible) {
+        panel.dataset.visible = 'si';
+        panel.removeAttribute('inert');
+        panel.removeAttribute('aria-hidden');
+      } else {
+        delete panel.dataset.visible;
+        panel.setAttribute('inert', '');
+        panel.setAttribute('aria-hidden', 'true');
+      }
     });
 
     actualizarFotos(avance);

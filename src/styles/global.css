@@ -537,7 +537,8 @@
   max-width: 72rem;
   margin: 2.5rem auto 0;
   font-size: 0.8rem;
-  color: rgb(253 250 244 / 0.55);
+  /* Al 0,55 daba 4,45:1 sobre el verde y no llegaba al mínimo de 4,5 para texto pequeño. */
+  color: rgb(253 250 244 / 0.62);
 }
 
 @media (min-width: 860px) {
@@ -778,6 +779,7 @@
 }
 
 .cierre__mapa-caja {
+  position: relative;
   grid-column: 1 / -1;
   grid-row: 3;
   width: 100%;
@@ -786,6 +788,80 @@
   overflow: hidden;
   border-radius: 2px;
   background: #0b0c0d;
+}
+
+/* El botón ocupa toda la caja: es la foto con el rótulo encima. */
+.cierre__mapa-boton {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cierre__mapa-fondo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* El velo: solo abajo, para que el rótulo se lea sin oscurecer la fachada. */
+.cierre__mapa-velo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgb(4 16 9 / 0.82), rgb(4 16 9 / 0.15) 45%, transparent);
+  pointer-events: none;
+}
+
+.cierre__mapa-rotulo {
+  position: absolute;
+  left: 1.1rem;
+  bottom: 1.5rem;
+  z-index: 2;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-crema-50);
+}
+
+.cierre__mapa-aviso {
+  position: absolute;
+  left: 1.1rem;
+  bottom: 0.65rem;
+  z-index: 2;
+  font-size: 0.68rem;
+  color: rgb(253 250 244 / 0.62);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cierre__mapa-boton:hover .cierre__mapa-fondo {
+    transform: scale(1.02);
+  }
+}
+
+.cierre__mapa-boton:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: -3px;
+}
+
+/* El mapa, ya cargado: ocupa la caja entera. */
+.cierre__mapa-marco {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 
@@ -1438,6 +1514,11 @@
   place-items: center;
   width: 2.2rem;
   height: 2.2rem;
+  /* La zona pulsable llega a 44 px con un relleno invisible: el dibujo sigue midiendo lo
+     mismo, pero el dedo acierta. */
+  padding: 0.55rem;
+  margin: -0.55rem;
+  box-sizing: content-box;
   padding: 0;
   border: 0;
   background: none;
@@ -2008,6 +2089,25 @@ button.tira__marco {
   }
 }
 
+/* Los dos enlaces legales del cierre, al lado del copyright y en su mismo tono. */
+.cierre__enlaces {
+  display: inline-flex;
+  gap: 0.9rem;
+  margin-inline-start: 0.7rem;
+}
+
+.cierre__enlaces a {
+  color: rgb(253 250 244 / 0.72);
+  text-decoration: none;
+  border-bottom: 1px solid rgb(253 250 244 / 0.3);
+}
+
+.cierre__enlaces a:hover,
+.cierre__enlaces a:focus-visible {
+  color: var(--color-crema-50);
+  border-bottom-color: var(--color-jardin-ambar);
+}
+
 /* ---- El rótulo de abierto -------------------------------------------- */
 
 /* Va encima del horario: un punto y una frase. Encendido en ámbar cuando el bar está
@@ -2039,4 +2139,216 @@ button.tira__marco {
 .cierre__estado[data-abierto='si'] .cierre__punto {
   background: var(--color-jardin-ambar);
   box-shadow: 0 0 0 3px rgb(255 160 0 / 0.18);
+}
+
+/* ---------------------------------------------------------------------------
+   Páginas legales (T11)
+
+   Aviso legal y privacidad: una columna de lectura sobre el crema de la casa. La
+   cabecera cambia a tinta oscura, porque el crema sobre crema no se lee.
+   --------------------------------------------------------------------------- */
+
+[data-tema='claro'] .encabezado {
+  background: linear-gradient(to bottom, rgb(253 250 244 / 0.95), rgb(253 250 244 / 0.8) 70%, rgb(253 250 244 / 0));
+  color: var(--color-tinta-900);
+}
+
+[data-tema='claro'] .encabezado__nav a {
+  color: rgb(22 36 28 / 0.78);
+}
+
+[data-tema='claro'] .encabezado__nav a:hover,
+[data-tema='claro'] .encabezado__nav a:focus-visible {
+  color: var(--color-tinta-900);
+}
+
+[data-tema='claro'] .encabezado__boton {
+  border-color: rgb(22 36 28 / 0.35);
+  color: var(--color-tinta-900);
+}
+
+/* Sobre crema el logotipo no necesita el contorno: sus colores ya contrastan. */
+[data-tema='claro'] .encabezado__logo {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.25));
+}
+
+.legal {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: clamp(5.5rem, 12vh, 7.5rem) clamp(1.25rem, 4vw, 2rem) clamp(3rem, 8vh, 5rem);
+  color: var(--color-tinta-700);
+}
+
+.legal__migas {
+  margin: 0 0 1.6rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--color-tinta-500);
+}
+
+.legal__migas a {
+  color: inherit;
+}
+
+.legal__titulo {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5.4vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--color-tinta-900);
+}
+
+.legal__entradilla {
+  margin: 0.9rem 0 0;
+  font-size: clamp(1.02rem, 2.2vmin, 1.18rem);
+  line-height: 1.7;
+  color: var(--color-tinta-700);
+}
+
+/* La ficha del titular: los mismos pares de datos que el horario del cierre. */
+.legal__ficha {
+  display: grid;
+  gap: 0.55rem;
+  margin: 2rem 0 0;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--color-crema-200);
+  font-size: 0.95rem;
+}
+
+.legal__ficha div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.legal__ficha dt {
+  color: var(--color-tinta-500);
+}
+
+.legal__ficha dd {
+  margin: 0;
+  text-align: right;
+}
+
+.legal__bloque {
+  margin-top: 2.2rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--color-crema-200);
+}
+
+.legal__bloque h2 {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-tinta-900);
+}
+
+.legal__bloque p {
+  margin: 0 0 0.85rem;
+  font-size: 1rem;
+  line-height: 1.78;
+  text-wrap: pretty;
+}
+
+.legal__bloque p:last-child {
+  margin-bottom: 0;
+}
+
+.legal__bloque a {
+  color: var(--color-tinta-900);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-jardin-ambar);
+}
+
+.legal__bloque a:hover,
+.legal__bloque a:focus-visible {
+  border-bottom-width: 2px;
+}
+
+/* El aviso de datos que faltan: rojo de marca, sin adornos. Se ve y se quita al rellenarlos. */
+.legal__pendiente {
+  margin: 1.6rem 0 0;
+  padding: 0.9rem 1.1rem;
+  border-left: 3px solid var(--color-jardin-granate);
+  background: rgb(175 0 37 / 0.06);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-tinta-900);
+}
+
+.legal__pendiente code {
+  font-size: 0.88em;
+  background: rgb(22 36 28 / 0.06);
+  padding: 0.1em 0.35em;
+  border-radius: 2px;
+}
+
+.legal__pie {
+  margin: 2.6rem 0 0;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--color-crema-200);
+  font-size: 0.85rem;
+  color: var(--color-tinta-500);
+}
+
+.legal__pie a {
+  color: inherit;
+}
+
+/* Los dos enlaces legales del pie, separados del copyright. */
+.pie__enlaces {
+  display: inline-flex;
+  gap: 1rem;
+  margin-inline-start: 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Zonas pulsables en pantallas táctiles (T13)
+
+   Los mandos de la web son pequeños a propósito —rayas, flechas, enlaces en versalitas—
+   y en un móvil eso obliga a apuntar. Con `pointer: coarse` se crece solo el área que
+   recibe el dedo, con relleno invisible y margen negativo: el dibujo no cambia de tamaño
+   ni de sitio, pero se acierta sin precisión. En escritorio, nada de esto se aplica.
+   --------------------------------------------------------------------------- */
+
+@media (pointer: coarse) {
+  /* El logotipo y el botón del índice, a 44 px de alto. */
+  .encabezado__marca {
+    padding-block: 3px;
+    margin-block: -3px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .encabezado__boton {
+    min-height: 44px;
+    padding-block: 0.65rem;
+  }
+
+  /* «Ver en grande», la etiqueta de la escena. */
+  .escena__enlace {
+    padding-block: 0.85rem;
+    margin-block: -0.85rem;
+  }
+
+  /* Las rayas del carrusel: la línea mide 2 px, el blanco del dedo 44. */
+  .carta__raya,
+  .escena__raya {
+    height: 44px;
+    display: grid;
+    align-items: center;
+  }
+
+  /* Las flechas de las dos tiras. */
+  .escena__flecha,
+  .carta__flecha {
+    padding: 0.55rem;
+    margin: -0.55rem;
+    box-sizing: content-box;
+  }
 }
