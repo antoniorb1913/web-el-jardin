@@ -15,6 +15,7 @@ import HeroScrolly from '../components/HeroScrolly.astro';
 import Seccion from '../components/Seccion.astro';
 import Carta from '../components/Carta.astro';
 import Escena from '../components/Escena.astro';
+import JsonLd from '../components/JsonLd.astro';
 import { direccion, horario, enlaceMapa, redes } from '../data/negocio';
 import { bebidas, platos, notaCarta } from '../data/carta';
 
@@ -25,6 +26,7 @@ const anio = new Date().getFullYear();
 ---
 
 <Base pie={false}>
+  <JsonLd />
   <HeroScrolly>
     <!-- PORTADA: la foto manda y la tipografía susurra. Un bloque pequeño, apoyado en
          una línea fina, abajo a la izquierda. -->
@@ -119,7 +121,13 @@ const anio = new Date().getFullYear();
               </a>
             </p>
 
-            <p class="cierre__legal">© {anio} Bar El Jardín · Bolnuevo, Mazarrón</p>
+            <p class="cierre__legal">
+              © {anio} Bar El Jardín · Bolnuevo, Mazarrón
+              <span class="cierre__enlaces">
+                <a href="/aviso-legal">Aviso legal</a>
+                <a href="/privacidad">Privacidad</a>
+              </span>
+            </p>
           </div>
 
           {/* Redes del bar: a la derecha del texto, en texto y no en iconos, como el resto
@@ -165,18 +173,24 @@ const anio = new Date().getFullYear();
             </ul>
           </nav>
 
-          {/* Decisión del usuario (2026-11-10): el mapa se incrusta directamente y ocupa todo
-              el ancho de la cuadrícula, debajo del texto. Aviso: Google pone sus cookies al
-              cargar; el consentimiento se monta en T11. */}
-          <div class="cierre__mapa-caja">
-            <iframe
-              class="cierre__mapa-marco"
-              src={`https://www.google.com/maps?q=${encodeURIComponent(direccion.completa)}&z=16&iwloc=none&output=embed`}
-              title="Mapa con la ubicación del Bar El Jardín"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen
-            ></iframe>
+          {/* El mapa no carga nada de Google hasta que se pulsa: quien entra a mirar el
+              horario no recibe ni una cookie de terceros. El clic es el consentimiento. */}
+          <div class="cierre__mapa-caja" data-mapa>
+            <button class="cierre__mapa-boton" type="button" data-mapa-abrir>
+              <img
+                class="cierre__mapa-fondo"
+                src="/ubicacion/fachada-pequena.webp"
+                srcset="/ubicacion/fachada-pequena.webp 800w, /ubicacion/fachada.webp 1600w"
+                sizes="(max-width: 900px) 92vw, 70rem"
+                alt=""
+                width="1600"
+                height="1200"
+                decoding="async"
+              />
+              <span class="cierre__mapa-velo" aria-hidden="true"></span>
+              <span class="cierre__mapa-rotulo">Ver el mapa</span>
+              <span class="cierre__mapa-aviso">Al abrirlo, Google puede usar cookies.</span>
+            </button>
           </div>
         </div>
       </div>
@@ -186,7 +200,9 @@ const anio = new Date().getFullYear();
 
 <script>
   import { iniciarEstadoBar } from '../scripts/horario.js';
+  import { iniciarMapa } from '../scripts/mapa.js';
   import { tramos } from '../data/negocio.js';
 
   iniciarEstadoBar(tramos);
+  iniciarMapa();
 </script>

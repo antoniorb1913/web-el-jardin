@@ -1,0 +1,63 @@
+---
+/**
+ * Página legal (T11).
+ *
+ * Aviso legal y privacidad comparten forma: una columna estrecha sobre el crema de la
+ * casa, el título en Fredoka, los apartados en Figtree y una raya fina entre bloques.
+ * Nada más: son páginas para leer, no para mirar.
+ *
+ * Si faltan los datos del titular, la página lo dice en voz alta. Es preferible una
+ * página con un aviso rojo visible a un aviso legal publicado con huecos.
+ */
+import Base from '../layouts/Base.astro';
+import { titular, titularCompleto, ultimaRevision } from '../data/legal';
+
+interface Props {
+  titulo: string;
+  entradilla: string;
+}
+
+const { titulo, entradilla } = Astro.props;
+---
+
+<Base titulo={`${titulo} · Bar El Jardín`} descripcion={entradilla} tema="claro">
+  <article class="legal">
+    <p class="legal__migas"><a href="/">Bar El Jardín</a> · {titulo}</p>
+
+    <h1 class="legal__titulo">{titulo}</h1>
+    <p class="legal__entradilla">{entradilla}</p>
+
+    {!titularCompleto && (
+      <p class="legal__pendiente" role="status">
+        <strong>Falta por completar.</strong> Los datos del titular —nombre, NIF y correo—
+        todavía no están puestos en <code>src/data/legal.js</code>. Esta página no se puede
+        publicar así.
+      </p>
+    )}
+
+    <dl class="legal__ficha">
+      <div>
+        <dt>Titular</dt>
+        <dd>{titular.nombre || 'Pendiente'}</dd>
+      </div>
+      <div>
+        <dt>NIF</dt>
+        <dd>{titular.nif || 'Pendiente'}</dd>
+      </div>
+      <div>
+        <dt>Domicilio</dt>
+        <dd>{titular.domicilio}</dd>
+      </div>
+      <div>
+        <dt>Correo</dt>
+        <dd>{titular.correo || 'Pendiente'}</dd>
+      </div>
+    </dl>
+
+    <slot />
+
+    <p class="legal__pie">
+      Última revisión: {ultimaRevision}. · <a href="/">Volver a la portada</a>
+    </p>
+  </article>
+</Base>

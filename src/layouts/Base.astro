@@ -21,22 +21,59 @@ interface Props {
    * de páginas llevan el pie normal al final del documento.
    */
   pie?: boolean;
+  /**
+   * `claro` para las páginas sobre fondo crema —las legales—: la cabecera cambia a tinta
+   * oscura, porque el crema sobre crema no se lee.
+   */
+  tema?: 'claro';
 }
 
 const {
   titulo = 'Bar El Jardín · Bar en Bolnuevo, Mazarrón',
   descripcion = 'Bar rodeado de flores y plantas en Bolnuevo (Mazarrón, Murcia). Especialidades de la casa, bratwurst, currywurst y tabla de jamón serrano.',
   pie = true,
+  tema,
 } = Astro.props;
+
+/** Dirección absoluta de esta página, para la canónica y para Open Graph. */
+const canonica = new URL(Astro.url.pathname, Astro.site ?? 'https://bareljardin.netlify.app').href;
+
+/** La imagen que enseñan WhatsApp, Telegram y las redes al compartir el enlace. */
+const imagenSocial = new URL('/og.jpg', Astro.site ?? 'https://bareljardin.netlify.app').href;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" data-tema={tema}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titulo}</title>
     <meta name="description" content={descripcion} />
+
+    {/* Canónica: una sola dirección por página. Sin esto, la misma página se sirve con y
+        sin barra final y Google indexa las dos. */}
+    <link rel="canonical" href={canonica} />
+
+    {/* Al compartir por WhatsApp, Telegram o Twitter. La imagen es la fachada del bar en
+        1200×630, que es la medida que piden todas. */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bar El Jardín" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:image" content={imagenSocial} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="La fachada del Bar El Jardín en Bolnuevo" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={titulo} />
+    <meta name="twitter:description" content={descripcion} />
+    <meta name="twitter:image" content={imagenSocial} />
+
+    {/* El verde del Jardín en la barra del navegador del móvil. */}
+    <meta name="theme-color" content="#004320" />
 
     <!-- Iconos (T3): la «J» roja sobre baldosa verde del propio logo. -->
     <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />

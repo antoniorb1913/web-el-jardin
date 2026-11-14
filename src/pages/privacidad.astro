@@ -1,0 +1,108 @@
+---
+/**
+ * Política de privacidad (T11).
+ *
+ * La web no tiene formularios ni analítica: lo único que puede tratar datos de terceros es
+ * el mapa de Google, que va incrustado. El texto lo cuenta sin rodeos, que es lo que exige
+ * el RGPD y lo que entiende quien lo lee.
+ */
+import PaginaLegal from '../components/PaginaLegal.astro';
+import { titular } from '../data/legal';
+---
+
+<PaginaLegal
+  titulo="Privacidad"
+  entradilla="Qué datos se tratan cuando entras en esta web, quién los trata y cómo pedir que se borren. Es corta porque la web pide muy poco."
+>
+  <section class="legal__bloque">
+    <h2>Quién trata tus datos</h2>
+    <p>
+      El responsable es {titular.nombre || 'el titular del bar'}, con NIF
+      {titular.nif || 'pendiente de completar'}, y su correo de contacto es
+      {titular.correo || 'pendiente de completar'}.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Qué datos recoge esta web</h2>
+    <p>
+      <strong>Ninguno por su cuenta.</strong> La web no tiene formularios, ni cuentas, ni
+      comentarios, ni carrito. No pide nombre, ni correo, ni teléfono, ni documento. No
+      guarda nada en tu navegador salvo una marca para no volver a enseñarte el aviso de
+      cookies.
+    </p>
+    <p>
+      No hay analítica, ni píxeles publicitarios, ni perfiles de visitante. El titular no
+      sabe quién ha entrado, ni desde dónde, ni cuánto rato.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Lo único que sí pasa: el mapa</h2>
+    <p>
+      En el último apartado hay un <strong>mapa de Google incrustado</strong> para que se vea
+      dónde está el bar. Al cargar la página, ese mapa se descarga desde los servidores de
+      Google, y Google puede instalar sus cookies y recoger la dirección IP desde la que
+      entras.
+    </p>
+    <p>
+      Ese tratamiento no lo hace el bar: lo hace Google, según sus propias condiciones. Si no
+      quieres que ocurra, puedes entrar con un bloqueador de contenido o cerrar la página
+      antes de bajar hasta el mapa; el resto de la web —horario, dirección y carta— se lee
+      igual sin él.
+    </p>
+    <p>
+      El enlace «Cómo llegar» abre Google Maps en otra pestaña: solo si lo pulsas.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Si escribes un correo</h2>
+    <p>
+      Si decides escribir al correo de contacto, el titular usará tu dirección y lo que le
+      cuentes solo para responderte. La base legal es tu consentimiento al escribir. No se
+      usa para publicidad y no se cede a nadie. Se conserva mientras dure la conversación y
+      lo mínimo que exija la ley.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Qué derechos tienes</h2>
+    <p>
+      Tienes derecho a saber si se están tratando datos tuyos, a que se corrijan, a que se
+      supriman, a oponerte al tratamiento y a pedirlos en un formato portable. Para
+      ejercerlos basta con escribir al correo de contacto indicando qué derecho pides.
+    </p>
+    <p>
+      Si no quedas conforme con la respuesta, puedes reclamar ante la
+      <a
+        href="https://www.aepd.es"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Agencia Española de Protección de Datos</a
+      >.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Cookies</h2>
+    <p>
+      La web, por sí misma, <strong>no instala cookies</strong>. Solo hay una excepción, y no
+      es del bar: al abrir la página se carga el mapa de Google, que sí puede instalarlas.
+    </p>
+    <p>
+      Del aviso que aparece al entrar se guarda una marca en tu navegador, para no volver a
+      enseñártelo. Esa marca no identifica a nadie y puedes borrarla vaciando los datos del
+      sitio en tu navegador.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Cambios en este texto</h2>
+    <p>
+      Si algún día la web añade algo que trate datos —un formulario, un boletín, una
+      analítica—, este texto se actualizará antes de encenderlo. La fecha del pie dice cuándo
+      se revisó por última vez.
+    </p>
+  </section>
+</PaginaLegal>
