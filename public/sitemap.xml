@@ -3,19 +3,19 @@
      actualiza a mano cuando cambia el contenido; es más honesto que poner la de hoy. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://bareljardin.netlify.app/</loc>
+    <loc>https://web-bar-jardin.netlify.app/</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://bareljardin.netlify.app/aviso-legal/</loc>
+    <loc>https://web-bar-jardin.netlify.app/aviso-legal/</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
   <url>
-    <loc>https://bareljardin.netlify.app/privacidad/</loc>
+    <loc>https://web-bar-jardin.netlify.app/privacidad/</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>

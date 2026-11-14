@@ -2360,3 +2360,39 @@ button.tira__marco {
     box-sizing: content-box;
   }
 }
+
+/* «Ver con movimiento»: solo aparece si el sistema pide menos movimiento. Dice lo que
+   hace y desaparece en cuanto se pulsa. Va en la esquina de la portada, fuera del bloque
+   de texto: dentro empujaba el párrafo y se pisaban. */
+.susurro__movimiento {
+  position: absolute;
+  right: clamp(1.2rem, 4vw, 3.4rem);
+  bottom: clamp(1.4rem, 4vh, 2.4rem);
+  z-index: 3;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid rgb(253 250 244 / 0.42);
+  border-radius: 2px;
+  background: rgb(4 16 9 / 0.42);
+  color: var(--color-crema-50);
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 240ms ease-out, color 240ms ease-out;
+}
+
+.susurro__movimiento:hover,
+.susurro__movimiento:focus-visible {
+  border-color: var(--color-jardin-ambar);
+  color: var(--color-jardin-ambar);
+}
+
+.susurro__movimiento:focus-visible {
+  outline: 2px solid var(--color-jardin-ambar);
+  outline-offset: 2px;
+}
+
+.susurro__movimiento[hidden] {
+  display: none;
+}

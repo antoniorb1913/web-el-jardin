@@ -60,10 +60,15 @@ const anio = new Date().getFullYear();
             <span class="susurro__bajatexto">Baja y entra</span>
           </a>
         </div>
-      </div>
-    </section>
 
-    <!-- ESPECIALIDADES -->
+        {/* Solo aparece si el sistema pide menos movimiento: es la forma de ver el
+            recorrido de cámara con esa opción activada, sin escribir en la dirección.
+            Va fuera del bloque de texto, abajo a la derecha, para no pisar el párrafo. */}
+        <button class="susurro__movimiento" type="button" data-activar-movimiento hidden>
+          Ver con movimiento
+        </button>
+      </div>
+    </section> -->
     <Carta
       id="especialidades"
       titulo="Nuestras especialidades"

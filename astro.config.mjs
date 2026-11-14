@@ -6,10 +6,10 @@ import tailwindcss from '@tailwindcss/vite';
 // del CSS desde el plugin de Vite (Tailwind v4 no necesita tailwind.config.js).
 // El dominio definitivo (`site`) se fija en T18, cuando se conecte Netlify.
 export default defineConfig({
-  // Dominio del sitio. Hoy es la dirección provisional de Netlify; en T18, cuando se
-  // conecte el dominio definitivo, se cambia esta línea y con ella cambian las canónicas,
-  // las URLs de Open Graph y las del sitemap.
-  site: 'https://bareljardin.netlify.app',
+  // Dominio del sitio: la dirección publicada en Netlify. De aquí salen las canónicas,
+  // las URLs de Open Graph y las del sitemap. Si algún día hay dominio propio, se cambia
+  // esta línea y todo lo demás se actualiza solo.
+  site: 'https://web-bar-jardin.netlify.app',
   vite: {
     plugins: [tailwindcss()],
     build: {

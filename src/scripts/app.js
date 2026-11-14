@@ -127,8 +127,35 @@ function cancelarViaje() {
   refrescarPortada();
 }
 
+/**
+ * ¿Toca servir la web quieta?
+ *
+ * El sistema pide menos movimiento → sí, quieta. Pero se puede pedir lo contrario de dos
+ * maneras: con `?animar=1` en la dirección (pruebas) o pulsando el botón «Ver con
+ * movimiento» de la portada, que guarda la decisión. Un dueño de bar con la opción de
+ * Windows activada vería siempre la versión quieta y creería que la web está rota.
+ */
+const CLAVE_MOVIMIENTO = 'jardin-movimiento';
+
+function movimientoPedido() {
+  if (new URLSearchParams(window.location.search).has('animar')) return true;
+  try {
+    return window.localStorage.getItem(CLAVE_MOVIMIENTO) === 'si';
+  } catch {
+    return false;
+  }
+}
+
+function guardarMovimiento() {
+  try {
+    window.localStorage.setItem(CLAVE_MOVIMIENTO, 'si');
+  } catch {
+    /* Sin almacenamiento: se anima solo en esta visita. */
+  }
+}
+
 function prefiereMenosMovimiento() {
-  if (new URLSearchParams(window.location.search).has('animar')) return false;
+  if (movimientoPedido()) return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
@@ -199,7 +226,7 @@ export function iniciarPortada() {
   contexto.imageSmoothingEnabled = true;
   contexto.imageSmoothingQuality = 'high';
 
-  const sinMovimiento = prefiereMenosMovimiento();
+  let sinMovimiento = prefiereMenosMovimiento();
   const imagenes = new Array(total).fill(null);
   const estado = { posicion: 0, ancho: 0, alto: 0, dpr: 1 };
   let objetivo = 0;
@@ -502,10 +529,28 @@ export function iniciarPortada() {
       estado.posicion = objetivo;
       pintar();
     };
+    const botonMovimiento = document.querySelector('[data-activar-movimiento]');
+
     if (sinMovimiento) {
       estado.posicion = 0;
       pintar();
       actualizarPaneles();
+
+      /*
+       * El sistema pide quietud, pero quien mira puede querer ver el recorrido. El botón no
+       * engaña a nadie: dice lo que hace y solo aparece en este caso.
+       */
+      if (botonMovimiento) {
+        botonMovimiento.hidden = false;
+        botonMovimiento.addEventListener('click', () => {
+          sinMovimiento = false;
+          guardarMovimiento();
+          document.documentElement.dataset.animar = 'si';
+          botonMovimiento.hidden = true;
+          redimensionar();
+          actualizar();
+        });
+      }
     } else {
       actualizar();
     }
