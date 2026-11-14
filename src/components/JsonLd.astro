@@ -1,0 +1,17 @@
+---
+/**
+ * La ficha del bar para los buscadores (T12).
+ *
+ * Un `<script type="application/ld+json">` con el tipo `BarOrPub` de schema.org: nombre,
+ * dirección, horario semana a semana, redes y mapa. Es lo que permite que Google enseñe
+ * el horario y la dirección en el resultado de búsqueda, sin que el visitante entre.
+ *
+ * Los datos salen de `negocio.js`; aquí no se escribe ni una dirección nueva.
+ */
+import { fichaBar } from '../data/seo';
+
+const sitio = Astro.site ? Astro.site.href : 'https://bareljardin.netlify.app/';
+const ficha = fichaBar(sitio);
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(ficha)} />

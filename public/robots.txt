@@ -1,0 +1,9 @@
+# robots.txt — Bar El Jardín
+#
+# Se permite todo: la web es pública y no hay nada que esconder. Se señala el sitemap para
+# que los buscadores encuentren las tres páginas sin tener que adivinarlas.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://bareljardin.netlify.app/sitemap.xml
