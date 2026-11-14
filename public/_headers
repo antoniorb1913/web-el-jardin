@@ -19,6 +19,18 @@
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
+# La galería y la fachada del mapa cambian cuando se cambian las fotos, no al publicar
+# código: un mes de caché ahorra la descarga en cada visita sin riesgo de quedarse con una
+# foto vieja más de la cuenta.
+/galeria/*
+  Cache-Control: public, max-age=2592000
+
+/ubicacion/*
+  Cache-Control: public, max-age=2592000
+
+/og.jpg
+  Cache-Control: public, max-age=604800
+
 # El HTML sí se comprueba siempre: es lo que cambia al publicar.
 /*.html
   Cache-Control: public, max-age=0, must-revalidate

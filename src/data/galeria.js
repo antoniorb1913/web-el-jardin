@@ -16,18 +16,3 @@ export const fotos = [
   { foto: 'bar5', alt: 'La estatua dorada junto a la pared de platos' },
   { foto: 'bar6', alt: 'Las mesas amarillas, con las vistas al campo' },
 ];
-
-/**
- * El vídeo, uno por idioma.
- *
- * Ahora solo existe el español; el inglés y el alemán llegan con la versión en otros
- * idiomas (T16). El reproductor elige el archivo según el `lang` de la página.
- */
-export const videos = {
-  es: {
-    archivo: '/video/bar-es.mp4',
-    poster: '/video/bar-es-poster.webp',
-    duracion: '0:54',
-    alt: 'Paseo por el bar: la entrada, la terraza, la barra y las vistas',
-  },
-};

@@ -23,6 +23,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T11 | 2026-11-14 | Aviso legal, privacidad y consentimiento del mapa | ✅ Completada |
 | T12 | 2026-11-14 | SEO: metas, Open Graph, JSON-LD, sitemap y robots | ✅ Completada |
 | T13 | 2026-11-14 | Accesibilidad y responsive | ✅ Completada |
+| T14 | 2026-11-14 | Rendimiento: peso, imágenes y caché | ✅ Completada |
 
 ---
 
@@ -517,3 +518,44 @@ había que apuntar. Con `pointer: coarse` crece solo el área del dedo, no el di
 2. Con el móvil o el modo dispositivo de las herramientas: pulsar las rayas del carrusel y
    las flechas — se acierta sin apuntar.
 3. `axe-core` sobre la portada, el cierre y las dos páginas legales: cero infracciones.
+
+## 2026-11-14 · T14 — Rendimiento: peso, imágenes y caché
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t14-rendimiento`
+**Commit:** `perf: imágenes a su tamaño real, fuera un vídeo muerto y caché de galería`
+**Archivos:** `public/_headers`, `public/galeria/`, `public/ubicacion/`,
+`src/components/Escena.astro`, `src/pages/index.astro`, `src/data/galeria.js`,
+`public/video/` (borrado)
+
+### 1. ¿Qué he realizado?
+
+Medido el sitio construido con red 4G simulada —no la versión de desarrollo, que engaña— y
+recortado todo lo que no hacía falta: un vídeo de 16,4 MB que ya no usaba nadie, las fotos
+de la galería al tamaño al que se ven de verdad, la fachada del mapa a 1200 px y caché para
+las dos carpetas que faltaban.
+
+### 2. ¿Por qué?
+
+El total del sitio eran 33,6 MB y la visita descargaba 9,17 MB. Lo grave era el vídeo: seguía
+en `public/video/` desde el diseño anterior de la galería y **ni un componente lo nombraba**.
+
+Y las fotos tenían un problema silencioso: el atributo `sizes` del HTML decía que ocupaban
+`46vw` cuando en la maqueta miden `35vw`, así que el navegador pedía siempre la imagen grande
+aunque cupiera la pequeña. Corregir ese dato ahorró 309 KB sin tocar una sola foto de calidad.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/components/Escena.astro` — `sizes="(max-width: 900px) 86vw, 35vw"` y `srcset` 600/1200.
+- `src/pages/index.astro` — la fachada del mapa, 700/1200.
+- `public/_headers` — caché de 30 días para `/galeria/*` y `/ubicacion/*`.
+- `src/data/galeria.js` — fuera la exportación `videos`, que nadie importaba.
+- `public/video/` — borrado (el original sigue en `transicion.mp4`, en la raíz del repo).
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. `npm run build && npm run preview` y abrir <http://localhost:4321/>.
+2. En la pestaña de red: al entrar se descargan unos 8,5 MB y la primera pintura llega en
+   menos de medio segundo.
+3. `npm run dev` no sirve para esto: mete el cliente de recarga y la barra de Astro, y suma
+   más de 2 MB que en producción no existen.
