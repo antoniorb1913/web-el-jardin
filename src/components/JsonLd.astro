@@ -10,13 +10,8 @@
  */
 import { fichaBar } from '../data/seo';
 
-interface Props {
-  idioma?: string;
-}
-
-const { idioma = 'es' } = Astro.props;
 const sitio = Astro.site ? Astro.site.href : 'https://bareljardin.netlify.app/';
-const ficha = { ...fichaBar(sitio), inLanguage: idioma };
+const ficha = fichaBar(sitio);
 ---
 
 <script type="application/ld+json" set:html={JSON.stringify(ficha)} />

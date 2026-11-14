@@ -7,21 +7,18 @@
  * Lo visual va por CSS con `data-activa`; aquí solo se decide cuál manda.
  */
 
-/*
- * Los titulares ya no viven aquí: los escribe el componente en `data-titulos`, en el idioma
- * de la página. Antes había dos listas —una en el componente y otra aquí— y dejaron de
- * coincidir: la primera foto decía «La entrada» arriba y «La fachada» al pasar.
- */
+const TITULOS = [
+  ['La', 'fachada'],
+  ['La', 'entrada'],
+  ['La', 'terraza 1'],
+  ['La', 'barra'],
+  ['David', 'de Miguel Angel'],
+  ['La', 'terraza 2'],
+];
 
 export function iniciarEscena() {
   document.querySelectorAll('[data-escena]').forEach((raiz) => {
     const pases = Array.from(raiz.querySelectorAll('[data-pase]'));
-    let titulos = [];
-    try {
-      titulos = JSON.parse(raiz.dataset.titulos || '[]');
-    } catch {
-      titulos = [];
-    }
     const rayas = Array.from(raiz.querySelectorAll('[data-raya]'));
     const linea1 = raiz.querySelector('[data-linea-1]');
     const linea2 = raiz.querySelector('[data-linea-2]');
@@ -54,14 +51,10 @@ export function iniciarEscena() {
         else delete raya.dataset.activa;
       });
 
-      // El titular se parte en dos líneas por la mitad, como en el componente.
-      const titulo = titulos[actual] || '';
-      const palabras = titulo.split(' ').filter(Boolean);
-      const medio = Math.max(1, Math.ceil(palabras.length / 2));
-      if (linea1) linea1.textContent = palabras.slice(0, medio).join(' ');
-      if (linea2) linea2.textContent = palabras.slice(medio).join(' ');
+      if (linea1) linea1.textContent = TITULOS[actual]?.[0] || '';
+      if (linea2) linea2.textContent = TITULOS[actual]?.[1] || '';
       if (enlace) enlace.setAttribute('data-abrir-foto', String(actual));
-      if (anuncio) anuncio.textContent = `${nombres[actual] || ''} (${actual + 1}/${pases.length})`;
+      if (anuncio) anuncio.textContent = `${nombres[actual] || ''} (${actual + 1} de ${pases.length})`;
 
       // El enlace abre la foto que se está viendo: se le cambia el índice.
       if (enlace) {

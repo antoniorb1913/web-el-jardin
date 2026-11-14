@@ -1,10 +1,94 @@
 ---
 /**
- * Aviso legal — español (T11 · T16).
+ * Aviso legal (T11).
  *
- * El texto vive en `data/legales.js`; aquí solo se elige idioma y página.
+ * Lo que la LSSI-CE pide a una web informativa: quién es el titular, cómo se le escribe,
+ * qué se puede hacer con lo que hay publicado y qué pasa con los enlaces a otros sitios.
+ * Los datos personales del titular salen de `src/data/legal.js`.
  */
 import PaginaLegal from '../components/PaginaLegal.astro';
+import { titular } from '../data/legal';
 ---
 
-<PaginaLegal idioma="es" pagina="aviso" />
+<PaginaLegal
+  titulo="Aviso legal"
+  entradilla="Quién está detrás de esta web, cómo se puede contactar y en qué condiciones se puede usar lo que hay en ella."
+>
+  <section class="legal__bloque">
+    <h2>Quién es el titular</h2>
+    <p>
+      Esta web es el sitio informativo del <strong>Bar El Jardín</strong>, en Bolnuevo
+      (Mazarrón, Murcia). Su titular es {titular.nombre || 'la persona que figura en el pie de esta página'},
+      con NIF {titular.nif || 'pendiente de completar'}, y estas son sus señas:
+    </p>
+    <p>
+      Av. Antonio Segado del Olmo, 19 — 30877 Bolnuevo, Mazarrón (Murcia).<br />
+      Correo de contacto: {titular.correo || 'pendiente de completar'}.
+    </p>
+    <p>
+      El correo es el único canal de contacto de la web: no hay formularios, ni reservas, ni
+      área de usuario. No se piden datos a quien solo entra a mirar.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Para qué sirve esta web</h2>
+    <p>
+      Es una web informativa. Cuenta qué es el bar, qué se puede tomar y comer, cómo es el
+      local y dónde y cuándo abrir. <strong>No vende nada</strong>, no cobra nada y no tiene
+      carrito: los precios y la carta se consultan en el propio bar.
+    </p>
+    <p>
+      La información se ofrece de buena fe y se revisa cuando cambia. Aun así, los horarios
+      pueden variar por festivos, temporada o eventos del pueblo: si vas a venir de lejos,
+      mejor confirmar por teléfono o pasarse antes por el local.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Lo que hay escrito y fotografiado</h2>
+    <p>
+      Los textos, el logotipo y las fotografías del local son del titular de esta web. Se
+      pueden leer, ver y compartir enlazando a esta dirección; lo que no se puede es
+      copiarlos a otro sitio como si fueran propios, ni usarlos para otro negocio, sin
+      permiso por escrito.
+    </p>
+    <p>
+      El logotipo del bar es obra de su diseñador. El código de la web lo es de sus autores.
+      Las tipografías —Fredoka, Figtree y Chorus— se usan con su licencia libre y se sirven
+      desde este mismo servidor.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Puede que algo falle</h2>
+    <p>
+      Esta web se hace con cuidado, pero no hay servidor infalible: puede haber una imagen que
+      no carga, un enlace caído o un horario sin actualizar. El titular no responde de los
+      daños que pudieran derivarse de usar la web, y no garantiza que el sitio esté
+      disponible sin interrupciones.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Enlaces a otros sitios</h2>
+    <p>
+      La web enlaza a Google Maps para llegar al bar y a las redes del local. Esos servicios
+      son de sus dueños, tienen sus propias condiciones y su propia política de privacidad, y
+      el titular de esta web no responde de lo que hagan con los datos de quien los use.
+    </p>
+    <p>
+      El mapa está incrustado en el último apartado: al abrir la página, Google puede
+      instalar cookies. Está explicado, con detalle, en la
+      <a href="/privacidad">política de privacidad</a>.
+    </p>
+  </section>
+
+  <section class="legal__bloque">
+    <h2>Qué ley manda aquí</h2>
+    <p>
+      Esta web se rige por la legislación española. Para cualquier desacuerdo, si la ley no
+      obliga a otro fuero, serán competentes los juzgados y tribunales de Murcia.
+    </p>
+  </section>
+</PaginaLegal>

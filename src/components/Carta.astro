@@ -13,8 +13,6 @@
  * marca y la «J» del logotipo, y no es pulsable: se lee como una decisión y no como una
  * imagen rota. Ahora mismo las ocho tienen foto.
  */
-import { t } from '../data/i18n';
-
 interface Pieza {
   nombre: string;
   foto: string | null;
@@ -27,12 +25,9 @@ interface Props {
   nota: string;
   /** Texto descriptivo de la columna izquierda. Opcional: si no viene, no ocupa sitio. */
   texto?: string;
-  /** Idioma de la página: de aquí salen las etiquetas de los mandos y del visor. */
-  idioma: string;
 }
 
-const { id, titulo, piezas, nota, texto, idioma } = Astro.props;
-const textos = t(idioma);
+const { id, titulo, piezas, nota, texto } = Astro.props;
 
 // El titular se parte por la mitad, pero solo en el móvil: un <br> que en escritorio no
 // se muestra deja «Nuestra» / «comida» en dos líneas sin tocar el tamaño ni el texto.
@@ -62,7 +57,7 @@ const resto = palabras.slice(1).join(' ');
                   type="button"
                   class="tira__marco"
                   data-abrir={indice}
-                  aria-label={`${textos.fotos.verEnGrande}: ${pieza.nombre}`}
+                  aria-label={`Ver ${pieza.nombre} en grande`}
                 >
                   <img
                     class="tira__foto"
@@ -91,14 +86,14 @@ const resto = palabras.slice(1).join(' ');
 
       <div class="carta__pie">
         {/* Una raya por pieza, como en el apartado de fotos: la que toca, en ámbar. */}
-        <div class="carta__rayas" role="group" aria-label={textos.fotos.elegir}>
+        <div class="carta__rayas" role="group" aria-label="Ir a una foto">
           {
             piezas.map((pieza, indice) => (
               <button
                 type="button"
                 class="carta__raya"
                 data-raya={indice}
-                aria-label={`${textos.fotos.irA} ${pieza.nombre}`}
+                aria-label={`Ir a ${pieza.nombre}`}
               >
                 <span aria-hidden="true"></span>
               </button>
@@ -107,10 +102,10 @@ const resto = palabras.slice(1).join(' ');
         </div>
 
         <div class="carta__mandos">
-          <button type="button" class="carta__flecha" data-anterior aria-label={textos.fotos.anterior}>
+          <button type="button" class="carta__flecha" data-anterior aria-label="Fotos anteriores">
             <span aria-hidden="true">‹</span>
           </button>
-          <button type="button" class="carta__flecha" data-siguiente aria-label={textos.fotos.siguiente}>
+          <button type="button" class="carta__flecha" data-siguiente aria-label="Fotos siguientes">
             <span aria-hidden="true">›</span>
           </button>
         </div>
@@ -119,21 +114,21 @@ const resto = palabras.slice(1).join(' ');
   </div>
 
   {/* Visor de la foto ampliada. */}
-  <dialog class="visor-grande" data-visor aria-label={`${titulo} — ${textos.fotos.verEnGrande}`}>
+  <dialog class="visor-grande" data-visor aria-label={`${titulo}: foto ampliada`}>
     <div class="visor-grande__caja">
       <img class="visor-grande__foto" data-visor-foto alt="" width="860" height="1147" />
       <p class="visor-grande__nombre" data-visor-nombre></p>
     </div>
 
-    <button type="button" class="visor-grande__cerrar" data-visor-cerrar aria-label={textos.carta.cerrar}>
+    <button type="button" class="visor-grande__cerrar" data-visor-cerrar aria-label="Cerrar">
       <span aria-hidden="true">×</span>
     </button>
 
     <div class="visor-grande__mandos">
-      <button type="button" class="visor-grande__flecha" data-visor-anterior aria-label={textos.fotos.anterior}>
+      <button type="button" class="visor-grande__flecha" data-visor-anterior aria-label="Foto anterior">
         <span aria-hidden="true">‹</span>
       </button>
-      <button type="button" class="visor-grande__flecha" data-visor-siguiente aria-label={textos.fotos.siguiente}>
+      <button type="button" class="visor-grande__flecha" data-visor-siguiente aria-label="Foto siguiente">
         <span aria-hidden="true">›</span>
       </button>
     </div>

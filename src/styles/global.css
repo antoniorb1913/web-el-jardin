@@ -2141,51 +2141,6 @@ button.tira__marco {
   box-shadow: 0 0 0 3px rgb(255 160 0 / 0.18);
 }
 
-/* El idioma en la cabecera: dos letras, la actual apagada y la otra como enlace. Va
-   pegado a la navegación, con su misma tipografía pequeña. */
-.encabezado__idiomas {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.encabezado__idiomas span {
-  color: var(--color-crema-50);
-}
-
-.encabezado__idiomas a {
-  color: rgb(253 250 244 / 0.62);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: color 240ms ease-out, border-color 240ms ease-out;
-}
-
-.encabezado__idiomas a:hover,
-.encabezado__idiomas a:focus-visible {
-  color: var(--color-jardin-ambar);
-  border-bottom-color: var(--color-jardin-ambar);
-}
-
-/* Sobre las páginas legales, en tinta oscura como el resto de la cabecera. */
-[data-tema='claro'] .encabezado__idiomas span {
-  color: var(--color-tinta-900);
-}
-
-[data-tema='claro'] .encabezado__idiomas a {
-  color: rgb(22 36 28 / 0.6);
-}
-
-[data-tema='claro'] .encabezado__idiomas a:hover,
-[data-tema='claro'] .encabezado__idiomas a:focus-visible {
-  color: var(--color-tinta-900);
-  border-bottom-color: var(--color-jardin-ambar);
-}
-
 /* ---------------------------------------------------------------------------
    Páginas legales (T11)
 

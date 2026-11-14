@@ -1,85 +1,66 @@
 ---
 /**
- * Layout raíz: todo lo que va entre <html> y </html> (T2 · idiomas en T16).
+ * Layout raíz: todo lo que va entre <html> y </html>.
  *
- * Recibe el idioma y la página, y de ahí salen el `<html lang>`, la canónica, las etiquetas
- * para compartir y las `hreflang` que le dicen a Google que esta página existe también en
- * los otros idiomas.
+ * Las metas de SEO completas (Open Graph, canónicas, JSON-LD) llegan en T12; aquí
+ * solo el mínimo válido. La cabecera y el pie viven aquí para que cualquier página
+ * los tenga sin repetirlos.
  *
- * El JS de cliente se arranca desde aquí y no desde cada componente: es el único punto de
- * entrada, y cada módulo se activa solo si encuentra su marcador.
+ * El JS de cliente se arranca desde este layout y no desde cada componente: es el
+ * único punto de entrada, y cada módulo se activa solo si encuentra su marcador.
  */
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { t, LANG, PUBLICADOS, IDIOMA_POR_DEFECTO } from '../data/i18n';
 
 interface Props {
-  idioma?: string;
-  /** `portada`, `aviso` o `privacidad`: la clave de `rutas` del idioma. */
-  pagina?: string;
   titulo?: string;
   descripcion?: string;
-  /** En la portada el pie va dentro de la película; el resto lo llevan al final. */
+  /**
+   * En la portada el pie va **dentro de la película**, como última escena. El resto
+   * de páginas llevan el pie normal al final del documento.
+   */
   pie?: boolean;
-  /** `claro` para las páginas sobre fondo crema: la cabecera cambia a tinta oscura. */
+  /**
+   * `claro` para las páginas sobre fondo crema —las legales—: la cabecera cambia a tinta
+   * oscura, porque el crema sobre crema no se lee.
+   */
   tema?: 'claro';
 }
 
 const {
-  idioma = IDIOMA_POR_DEFECTO,
-  pagina = 'portada',
-  titulo,
-  descripcion,
+  titulo = 'Bar El Jardín · Bar en Bolnuevo, Mazarrón',
+  descripcion = 'Bar rodeado de flores y plantas en Bolnuevo (Mazarrón, Murcia). Especialidades de la casa, bratwurst, currywurst y tabla de jamón serrano.',
   pie = true,
   tema,
 } = Astro.props;
 
-const textos = t(idioma);
-const tituloFinal = titulo ?? textos.seo.titulo;
-const descripcionFinal = descripcion ?? textos.seo.descripcion;
+/** Dirección absoluta de esta página, para la canónica y para Open Graph. */
+const canonica = new URL(Astro.url.pathname, Astro.site ?? 'https://bareljardin.netlify.app').href;
 
-const base = Astro.site ?? new URL('https://bareljardin.netlify.app');
-const canonica = new URL(textos.rutas[pagina], base).href;
-const imagenSocial = new URL('/og.jpg', base).href;
-
-/**
- * Las otras versiones de esta misma página. `x-default` apunta al español: es el idioma
- * de referencia si el del visitante no coincide con ninguno.
- */
-const equivalencias = PUBLICADOS.map((otro) => ({
-  idioma: LANG[otro],
-  href: new URL(t(otro).rutas[pagina], base).href,
-}));
-const porDefecto = new URL(t(IDIOMA_POR_DEFECTO).rutas[pagina], base).href;
-
-/** `es_ES`, `en_GB`, `de_DE`: el formato que pide Open Graph. */
-const localeOg = { es: 'es_ES', en: 'en_GB', de: 'de_DE' }[idioma] ?? 'es_ES';
+/** La imagen que enseñan WhatsApp, Telegram y las redes al compartir el enlace. */
+const imagenSocial = new URL('/og.jpg', Astro.site ?? 'https://bareljardin.netlify.app').href;
 ---
 
 <!doctype html>
-<html lang={LANG[idioma]} data-tema={tema}>
+<html lang="es" data-tema={tema}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{tituloFinal}</title>
-    <meta name="description" content={descripcionFinal} />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
 
-    {/* Canónica: una sola dirección por página e idioma. */}
+    {/* Canónica: una sola dirección por página. Sin esto, la misma página se sirve con y
+        sin barra final y Google indexa las dos. */}
     <link rel="canonical" href={canonica} />
 
-    {/* La misma página en los otros idiomas. */}
-    {equivalencias.map((equivalencia) => (
-      <link rel="alternate" hreflang={equivalencia.idioma} href={equivalencia.href} />
-    ))}
-    <link rel="alternate" hreflang="x-default" href={porDefecto} />
-
-    {/* Al compartir por WhatsApp, Telegram o Twitter. */}
+    {/* Al compartir por WhatsApp, Telegram o Twitter. La imagen es la fachada del bar en
+        1200×630, que es la medida que piden todas. */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Bar El Jardín" />
-    <meta property="og:locale" content={localeOg} />
-    <meta property="og:title" content={tituloFinal} />
-    <meta property="og:description" content={descripcionFinal} />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonica} />
     <meta property="og:image" content={imagenSocial} />
     <meta property="og:image:width" content="1200" />
@@ -87,18 +68,19 @@ const localeOg = { es: 'es_ES', en: 'en_GB', de: 'de_DE' }[idioma] ?? 'es_ES';
     <meta property="og:image:alt" content="La fachada del Bar El Jardín en Bolnuevo" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={tituloFinal} />
-    <meta name="twitter:description" content={descripcionFinal} />
+    <meta name="twitter:title" content={titulo} />
+    <meta name="twitter:description" content={descripcion} />
     <meta name="twitter:image" content={imagenSocial} />
 
+    {/* El verde del Jardín en la barra del navegador del móvil. */}
     <meta name="theme-color" content="#004320" />
 
-    {/* Iconos (T3): la «J» roja sobre baldosa verde del propio logo. */}
+    <!-- Iconos (T3): la «J» roja sobre baldosa verde del propio logo. -->
     <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    {/* Las dos tipografías se usan por encima del pliegue: se precargan para evitar el
-        salto de texto al pasar de la fuente del sistema a la nuestra. */}
+    <!-- Las dos tipografías se usan por encima del pliegue: se precargan para
+         evitar el salto de texto al pasar de la fuente del sistema a la nuestra. -->
     <link
       rel="preload"
       href="/fonts/fredoka-latin-400_600.woff2"
@@ -114,20 +96,19 @@ const localeOg = { es: 'es_ES', en: 'en_GB', de: 'de_DE' }[idioma] ?? 'es_ES';
       crossorigin
     />
 
-    {/* Sin JavaScript la web monta los apartados en capas que nadie enciende: esta hoja
-        los pone en columna para que el texto se lea igual. Solo se descarga sin guion. */}
+    <!-- Sin JavaScript la web monta los apartados en capas que nadie enciende: esta hoja
+         los pone en columna para que el texto se lea igual. Solo se descarga sin guion. -->
     <noscript>
       <link rel="stylesheet" href="/sin-js.css" />
     </noscript>
   </head>
   <body>
     <a class="saltar" href="#contenido">Saltar al contenido</a>
-    <Header idioma={idioma} pagina={pagina} />
-
+    <Header />
     <main id="contenido">
       <slot />
     </main>
-    {pie && <Footer idioma={idioma} />}
+    {pie && <Footer />}
   </body>
 </html>
 

@@ -1,20 +1,13 @@
 ---
 /**
- * Pie (T6 · idiomas en T16).
+ * Pie (T6).
  *
- * Va debajo de la película, sobre fondo verde de la marca. Tres bloques: quién es el bar,
- * dónde está y cuándo abre. Sin iconos, sin tarjetas y sin enlaces a redes que no nos
- * hayan dado — para eso está la columna del cierre.
+ * Va debajo de la película, sobre fondo verde de la marca. Tres bloques: quién es el
+ * bar, dónde está y cuándo abre. Sin iconos, sin tarjetas y sin enlaces a redes que
+ * todavía no nos han dado — cuando existan, se añaden aquí.
  */
-import { negocio, direccion, enlaceMapa } from '../data/negocio';
-import { t } from '../data/i18n';
+import { negocio, direccion, horario, enlaceMapa } from '../data/negocio';
 
-interface Props {
-  idioma: string;
-}
-
-const { idioma } = Astro.props;
-const textos = t(idioma);
 const anio = new Date().getFullYear();
 ---
 
@@ -22,21 +15,21 @@ const anio = new Date().getFullYear();
   <div class="pie__interior">
     <div class="pie__bloque">
       <p class="pie__nombre">{negocio.nombre}</p>
-      <p class="pie__lema">{textos.seo.descripcionCorta}.</p>
+      <p class="pie__lema">{negocio.lema}.</p>
     </div>
 
     <div class="pie__bloque">
-      <p class="pie__titulo">{textos.pie.donde}</p>
+      <p class="pie__titulo">Dónde</p>
       <p>{direccion.calle}</p>
       <p>{direccion.poblacion} ({direccion.provincia})</p>
       <p class="pie__accion">
-        <a href={enlaceMapa} target="_blank" rel="noopener noreferrer">{textos.pie.comoLlegar}</a>
+        <a href={enlaceMapa} target="_blank" rel="noopener noreferrer">Cómo llegar</a>
       </p>
     </div>
 
     <div class="pie__bloque">
-      <p class="pie__titulo">{textos.pie.cuando}</p>
-      {textos.ubicacion.horario.map((tramo) => (
+      <p class="pie__titulo">Cuándo</p>
+      {horario.map((tramo) => (
         <p class="pie__horario">
           <span>{tramo.dias}</span>
           <span class="pie__horas">{tramo.horas}</span>
@@ -48,8 +41,8 @@ const anio = new Date().getFullYear();
   <p class="pie__legal">
     © {anio} {negocio.nombre} · Bolnuevo, Mazarrón
     <span class="pie__enlaces">
-      <a href={textos.rutas.aviso}>{textos.pie.aviso}</a>
-      <a href={textos.rutas.privacidad}>{textos.pie.privacidad}</a>
+      <a href="/aviso-legal">Aviso legal</a>
+      <a href="/privacidad">Privacidad</a>
     </span>
   </p>
 </footer>

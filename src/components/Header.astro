@@ -1,103 +1,66 @@
 ---
 /**
- * Cabecera (T6 · idiomas en T16).
+ * Cabecera (T6).
  *
- * Va fija sobre la película, así que se mantiene pequeña: el logotipo del bar, los cinco
- * apartados y el selector de idioma. El logotipo es la única imagen de la cabecera.
+ * Va fija sobre la película, así que se mantiene pequeña: el logotipo del bar y los
+ * cinco apartados. El logotipo es la única imagen de la cabecera; no se escribe el
+ * nombre al lado para no repetirlo con el que ya forma parte del propio logo.
  *
  * En la portada la cabecera **no se ve durante la primera pantalla**: allí está el
  * logotipo grande y dos a la vez sería ruido. Aparece al salir del héroe.
  *
- * En pantallas estrechas los enlaces se esconden y queda un botón «Índice» que abre el
- * mismo listado a pantalla completa, con la dirección y el horario al pie.
- *
- * El selector de idioma son tres letras —ES · EN— y llevan a **la misma página** en el
- * otro idioma, no a la portada: quien está leyendo la privacidad y cambia de idioma
- * quiere seguir leyendo la privacidad.
+ * En pantallas estrechas los enlaces se esconden y queda un botón «Índice» que abre
+ * el mismo listado a pantalla completa, con la dirección y el horario al pie: es lo
+ * que se busca al abrir un menú en el móvil.
  */
 import { Image } from 'astro:assets';
 import logo from '../assets/logo.png';
-import { direccion } from '../data/negocio';
-import { t, alternativas, SIGLAS, NOMBRES } from '../data/i18n';
-
-interface Props {
-  idioma: string;
-  /** `portada`, `aviso` o `privacidad`: para que el selector lleve a la misma página. */
-  pagina: string;
-}
-
-const { idioma, pagina } = Astro.props;
-const textos = t(idioma);
-const otros = alternativas(idioma, pagina);
-
-/**
- * En la portada los enlaces son anclas locales. En las páginas legales no hay apartados
- * que saltar, así que apuntan a la portada del idioma: pulsar «Fotos» desde el aviso legal
- * tiene que llevar a las fotos, no a ningún sitio.
- */
-const enPortada = pagina === 'portada';
-const enlace = (destino) => (enPortada ? `#${destino}` : `${textos.rutas.portada}#${destino}`);
-
-const apartados = [
-  { id: 'portada', nombre: textos.nav.portada },
-  { id: 'especialidades', nombre: textos.nav.especialidades },
-  { id: 'comida', nombre: textos.nav.comida },
-  { id: 'fotos', nombre: textos.nav.fotos },
-  { id: 'ubicacion', nombre: textos.nav.ubicacion },
-];
+import { apartados, direccion, horario } from '../data/negocio';
 ---
 
 <header class="encabezado" data-encabezado>
   <div class="encabezado__contenido">
-    <a class="encabezado__marca" href={enlace('portada')} data-enlace-apartado data-destino="portada">
-      <Image src={logo} alt="Bar El Jardín" width={180} class="encabezado__logo" loading="eager" />
-    </a>
+    <a class="encabezado__marca" href="#portada" data-enlace-apartado data-destino="portada">
+    <Image src={logo} alt="Bar El Jardín" width={180} class="encabezado__logo" loading="eager" />
+  </a>
 
-    <nav class="encabezado__nav" aria-label={textos.nav.aria}>
-      <ul>
-        {apartados.map((apartado) => (
-          <li>
-            <a href={enlace(apartado.id)} data-enlace-apartado data-destino={apartado.id}>
-              {apartado.nombre}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-
-    {/* El idioma: la actual, apagada; las demás, enlaces a la misma página. */}
-    <p class="encabezado__idiomas">
-      <span aria-current="true" title={NOMBRES[idioma]}>{SIGLAS[idioma]}</span>
-      {otros.map((otro) => (
-        <a href={otro.href} hreflang={otro.idioma} title={otro.nombre}>{otro.siglas}</a>
+  <nav class="encabezado__nav" aria-label="Apartados de la portada">
+    <ul>
+      {apartados.map((apartado) => (
+        <li>
+          <a href={`#${apartado.id}`} data-enlace-apartado data-destino={apartado.id}>
+            {apartado.nombre}
+          </a>
+        </li>
       ))}
-    </p>
+    </ul>
+  </nav>
 
-    <button
-      class="encabezado__boton"
-      type="button"
-      data-abrir-indice
-      aria-expanded="false"
-      aria-controls="indice"
-    >
-      {textos.nav.indice}
+  <button
+    class="encabezado__boton"
+    type="button"
+    data-abrir-indice
+    aria-expanded="false"
+    aria-controls="indice"
+  >
+      Índice
     </button>
   </div>
 </header>
 
 <!-- Índice a pantalla completa: mismo listado, cómodo en móvil. -->
 <div class="indice" id="indice" data-indice data-abierto="no">
-  <div class="indice__caja" role="dialog" aria-modal="true" aria-label={textos.nav.aria}>
+  <div class="indice__caja" role="dialog" aria-modal="true" aria-label="Índice de la web">
     <div class="indice__cabecera">
       <p class="indice__marca">Bar El Jardín</p>
-      <button class="indice__cerrar" type="button" data-cerrar-indice>{textos.nav.cerrar}</button>
+      <button class="indice__cerrar" type="button" data-cerrar-indice>Cerrar</button>
     </div>
 
-    <nav aria-label={textos.nav.aria}>
+    <nav aria-label="Apartados de la portada">
       <ul class="indice__lista">
         {apartados.map((apartado) => (
           <li>
-            <a href={enlace(apartado.id)} data-enlace-apartado data-destino={apartado.id}>
+            <a href={`#${apartado.id}`} data-enlace-apartado data-destino={apartado.id}>
               {apartado.nombre}
             </a>
           </li>
@@ -107,7 +70,7 @@ const apartados = [
 
     <div class="indice__ficha">
       <p>{direccion.completa}</p>
-      {textos.ubicacion.horario.map((tramo) => (
+      {horario.map((tramo) => (
         <p class="indice__horario">
           <span>{tramo.dias}</span>
           <span>{tramo.horas}</span>
