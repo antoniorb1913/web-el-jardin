@@ -71,7 +71,11 @@ El fondo de la portada es un **recorrido de cámara por el bar** que avanza con 
 4. **Inercia** en el avance, para que las muescas de la rueda no se noten; un solo fotograma por repintado, sin fundirlos (producía fantasma).
 5. **Paradas de cámara al principio de cada cuarto** (`PAUSA = 0,26`): la cámara se queda quieta el 26 % de cada tramo y luego camina. Es lo que permite que la foto nítida se vea sin doble imagen. Se probó a atar las paradas a los centros de los apartados para que el texto entrara justo con su foto, pero el reparto quedaba desigual entre tramos y se revirtió.
 6. **Cinco fotos nítidas** en `public/escenas/` (2400 px y 1200 px en WebP), sacadas de los HEIC del usuario. Cada una es el primer fotograma de su clip; la de la estatua es el último del vídeo. Se encienden en los fotogramas 0, 60, 120, 180 y 239, y se apagan en 3 fotogramas (más tiempo produce doble imagen, porque Kling redibujó la escena y las dos versiones no coinciden píxel a píxel).
-7. **Degradaciones**: `prefers-reduced-motion` → un fotograma fijo; sin JavaScript → todo el texto sigue en el HTML.
+7. **Degradaciones**: la web **se mueve siempre**, también con `prefers-reduced-motion`
+   activado (decisión del 2026-11-14, tras comprobar que el dueño veía la web quieta y la
+   creía rota). Si el sistema pide menos movimiento, la portada ofrece un botón discreto
+   «Ver sin movimiento» que apaga la cámara y guarda la decisión en ese navegador. Sin
+   JavaScript, todo el texto sigue en el HTML.
 
 **Cierre del recorrido (T6):**
 
@@ -110,10 +114,9 @@ El fondo de la portada es un **recorrido de cámara por el bar** que avanza con 
 web-el-jardin/               ← raíz del repo (github.com/antoniorb1913/web-el-jardin)
 ├─ AGENTS.md · TAREAS.md · HISTORIAL.md · README.md
 ├─ astro.config.mjs · package.json · netlify.toml
-├─ fotos/                    ← originales del usuario. NUNCA se tocan ni se borran
-│  └─ logo.png               ← el logo original vive aquí dentro
-├─ transicion.mp4            ← vídeo original (unión de las 4 escenas). NUNCA se sobrescribe
-├─ clips-originales/         ← las 4 escenas separadas, tal cual las entregó el usuario
+│  (los originales —fotos/, transicion.mp4 y clips-originales/— ya NO viven aquí:
+│   se movieron el 2026-11-14 a D:\Users\MSI-PC\video\originales-bar. Siguen siendo
+│   la materia prima y NUNCA se tocan, pero no hacen falta para construir la web.)
 ├─ public/
 │  ├─ _headers               ← cabeceras de seguridad (CSP incluida)
 │  ├─ robots.txt · favicon.png · apple-touch-icon.png
@@ -129,7 +132,7 @@ web-el-jardin/               ← raíz del repo (github.com/antoniorb1913/web-el
    └─ assets/      ← copias optimizadas de las fotos
 ```
 
-Los archivos originales del usuario se tratan como **sólo lectura**: se copian y se optimizan, nunca se modifican in situ.
+Los archivos originales del usuario se tratan como **sólo lectura**: se copian y se optimizan, nunca se modifican in situ. Desde el 2026-11-14 están **fuera del repositorio** (209 MB que solo eran materia prima), en `D:\Users\MSI-PC\video\originales-bar`.
 
 ---
 

@@ -23,6 +23,9 @@ desktop.ini
 npm-debug.log*
 pnpm-debug.log*
 
-# OJO: `fotos/` y `transicion.mp4` SÍ se versionan a propósito.
-# Son el material original del bar (irreemplazable) y GitHub hace de copia de
-# seguridad. Decisión del usuario, 2026-11-01. No añadir aquí.
+# Los originales del bar (fotos/, transicion.mp4, clips-originales/) se sacaron del
+# repositorio el 2026-11-14: 209 MB de materia prima que la web no sirve. Viven en
+# D:\Users\MSI-PC\video\originales-bar. Si algún día vuelven, quitar estas líneas.
+/fotos/
+/transicion.mp4
+/clips-originales/

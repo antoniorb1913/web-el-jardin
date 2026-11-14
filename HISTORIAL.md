@@ -631,3 +631,75 @@ fotos —el enlace del menú no llevaba a ninguna parte— y las notas de esta e
 - `astro.config.mjs` declara hoy `site: 'https://bareljardin.netlify.app'`, que **no es de este
   bar**: hay otra web de otro «Bar El Jardín» ahí. Antes de publicar hay que poner el dominio
   de verdad (T18).
+
+## 2026-11-14 · Ajuste — la web se mueve siempre
+
+**Estado:** ✅ Completada
+**Commit:** `feat: la web se mueve siempre; boton para quien prefiera quietud, y dominio del sitio`
+**Archivos:** `src/scripts/app.js`, `src/pages/index.astro`, `src/styles/global.css`,
+`astro.config.mjs`, `public/sitemap.xml`, `AGENTS.md`
+
+### 1. ¿Qué he realizado?
+
+El recorrido de cámara pasa a ser lo normal para todo el mundo. Si el sistema pide menos
+movimiento, en la portada aparece un botón de dos palabras —«Ver sin movimiento»— que lo
+apaga y lo recuerda. La dirección del sitio pasa a `https://web-bar-jardin.netlify.app`.
+
+### 2. ¿Por qué?
+
+El dueño del bar tiene activado «reducir movimiento» en Windows. Con la regla anterior, la
+web se servía quieta en su ordenador y solo se animaba escribiendo `?animar=1`, un truco de
+pruebas. Veía la web sin cámara y con razón la creía rota. En este bar la animación no es un
+adorno: es el producto.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/scripts/app.js` — `pideQuieto()` (solo si se eligió «sin movimiento» o con
+  `?quieto=1`) y el botón que apaga la cámara.
+- `src/pages/index.astro` — el `<button data-activar-movimiento>`, oculto salvo que el
+  sistema pida quietud.
+- `astro.config.mjs` — `site` con la dirección publicada.
+- `AGENTS.md` §3.1, punto 7 — la degradación, actualizada.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. Abrir <http://localhost:4321/> (sin añadir nada) y bajar: la cámara avanza y los cruces
+   se difuminan.
+2. Si el sistema pide menos movimiento, aparece abajo a la derecha «Ver sin movimiento»;
+   al pulsarlo, el fotograma se queda fijo y al recargar sigue fijo.
+
+## 2026-11-14 · Limpieza — fuera lo que no se usa
+
+**Estado:** ✅ Completada
+**Commit:** `chore: fuera el codigo muerto y los 209 MB de originales del repositorio`
+**Archivos:** `src/components/Seccion.astro` (borrado), `src/pages/estilo.astro` (borrado),
+`src/pages/index.astro`, `fotos/`, `clips-originales/`, `transicion.mp4` (sacados del repo),
+`AGENTS.md`, `.gitignore`
+
+### 1. ¿Qué he realizado?
+
+Auditoría de todo el proyecto cruzando cada archivo con lo que pide la web construida. Se
+borraron dos archivos de código que nadie usaba y se sacaron del repositorio los 209 MB de
+material original, que quedan copiados en `D:\Users\MSI-PC\video\originales-bar`.
+
+### 2. ¿Por qué?
+
+El repositorio pesaba 225 MB y la web publicada solo necesita 15,5 MB. Netlify descarga el
+repositorio entero en cada despliegue y cada clon de GitHub arrastraba 209 MB de fotos y
+vídeos que no se sirven. `Seccion.astro` estaba importado pero no se pintaba nunca, y
+`estilo.astro` era la página de muestra del sistema de diseño, que su propio comentario daba
+por borrada en T17.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/components/Seccion.astro` y `src/pages/estilo.astro` — ya no existen.
+- `src/pages/index.astro` — sin el `import Seccion`.
+- `AGENTS.md` §4 y `.gitignore` — los originales están fuera y no se versionan.
+- `public/` — intacto: 240 fotogramas, 10 escenas, 12 fotos de galería, 16 productos, 3 fuentes.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. `npm run build`: 301 archivos, 15,6 MB en `dist/`.
+2. Abrir <http://localhost:4321/> y bajar el recorrido entero: las cuatro paradas y el cierre,
+   con todas sus imágenes cargadas y ninguna rota.
+3. Los originales siguen en `D:\Users\MSI-PC\video\originales-bar` (25 archivos, 208,9 MB).
