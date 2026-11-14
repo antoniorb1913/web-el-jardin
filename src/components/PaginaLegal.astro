@@ -1,63 +1,107 @@
 ---
 /**
- * Página legal (T11).
+ * Página legal (T11 · idiomas en T16).
  *
- * Aviso legal y privacidad comparten forma: una columna estrecha sobre el crema de la
- * casa, el título en Fredoka, los apartados en Figtree y una raya fina entre bloques.
- * Nada más: son páginas para leer, no para mirar.
+ * Aviso legal e intimidad comparten forma: una columna estrecha sobre el crema de la casa,
+ * el título en Fredoka, los apartados en Figtree y una raya fina entre bloques. El texto
+ * sale de `legales.js`, que lo tiene en los tres idiomas.
  *
- * Si faltan los datos del titular, la página lo dice en voz alta. Es preferible una
- * página con un aviso rojo visible a un aviso legal publicado con huecos.
+ * Si faltan los datos del titular, la página lo dice en voz alta: es preferible un aviso
+ * rojo visible a un aviso legal publicado con huecos.
  */
 import Base from '../layouts/Base.astro';
 import { titular, titularCompleto, ultimaRevision } from '../data/legal';
+import { textosLegales } from '../data/legales';
+import { t } from '../data/i18n';
 
 interface Props {
-  titulo: string;
-  entradilla: string;
+  idioma: string;
+  /** `aviso` o `privacidad`: la clave con la que se buscan los textos. */
+  pagina: 'aviso' | 'privacidad';
 }
 
-const { titulo, entradilla } = Astro.props;
+const { idioma, pagina } = Astro.props;
+const textos = textosLegales(idioma)[pagina];
+const ui = t(idioma);
+
+const pendiente = {
+  es: 'Falta por completar. Los datos del titular —nombre, NIF y correo— todavía no están puestos en la dirección del proyecto.',
+  en: 'Not finished yet. The owner’s details —name, tax ID and email— are not in the project settings yet.',
+  de: 'Noch nicht fertig. Die Angaben des Inhabers —Name, Steuernummer und E-Mail— fehlen noch in den Einstellungen.',
+};
+
+const revisado = {
+  es: `Última revisión: ${ultimaRevision}.`,
+  en: `Last reviewed: ${ultimaRevision}.`,
+  de: `Zuletzt geprüft: ${ultimaRevision}.`,
+};
+
+const volver = { es: 'Volver a la portada', en: 'Back to the home page', de: 'Zur Startseite' };
 ---
 
-<Base titulo={`${titulo} · Bar El Jardín`} descripcion={entradilla} tema="claro">
+<Base
+  idioma={idioma}
+  pagina={pagina}
+  titulo={`${textos.titulo} · Bar El Jardín`}
+  descripcion={textos.entradilla}
+  tema="claro"
+>
   <article class="legal">
-    <p class="legal__migas"><a href="/">Bar El Jardín</a> · {titulo}</p>
+    <p class="legal__migas">
+      <a href={ui.rutas.portada}>Bar El Jardín</a> · {textos.titulo}
+    </p>
 
-    <h1 class="legal__titulo">{titulo}</h1>
-    <p class="legal__entradilla">{entradilla}</p>
+    <h1 class="legal__titulo">{textos.titulo}</h1>
+    <p class="legal__entradilla">{textos.entradilla}</p>
 
     {!titularCompleto && (
       <p class="legal__pendiente" role="status">
-        <strong>Falta por completar.</strong> Los datos del titular —nombre, NIF y correo—
-        todavía no están puestos en <code>src/data/legal.js</code>. Esta página no se puede
-        publicar así.
+        <strong>{pendiente[idioma]}</strong>
       </p>
     )}
 
     <dl class="legal__ficha">
       <div>
-        <dt>Titular</dt>
-        <dd>{titular.nombre || 'Pendiente'}</dd>
+        <dt>{textos.ficha.titular}</dt>
+        <dd>{titular.nombre || '—'}</dd>
       </div>
       <div>
-        <dt>NIF</dt>
-        <dd>{titular.nif || 'Pendiente'}</dd>
+        <dt>{textos.ficha.nif}</dt>
+        <dd>{titular.nif || '—'}</dd>
       </div>
       <div>
-        <dt>Domicilio</dt>
+        <dt>{textos.ficha.domicilio}</dt>
         <dd>{titular.domicilio}</dd>
       </div>
       <div>
-        <dt>Correo</dt>
-        <dd>{titular.correo || 'Pendiente'}</dd>
+        <dt>{textos.ficha.correo}</dt>
+        <dd>{titular.correo || '—'}</dd>
       </div>
     </dl>
 
-    <slot />
+    {
+      textos.bloques.map((bloque) => (
+        <section class="legal__bloque">
+          <h2>{bloque.titulo}</h2>
+          {bloque.parrafos.map((parrafo) => (
+            <p>{parrafo}</p>
+          ))}
+          {bloque.enlaces?.map((enlace) => (
+            <p>
+              <a href={enlace.href} target={enlace.href.startsWith('http') ? '_blank' : undefined}
+                rel={enlace.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                {enlace.texto}
+              </a>
+            </p>
+          ))}
+        </section>
+      ))
+    }
+
+    {idioma !== 'es' && <p class="legal__idioma">{textosLegales(idioma).notaIdioma}</p>}
 
     <p class="legal__pie">
-      Última revisión: {ultimaRevision}. · <a href="/">Volver a la portada</a>
+      {revisado[idioma]} · <a href={ui.rutas.portada}>{volver[idioma]}</a>
     </p>
   </article>
 </Base>

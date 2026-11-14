@@ -24,7 +24,7 @@
 | 4 · Calidad | **T13** · Accesibilidad y responsive (auditoría) | ✅ Completada | T12 |
 | 4 · Calidad | **T14** · Rendimiento y presupuesto de arranque | ✅ Completada | T13 |
 | 4 · Calidad | **T15** · Seguridad: `_headers` y CSP | ✅ Completada | T14 |
-| 5 · Publicación | **T16** · Versión en inglés (**confirmar antes**) | ⏳ Pendiente | T15 |
+| 5 · Publicación | **T16** · Web en español e inglés (alemán preparado) | ✅ Completada | T15 |
 | 5 · Publicación | **T17** · Página 404 y detalles finales | ⏳ Pendiente | T15 |
 | 5 · Publicación | **T18** · Publicación en Netlify y dominio | ⏳ Pendiente | T16, T17 |
 
@@ -46,7 +46,7 @@
   - una foto de **«Pasión de la casa»**, que es la única especialidad sin imagen;
   - decidir qué hacer con **`gintonic.png`**, que no está en la lista de especialidades (¿se añade gin tonic a la carta o se usa sólo en la galería?).
 - [ ] **Convertir las fotos HEIC** (`dracula.heic`, `bar2.heic`): ni el navegador ni las herramientas los leen tal cual. Necesita `pillow-heif`, que habrá que instalar en T3.
-- [ ] **Decidir si habrá versión en inglés** (T16).
+- [x] ~~Decidir si habrá versión en inglés~~ → sí, y alemán preparado (T16).
 - [ ] Confirmar qué textos legales hay: nombre del titular y NIF para el aviso legal (T11).
 
 ---

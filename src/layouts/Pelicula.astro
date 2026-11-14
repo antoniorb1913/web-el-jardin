@@ -1,0 +1,88 @@
+---
+/**
+ * La película entera (T16): portada, carta, fotos y cierre, en un idioma.
+ *
+ * Las dos páginas —la española y la inglesa— son este componente con distinto `idioma`.
+ * Así no hay dos copias del recorrido que se puedan desincronizar: si mañana se añade un
+ * apartado, se añade aquí y aparece en los dos idiomas.
+ */
+import Base from './Base.astro';
+import HeroScrolly from '../components/HeroScrolly.astro';
+import Portada from '../components/Portada.astro';
+import Carta from '../components/Carta.astro';
+import Escena from '../components/Escena.astro';
+import Cierre from '../components/Cierre.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { t } from '../data/i18n';
+import { bebidas, platos } from '../data/carta';
+
+interface Props {
+  idioma: string;
+}
+
+const { idioma } = Astro.props;
+const textos = t(idioma);
+
+/** Los nombres de la carta, traducidos y en el mismo orden que las fotos. */
+const piezasEspecialidades = bebidas.map((bebida, indice) => ({
+  ...bebida,
+  nombre: textos.carta.bebidas[indice] ?? bebida.nombre,
+}));
+
+const piezasComida = platos.map((plato, indice) => ({
+  ...plato,
+  nombre: textos.carta.platos[indice] ?? plato.nombre,
+}));
+---
+
+<Base
+  idioma={idioma}
+  pagina="portada"
+  titulo={textos.seo.titulo}
+  descripcion={textos.seo.descripcion}
+  pie={false}
+>
+  <JsonLd idioma={idioma} />
+
+  <HeroScrolly>
+    <Portada idioma={idioma} />
+
+    <Carta
+      id="especialidades"
+      idioma={idioma}
+      titulo={textos.especialidades.titulo}
+      piezas={piezasEspecialidades}
+      nota={textos.carta.nota}
+      texto={textos.especialidades.texto}
+    />
+
+    <Carta
+      id="comida"
+      idioma={idioma}
+      titulo={textos.comida.titulo}
+      piezas={piezasComida}
+      nota={textos.carta.nota}
+      texto={textos.comida.texto}
+    />
+
+    <Escena idioma={idioma} />
+
+    <Cierre idioma={idioma} />
+  </HeroScrolly>
+</Base>
+
+<script>
+  /*
+   * Los dos guiones que dependen de datos, no de texto: el estado de apertura —que calcula
+   * en hora de Madrid— y el mapa —que no carga nada de Google hasta que se pulsa—.
+   *
+   * Vivían en `index.astro` y se quedaron fuera al mover el recorrido a este layout: la
+   * portada inglesa se quedaba con el rótulo en «…» y el mapa sin abrir.
+   */
+  import { iniciarEstadoBar } from '../scripts/horario.js';
+  import { iniciarMapa } from '../scripts/mapa.js';
+  import { tramos } from '../data/negocio';
+
+  iniciarEstadoBar(tramos);
+  iniciarMapa();
+</script>

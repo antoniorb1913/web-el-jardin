@@ -24,7 +24,7 @@ export function iniciarMapa() {
       const marco = document.createElement('iframe');
       marco.className = 'cierre__mapa-marco';
       marco.src = `https://www.google.com/maps?q=${encodeURIComponent(DIRECCION)}&z=16&output=embed`;
-      marco.title = 'Mapa con la ubicación del Bar El Jardín';
+      marco.title = caja.dataset.titulo || 'Mapa con la ubicación del Bar El Jardín';
       marco.referrerPolicy = 'no-referrer-when-downgrade';
       marco.allowFullscreen = true;
 

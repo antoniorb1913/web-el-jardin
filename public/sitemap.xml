@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Sitemap del Bar El Jardín. Tres páginas: la portada y las dos legales. La fecha se
-     actualiza a mano cuando cambia el contenido; es más honesto que poner la de hoy. -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<!-- Sitemap del Bar El Jardín, en sus dos idiomas. Cada página declara su pareja con
+     hreflang, que es lo que evita que Google las tome por duplicados. La fecha se
+     actualiza a mano cuando cambia el contenido. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bareljardin.netlify.app/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bareljardin.netlify.app/en/" />
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://bareljardin.netlify.app/en/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://bareljardin.netlify.app/" />
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
@@ -16,6 +25,18 @@
   </url>
   <url>
     <loc>https://bareljardin.netlify.app/privacidad/</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://bareljardin.netlify.app/en/legal-notice/</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://bareljardin.netlify.app/en/privacy/</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>

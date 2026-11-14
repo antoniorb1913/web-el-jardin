@@ -25,6 +25,7 @@ Cada entrada lleva obligatoriamente los 4 puntos: **¿qué?**, **¿por qué?**, 
 | T13 | 2026-11-14 | Accesibilidad y responsive | ✅ Completada |
 | T14 | 2026-11-14 | Rendimiento: peso, imágenes y caché | ✅ Completada |
 | T15 | 2026-11-14 | Seguridad: cabeceras y CSP | ✅ Completada |
+| T16 | 2026-11-14 | Web en español e inglés; alemán preparado | ✅ Completada |
 
 ---
 
@@ -595,3 +596,58 @@ HTML, el navegador lo bloquea en vez de ejecutarlo. Es el cinturón de seguridad
 3. Bajar al mapa y pulsar «Ver el mapa»: el iframe carga y sigue sin haber violaciones.
 4. `curl -I https://…/` y comprobar que salen `Content-Security-Policy` y
    `X-Frame-Options: DENY`.
+
+## 2026-11-14 · T16 — Web en español e inglés (alemán preparado)
+
+**Estado:** ✅ Completada
+**Rama:** `feat/t16-idiomas`
+**Commit:** `feat: la web en español e inglés, con el alemán preparado`
+**Archivos:** `src/data/i18n.js`, `src/data/legales.js`, `src/layouts/Base.astro`,
+`src/layouts/Pelicula.astro`, `src/components/{Header,Footer,Carta,Escena,Cierre,Portada,
+PaginaLegal,JsonLd}.astro`, `src/pages/**`, `src/scripts/{escena,horario,mapa}.js`,
+`src/styles/global.css`, `public/sitemap.xml`
+
+### 1. ¿Qué he realizado?
+
+La web entera en dos idiomas, con el tercero escrito y a un paso. **No se duplicó ninguna
+página**: el recorrido vive en un layout (`Pelicula.astro`) y cada idioma es una página de
+tres líneas que le pasa su código. Todos los textos —interfaz, carta, fotos, cierre, legales,
+metadatos— están en `i18n.js` y `legales.js`.
+
+### 2. ¿Por qué?
+
+El bar está en una zona con mucho turismo británico y alemán, y sirve bratwurst y currywurst.
+La web del vecino está solo en español: tener inglés es una ventaja barata. **El alemán no se
+publica todavía**: una traducción torpe se nota más que no tenerla, y estas son mías, sin
+revisar por un nativo. El día que alguien lo revise, se enciende añadiendo `'de'` a
+`PUBLICADOS` en `i18n.js` y creando sus dos páginas legales.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/data/i18n.js` — todo el texto de la web en `es`, `en` y `de`, y la lista `PUBLICADOS`.
+- `src/data/legales.js` — aviso legal y privacidad en los tres idiomas.
+- `src/layouts/Pelicula.astro` — el recorrido completo; recibe `idioma` y no escribe texto.
+- `src/layouts/Base.astro` — `<html lang>`, canónica por idioma y `hreflang` solo de los
+  idiomas publicados.
+- `src/components/Header.astro` — el selector `ES · EN`, que lleva a **la misma página** en el
+  otro idioma, no a la portada.
+- `src/scripts/horario.js` — el estado de apertura ya no lleva frases dentro: recibe las
+  plantillas traducidas por `data-estado`.
+- `src/scripts/escena.js` — los titulares de las fotos llegan del componente en
+  `data-titulos`; se eliminó la lista duplicada que había dentro.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. <http://localhost:4321/> y <http://localhost:4321/en/>: los mismos cinco apartados, cada
+   uno en su idioma, con la cabecera y el estado de apertura traducidos.
+2. Pulsar `EN` en la cabecera desde `/privacidad`: hay que llegar a `/en/privacy`, no a la
+   portada.
+3. Ver el código fuente: `lang="en-GB"`, canónica `/en/` y las tres `hreflang`.
+4. `/de/` da 404 a propósito: el alemán está escrito pero no publicado.
+
+### 5. Errores encontrados por el camino
+
+- Al mover la portada a `Pelicula.astro` se quedaron fuera los guiones del estado de apertura
+  y del mapa: el rótulo se quedaba en «…». Se volvieron a enganchar en el layout.
+- El enlace «Fotos» del menú apuntaba a `#fotos`, pero la sección no tenía ese `id`:
+  no llevaba a ninguna parte. Lo destapó la regla `skip-link` de la auditoría.

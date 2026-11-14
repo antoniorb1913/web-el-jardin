@@ -1,5 +1,5 @@
 /**
- * ¿Está abierto el bar?
+ * ¿Está abierto el bar? (T10 · idiomas en T16)
  *
  * El horario está en `AGENTS.md` §1 y en `negocio.js`: de domingo a jueves de 16:00 a
  * 23:00, y viernes y sábados de 16:00 a 00:00.
@@ -13,20 +13,22 @@
  * 3. **El paso de hora** de verano a invierno también va en hora de Madrid, así que el
  *    cálculo no se rompe dos veces al año.
  *
- * Es una función pura: recibe la hora y los tramos, y devuelve el estado. Así se puede
- * probar sin esperar a que lleguen las once de la noche.
+ * El cálculo no sabe idiomas: devuelve hechos —abierto, a qué hora cierra, qué día abre— y
+ * es `textoEstado()` quien los convierte en una frase con las plantillas que le llegan del
+ * componente. Así la misma lógica sirve para los tres idiomas sin tocar nada.
  */
 
 /** Días de la semana como los devuelve `Intl`: 0 es domingo. */
 const NOMBRES_DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
 /**
- * Un tramo: `{ dias, desde, hasta }`.
+ * El estado del bar en un momento dado.
  *
- * `dias` son los días en que se abre (0 domingo … 6 sábado), `desde` y `hasta` son horas
- * en formato «HH:MM». `hasta` puede ser «24:00», que significa medianoche del mismo día.
+ * Devuelve siempre la misma forma:
+ * `{ abierto, cuando, hora, diaNombre, cierraHora }`, donde `cuando` es `'hoy'`,
+ * `'manana'` o `'el viernes'` (este último con el nombre del día ya traducido).
  */
-export function estadoEn(tramos, ahora = new Date()) {
+export function estadoEn(tramos, ahora = new Date(), dias = NOMBRES_DIAS) {
   const { dia, minutos } = horaEnMadrid(ahora);
 
   // ¿Estamos dentro de algún tramo de hoy?
@@ -37,9 +39,10 @@ export function estadoEn(tramos, ahora = new Date()) {
     if (minutos >= inicio && minutos < fin) {
       return {
         abierto: true,
-        cierra: fin === 24 * 60 ? 'a las 00:00' : `a las ${tramo.hasta}`,
-        dia,
-        minutos,
+        cuando: '',
+        hora: '',
+        diaNombre: '',
+        cierraHora: fin === 24 * 60 ? '00:00' : tramo.hasta,
       };
     }
   }
@@ -51,32 +54,29 @@ export function estadoEn(tramos, ahora = new Date()) {
     if (!tramo) continue;
 
     const inicio = aMinutos(tramo.desde);
+
     // Hoy mismo, pero antes de abrir.
     if (salto === 0 && minutos < inicio) {
-      return {
-        abierto: false,
-        abre: `a las ${tramo.desde}`,
-        cuando: 'hoy',
-        dia,
-        minutos,
-      };
+      return { abierto: false, cuando: 'hoy', hora: tramo.desde, diaNombre: dias[dia], cierraHora: '' };
     }
-    // Hoy mismo, pero después de cerrar.
+
+    // Hoy mismo, pero después de cerrar: se sigue buscando.
     if (salto === 0 && minutos >= aMinutos(tramo.hasta)) continue;
 
     if (salto === 1) {
-      return { abierto: false, abre: `a las ${tramo.desde}`, cuando: 'mañana', dia, minutos };
+      return { abierto: false, cuando: 'manana', hora: tramo.desde, diaNombre: dias[diaBuscado], cierraHora: '' };
     }
+
     return {
       abierto: false,
-      abre: `a las ${tramo.desde}`,
-      cuando: `el ${NOMBRES_DIAS[diaBuscado]}`,
-      dia,
-      minutos,
+      cuando: 'el',
+      hora: tramo.desde,
+      diaNombre: dias[diaBuscado],
+      cierraHora: '',
     };
   }
 
-  return { abierto: false, abre: '', cuando: '', dia, minutos };
+  return { abierto: false, cuando: '', hora: '', diaNombre: '', cierraHora: '' };
 }
 
 /** La hora y el día en Madrid, sea cual sea la zona horaria del navegador. */
@@ -94,10 +94,7 @@ export function horaEnMadrid(ahora = new Date()) {
   // `hour` puede venir como «24» a medianoche según el navegador: se normaliza a 0.
   const hora = Number(buscar('hour')) % 24;
 
-  return {
-    dia: dias[buscar('weekday')] ?? 0,
-    minutos: hora * 60 + Number(buscar('minute')),
-  };
+  return { dia: dias[buscar('weekday')] ?? 0, minutos: hora * 60 + Number(buscar('minute')) };
 }
 
 function aMinutos(hora) {
@@ -106,28 +103,56 @@ function aMinutos(hora) {
 }
 
 /**
- * El texto que se enseña. Sin promesas raras: si está abierto, cuándo cierra; si está
- * cerrado, cuándo abre.
+ * El texto que se enseña. Las plantillas llegan del componente ya traducidas:
+ * «Cierra a las {hora}», «Abre mañana a las {hora}»…
  */
-export function textoEstado(estado) {
-  if (estado.abierto) return `Cierra ${estado.cierra}`;
-  if (!estado.abre) return 'Consulta el horario';
-  return `Abre ${estado.cuando} ${estado.abre}`;
+export function textoEstado(estado, frases) {
+  const f = frases ?? {
+    cierra: 'Cierra a las {hora}',
+    hoy: 'Abre hoy a las {hora}',
+    manana: 'Abre mañana a las {hora}',
+    otroDia: 'Abre el {dia} a las {hora}',
+    consulta: 'Consulta el horario',
+  };
+
+  const rellenar = (plantilla, valores) =>
+    plantilla.replace(/\{(\w+)\}/g, (_, clave) => valores[clave] ?? '');
+
+  if (estado.abierto) return rellenar(f.cierra, { hora: estado.cierraHora });
+  if (!estado.hora) return f.consulta;
+  if (estado.cuando === 'hoy') return rellenar(f.hoy, { hora: estado.hora });
+  if (estado.cuando === 'manana') return rellenar(f.manana, { hora: estado.hora });
+  if (estado.cuando === 'el') {
+    // «Abre el viernes a las 16:00»: la plantilla lleva el artículo, el día va aparte.
+    return rellenar(f.otroDia, { dia: estado.diaNombre, hora: estado.hora });
+  }
+  return f.consulta;
 }
 
 /**
  * Enciende el rótulo de la sección. Se actualiza cada minuto: un bar que abre a las 16:00
  * no puede seguir diciendo «cerrado» a las 16:01 porque el visitante no recargue.
+ *
+ * El componente deja las frases y los nombres de los días en `data-estado`, en el idioma de
+ * la página. Si falta o está roto, se usan los de por defecto, en español.
  */
 export function iniciarEstadoBar(tramos) {
   const rotulos = document.querySelectorAll('[data-estado-bar]');
   if (rotulos.length === 0) return;
 
   function pintar() {
-    const estado = estadoEn(tramos, new Date());
     rotulos.forEach((rotulo) => {
+      let datos = {};
+      try {
+        datos = JSON.parse(rotulo.dataset.estado || '{}');
+      } catch {
+        datos = {};
+      }
+
+      const estado = estadoEn(tramos, new Date(), datos.dias);
       const texto = rotulo.querySelector('[data-estado-texto]');
-      if (texto) texto.textContent = textoEstado(estado);
+      if (texto) texto.textContent = textoEstado(estado, datos);
+
       if (estado.abierto) rotulo.dataset.abierto = 'si';
       else delete rotulo.dataset.abierto;
     });
