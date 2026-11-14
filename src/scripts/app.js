@@ -128,25 +128,37 @@ function cancelarViaje() {
 }
 
 /**
- * ¿Toca servir la web quieta?
+ * ¿Se sirve la web quieta?
  *
- * El sistema pide menos movimiento → sí, quieta. Pero se puede pedir lo contrario de dos
- * maneras: con `?animar=1` en la dirección (pruebas) o pulsando el botón «Ver con
- * movimiento» de la portada, que guarda la decisión. Un dueño de bar con la opción de
- * Windows activada vería siempre la versión quieta y creería que la web está rota.
+ * **Por defecto, la web se mueve**: el recorrido de cámara es la web, no un adorno. Si el
+ * sistema pide menos movimiento, aparece un botón discreto para apagarlo, y esa decisión se
+ * recuerda. Así el dueño del bar ve lo mismo que verá su clientela —antes, con la opción de
+ * Windows activada, veía una web quieta y creía que estaba rota—.
+ *
+ * `?animar=1` sigue valiendo para forzarla, y `?quieto=1` para lo contrario.
  */
 const CLAVE_MOVIMIENTO = 'jardin-movimiento';
 
-function movimientoPedido() {
-  if (new URLSearchParams(window.location.search).has('animar')) return true;
+function pideQuieto() {
+  const parametros = new URLSearchParams(window.location.search);
+  if (parametros.has('animar')) return false;
+  if (parametros.has('quieto')) return true;
   try {
-    return window.localStorage.getItem(CLAVE_MOVIMIENTO) === 'si';
+    return window.localStorage.getItem(CLAVE_MOVIMIENTO) === 'no';
   } catch {
     return false;
   }
 }
 
-function guardarMovimiento() {
+function guardarQuieto() {
+  try {
+    window.localStorage.setItem(CLAVE_MOVIMIENTO, 'no');
+  } catch {
+    /* Sin almacenamiento: se queda quieta solo en esta visita. */
+  }
+}
+
+function guardarAnimado() {
   try {
     window.localStorage.setItem(CLAVE_MOVIMIENTO, 'si');
   } catch {
@@ -155,8 +167,7 @@ function guardarMovimiento() {
 }
 
 function prefiereMenosMovimiento() {
-  if (movimientoPedido()) return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return pideQuieto();
 }
 
 function rutaFotograma(indice) {
@@ -531,28 +542,33 @@ export function iniciarPortada() {
     };
     const botonMovimiento = document.querySelector('[data-activar-movimiento]');
 
+    /*
+     * La web se mueve siempre. Si el sistema pide menos movimiento, se ofrece apagarla: el
+     * botón dice exactamente eso y desaparece al pulsarlo. Quien no tenga esa opción activada
+     * no ve ningún botón.
+     */
+    const pideQuietudElSistema = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     if (sinMovimiento) {
       estado.posicion = 0;
       pintar();
       actualizarPaneles();
-
-      /*
-       * El sistema pide quietud, pero quien mira puede querer ver el recorrido. El botón no
-       * engaña a nadie: dice lo que hace y solo aparece en este caso.
-       */
-      if (botonMovimiento) {
-        botonMovimiento.hidden = false;
-        botonMovimiento.addEventListener('click', () => {
-          sinMovimiento = false;
-          guardarMovimiento();
-          document.documentElement.dataset.animar = 'si';
-          botonMovimiento.hidden = true;
-          redimensionar();
-          actualizar();
-        });
-      }
     } else {
       actualizar();
+
+      if (pideQuietudElSistema && botonMovimiento) {
+        botonMovimiento.hidden = false;
+        botonMovimiento.textContent = 'Ver sin movimiento';
+        botonMovimiento.addEventListener('click', () => {
+          sinMovimiento = true;
+          guardarQuieto();
+          delete document.documentElement.dataset.animar;
+          botonMovimiento.hidden = true;
+          estado.posicion = 0;
+          pintar();
+          actualizarPaneles();
+        });
+      }
     }
   } catch (error) {
     console.error('No se pudo dibujar el recorrido:', error);
