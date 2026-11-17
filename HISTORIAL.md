@@ -703,3 +703,47 @@ por borrada en T17.
 2. Abrir <http://localhost:4321/> y bajar el recorrido entero: las cuatro paradas y el cierre,
    con todas sus imágenes cargadas y ninguna rota.
 3. Los originales siguen en `D:\Users\MSI-PC\video\originales-bar` (25 archivos, 208,9 MB).
+
+## 2026-11-17 · Modo móvil — la película sin cámara
+
+**Estado:** ✅ Completada
+**Commit:** `feat: modo móvil sin cámara, carrusel deslizable y retoques del cierre y del índice`
+**Archivos:** `src/scripts/app.js`, `src/scripts/escena.js`, `src/components/Header.astro`,
+`src/pages/index.astro`, `src/styles/global.css`, `src/styles/escena.css`
+
+### 1. ¿Qué he realizado?
+
+En el móvil la web ya no recorre los 240 fotogramas: enseña **las cinco fotos nítidas**, una
+por apartado, con un fundido de 700 ms entre ellas. Además: el carrusel de fotos se desliza
+con el dedo sin abrir el visor, y se han afinado el cierre y el índice del móvil.
+
+### 2. ¿Por qué?
+
+El recorrido por fotogramas costaba en el teléfono 3,4 MB de descarga y ~180 MB de memoria
+decodificada, para un material de 12 fotogramas por segundo que en la mano se ve a saltos.
+Y el recorrido entero eran 11 pantallas de scroll: había que arrastrar el dedo sin fin. Con
+las fotos: 0 fotogramas descargados, 7 pantallas y el mismo relato.
+
+### 3. ¿Dónde verlo en el código?
+
+- `src/scripts/app.js` — `MODO_FOTOS` (pantalla < 760 px o `?movil=1`) y la rama de
+  `actualizarFotos` que empareja una foto con cada apartado.
+- `src/styles/escena.css` / `global.css` — todo bajo `html[data-movil='si']`.
+- `src/scripts/escena.js` — el gesto se escucha **en captura**, para que deslizar no abra el
+  visor; `pointercancel` también resuelve el gesto.
+- `src/styles/global.css` — `.solo-lectores`, que no tenía regla y se veía en pantalla.
+
+### 4. ¿Cómo comprobar que funciona?
+
+1. <http://localhost:4321/?movil=1>: siete pantallas de recorrido, una foto por apartado y
+   fundido entre ellas.
+2. En el móvil: deslizar sobre la foto cambia de imagen sin abrir el visor; tocar sin mover
+   la abre en grande.
+3. En escritorio (1920×1080) nada cambia: 240 fotogramas y el cruce desenfocado.
+
+### 5. Lo que se descartó
+
+- Un intento de bajar el bloque de fotos y separar titular, enlace y foto: se revirtió el
+  mismo día porque se veía peor que el original.
+- El botón «Ver sin movimiento»: el dueño no lo quiere en la web. Queda `?quieto=1` como
+  puerta trasera de pruebas.

@@ -90,6 +90,21 @@ const MODO_LIGERO =
 /** Cada cuántos fotogramas se descarga uno. */
 const SALTO_FOTOGRAMA = MODO_LIGERO ? 2 : 1;
 
+/**
+ * Modo «película sin cámara» (2026-11-17).
+ *
+ * En el móvil el recorrido por fotogramas no compensa: son 3,4 MB y ~180 MB de RAM
+ * decodificada para una animación que, a 12 fotogramas por segundo y en la mano, se ve a
+ * saltos. Ahí se sirve lo mismo que se ve, sin cámara: **las cinco fotos nítidas**, cada una
+ * fija en su parada, con un fundido suave entre ellas.
+ *
+ * Se enciende en pantallas estrechas y también con `?movil=1` en la dirección, para poder
+ * revisarlo desde el ordenador. En escritorio no cambia absolutamente nada.
+ */
+const MODO_FOTOS =
+  typeof window !== 'undefined' &&
+  (window.innerWidth < 760 || new URLSearchParams(window.location.search).has('movil'));
+
 /** Pasos de carga del recorrido y cuándo empieza cada uno. */
 const PASOS_CARGA = [24, 12, 4, 1];
 const RETARDOS_CARGA = [0, 700, 1800, 3500];
@@ -150,21 +165,7 @@ function pideQuieto() {
   }
 }
 
-function guardarQuieto() {
-  try {
-    window.localStorage.setItem(CLAVE_MOVIMIENTO, 'no');
-  } catch {
-    /* Sin almacenamiento: se queda quieta solo en esta visita. */
-  }
-}
 
-function guardarAnimado() {
-  try {
-    window.localStorage.setItem(CLAVE_MOVIMIENTO, 'si');
-  } catch {
-    /* Sin almacenamiento: se anima solo en esta visita. */
-  }
-}
 
 function prefiereMenosMovimiento() {
   return pideQuieto();
@@ -221,6 +222,21 @@ export function iniciarPortada() {
   const portada = document.querySelector('[data-scrolly]');
   if (!portada) return false;
 
+  /*
+   * El modo se decide una vez, al cargar. Si se cruza el umbral de 760 px con la ventana
+   * abierta (o se gira el móvil), se recarga: medio recorrido con cámara y medio sin ella
+   * sería peor que un parpadeo.
+   */
+  if (MODO_FOTOS) document.documentElement.dataset.movil = 'si';
+
+  let anchoInicial = window.innerWidth;
+  window.addEventListener('resize', () => {
+    const cruza = (anchoInicial < 760) !== (window.innerWidth < 760);
+    if (!cruza) return;
+    anchoInicial = window.innerWidth;
+    if (!new URLSearchParams(window.location.search).has('movil')) window.location.reload();
+  });
+
   const lienzo = portada.querySelector('[data-lienzo]');
   const capa = portada.querySelector('[data-capa]');
   const portal = portada.querySelector('[data-portal]');
@@ -275,6 +291,8 @@ export function iniciarPortada() {
    * golpe, el navegador los encola y en dos o tres segundos esta el recorrido entero.
    */
   function precargar() {
+    // En modo fotos no existe la cámara: no se pide ni un fotograma.
+    if (MODO_FOTOS) return;
     for (let i = 0; i < total; i += SALTO_FOTOGRAMA) cargar(i);
   }
 
@@ -288,6 +306,7 @@ export function iniciarPortada() {
    * que se esta viendo siempre esta listo.
    */
   function precargarAlrededor(centro) {
+    if (MODO_FOTOS) return; // en modo fotos no hay cámara a la que seguir
     const desde = Math.max(0, Math.floor(centro) - 10);
     const hasta = Math.min(total - 1, Math.ceil(centro) + 36);
     // En modo ligero solo se piden los pares; los impares no existen en memoria.
@@ -296,6 +315,7 @@ export function iniciarPortada() {
   }
 
   function redimensionar() {
+    if (MODO_FOTOS) return; // el lienzo está oculto: no hay nada que medir
     estado.ancho = portada.clientWidth;
     estado.alto = window.innerHeight;
 
@@ -320,6 +340,7 @@ export function iniciarPortada() {
   }
 
   function pintar() {
+    if (MODO_FOTOS) return; // no hay fotogramas que pintar
     const { ancho, alto, dpr } = estado;
     if (ancho === 0 || alto === 0) return;
 
@@ -359,6 +380,36 @@ export function iniciarPortada() {
     const total = avance * TRAMOS;
     const tramo = Math.min(Math.floor(total), TRAMOS - 1);
     const dentro = total - tramo;
+
+    /*
+     * Modo fotos: no hay cámara que sincronizar, así que cada parada enseña su foto entera
+     * mientras dura. El fundido entre una y otra lo hace el CSS (700 ms), no el guion.
+     */
+    if (MODO_FOTOS) {
+      /*
+       * Una foto por apartado, y el cambio en el hueco entre uno y otro.
+       *
+       * Los textos se encienden pegados a su parada (0, 0'25, 0'5, 0'75 y 1) y se apagan a
+       * 0,062 de ella; entre 0,062 y 0,188 no hay nada escrito. Ahí es donde cambia la foto:
+       * el visitante nunca ve dos escenas mezcladas con un texto encima, y cada apartado
+       * aparece ya sobre su foto, no antes.
+       */
+      const bordes = [0.125, 0.375, 0.625, 0.875];
+      let activa = bordes.findIndex((borde) => avance < borde);
+      if (activa === -1) activa = TRAMOS;
+
+      fotos.forEach((foto, indice) => {
+        const imagen = foto.elemento.querySelector('img');
+        const opacidad = indice === activa ? 1 : 0;
+
+        if (opacidad > 0 && imagen && !imagen.getAttribute('src')) {
+          imagen.setAttribute('srcset', imagen.dataset.fuenteSet || '');
+          imagen.setAttribute('src', imagen.dataset.fuente || '');
+        }
+        foto.elemento.style.setProperty('--op-foto', opacidad.toFixed(3));
+      });
+      return;
+    }
 
     fotos.forEach((foto, indice) => {
       const imagen = foto.elemento.querySelector('img');
@@ -403,6 +454,7 @@ export function iniciarPortada() {
 
   /** Abre y cierra el círculo del cruce. */
   function actualizarPortal(avance) {
+    if (MODO_FOTOS) return; // el cruce aquí es el fundido de las fotos
     if (!portal || cruzando) return;
     const curva = suavizar(estadoPortal(avance));
     portal.style.setProperty('--radio', (curva * 115).toFixed(2));
@@ -540,35 +592,20 @@ export function iniciarPortada() {
       estado.posicion = objetivo;
       pintar();
     };
-    const botonMovimiento = document.querySelector('[data-activar-movimiento]');
-
     /*
-     * La web se mueve siempre. Si el sistema pide menos movimiento, se ofrece apagarla: el
-     * botón dice exactamente eso y desaparece al pulsarlo. Quien no tenga esa opción activada
-     * no ve ningún botón.
+     * La web se mueve siempre.
+     *
+     * Hubo aquí un botón «Ver sin movimiento» para quien tiene el sistema en «reducir
+     * movimiento». El dueño del bar no lo quiere en la web, así que ya no se pinta: quien
+     * necesite la versión quieta puede pedirla con `?quieto=1` en la dirección, y esa
+     * preferencia sigue guardándose si algún día vuelve el botón.
      */
-    const pideQuietudElSistema = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     if (sinMovimiento) {
       estado.posicion = 0;
       pintar();
       actualizarPaneles();
     } else {
       actualizar();
-
-      if (pideQuietudElSistema && botonMovimiento) {
-        botonMovimiento.hidden = false;
-        botonMovimiento.textContent = 'Ver sin movimiento';
-        botonMovimiento.addEventListener('click', () => {
-          sinMovimiento = true;
-          guardarQuieto();
-          delete document.documentElement.dataset.animar;
-          botonMovimiento.hidden = true;
-          estado.posicion = 0;
-          pintar();
-          actualizarPaneles();
-        });
-      }
     }
   } catch (error) {
     console.error('No se pudo dibujar el recorrido:', error);

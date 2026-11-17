@@ -359,3 +359,8 @@ flechas caen debajo de la imagen.
 **Archivos:** `netlify.toml`, `README.md`.
 
 **Verificación:** tras conectar el repo en Netlify, la URL pública muestra la web y el formulario de build (no hay) no da errores; los clips de vídeo cargan desde el CDN.
+
+
+> **Resuelto el 2026-11-17.** En el móvil ya no hay recorrido de cámara: se sirven las cinco
+> fotos nítidas, una por apartado, y el recorrido baja de 11 pantallas a 7. Ver la entrada
+> «Modo móvil — la película sin cámara» en `HISTORIAL.md`.

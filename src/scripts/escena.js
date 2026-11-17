@@ -114,27 +114,51 @@ export function iniciarEscena() {
     let inicioX = null;
     let huboArrastre = false;
 
-    raiz.addEventListener('pointerdown', (evento) => {
-      if (evento.pointerType === 'mouse' && evento.button !== 0) return;
-      if (evento.target.closest('.escena__rayas, .escena__enlace, dialog')) return;
-      inicioX = evento.clientX;
-      huboArrastre = false;
-    });
+    /*
+     * El gesto se escucha **en fase de captura**, y esa es toda la gracia.
+     *
+     * La foto es un `<button>` y `galeria.js` le cuelga un `pointerup` que abre el visor. Ese
+     * manejador se ejecuta antes que el nuestro (está en el propio botón, no en la escena),
+     * así que deslizar sobre la foto abría la imagen grande: el gesto se convertía en un
+     * toque. Escuchando en captura llegamos antes, y si el recorrido es claramente
+     * horizontal se corta el evento: el visor no se abre y el carrusel pasa de foto. Si el
+     * dedo apenas se mueve, no se toca nada y el toque abre la foto, como siempre.
+     */
+    function esZonaMuerta(elemento) {
+      return Boolean(elemento.closest('.escena__rayas, .escena__enlace, dialog'));
+    }
 
-    raiz.addEventListener('pointerup', (evento) => {
+    raiz.addEventListener(
+      'pointerdown',
+      (evento) => {
+        if (evento.pointerType === 'mouse' && evento.button !== 0) return;
+        if (esZonaMuerta(evento.target)) return;
+        inicioX = evento.clientX;
+        huboArrastre = false;
+      },
+      true,
+    );
+
+    function resolverGesto(evento) {
       if (inicioX === null) return;
       const recorrido = evento.clientX - inicioX;
       inicioX = null;
-      if (Math.abs(recorrido) > 48) {
-        huboArrastre = true;
-        pintar(actual + (recorrido < 0 ? 1 : -1));
-      }
-    });
 
-    raiz.addEventListener('pointercancel', () => {
-      inicioX = null;
-    });
+      // Menos de 40 px es un toque, no un gesto: se deja pasar para que abra la foto.
+      if (Math.abs(recorrido) < 40) return;
 
+      huboArrastre = true;
+      evento.stopPropagation();
+      evento.preventDefault();
+      pintar(actual + (recorrido < 0 ? 1 : -1));
+    }
+
+    // En captura los dos: `pointerup` cuando el gesto termina bien y `pointercancel` cuando
+    // el navegador se queda el dedo (pasa en casi todos los móviles en cuanto se mueve).
+    raiz.addEventListener('pointerup', resolverGesto, true);
+    raiz.addEventListener('pointercancel', resolverGesto, true);
+
+    // Y si aun así llega un `click` después de un arrastre, no abre el visor.
     raiz.addEventListener(
       'click',
       (evento) => {

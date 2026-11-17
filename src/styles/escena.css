@@ -410,3 +410,61 @@
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   El apartado de fotos en el móvil — solo el gesto (2026-11-17)
+
+   Aquí hubo un intento de bajar el bloque y separar titular, enlace y foto. Se revirtió
+   el mismo día: se veía peor que el original. Se conserva únicamente lo que hace falta
+   para que el deslizamiento con el dedo llegue al guion: `pan-y` le dice al navegador que
+   el desplazamiento vertical es suyo y el horizontal es de la web. Sin esto, el gesto se
+   cancelaba antes de terminar.
+
+   La maquetación vuelve a ser la de siempre (bloque `@media (max-width: 900px)`).
+   --------------------------------------------------------------------------- */
+
+html[data-movil='si'] .escena {
+  /* El vertical es de la página; el horizontal, de la web. Sin esto el gesto se cancelaba. */
+  touch-action: pan-y;
+  /*
+   * El bloque va centrado en vertical, así que meter aire debajo subía el titular. Este
+   * relleno compensa exactamente ese hueco: el titular se queda donde estaba y lo que baja
+   * es «VER EN GRANDE» y el carrusel.
+   */
+  padding-top: calc(7rem + 3.1rem);
+}
+
+/*
+ * Solo bajan «VER EN GRANDE» y el carrusel: el titular y el encabezado del apartado se
+ * quedan donde estaban. El aire se mete como margen, no moviendo el bloque, para que el
+ * titular no se desplace ni un píxel.
+ */
+html[data-movil='si'] .escena__enlace {
+  margin-top: 1.8rem;
+}
+
+html[data-movil='si'] .escena__fotos {
+  margin-top: 1.5rem;
+}
+
+/*
+ * El paso de una foto a otra en el móvil: más recorrido y más lento que en el escritorio.
+ *
+ * En el escritorio el deslizamiento es corto (14 %) porque la foto compite con el titular
+ * en la misma línea de visión. Aquí hay pantalla de sobra y el gesto lo pone el dedo, así
+ * que la foto sale desplazada un 22 % y el fundido tarda más: se lee como un pase, no como
+ * un corte. La curva es la misma en las dos, para que no cambien de carácter.
+ */
+html[data-movil='si'] .escena__foto {
+  transform: translateX(calc(var(--d, 1) * 22%)) scale(calc(1 - var(--d, 1) * 0.03));
+  /* Curva de salida larga: arranca decidida y se posa despacio, que es lo que hace que un
+     desplazamiento se lea como suave y no como un tirón al final. */
+  transition:
+    transform 950ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 680ms ease-out;
+}
+
+/* La que llega entra desde el lado contrario, con su propio recorrido. */
+html[data-movil='si'] .escena__foto[data-activa='si'] {
+  transform: translateX(0) scale(1);
+}
