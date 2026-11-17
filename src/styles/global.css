@@ -141,6 +141,16 @@
     );
 
   /*
+   * Por encima de las fotos, siempre.
+   *
+   * El velo se pintaba después que la capa del fondo, pero las fotos de la galería llevan
+   * `z-index` propio (1 y 2) para apilarse entre ellas: sin este número, las fotos se le
+   * colocaban por encima del velo y en el móvil se veían sin oscurecer, mientras que en el
+   * ordenador sí salían oscurecidas. Con `z-index: 3` el velo vuelve a tapar todo.
+   */
+  z-index: 3;
+
+  /*
    * Aquí había una capa de luz cálida en modo `screen`. Se retiró: su variable estaba
    * fija a 0 —nunca se encendía— y el modo de fusión obligaba al navegador a mezclar
    * una capa a pantalla completa en cada fotograma del recorrido. En un portátil no se
