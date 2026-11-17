@@ -342,6 +342,11 @@
     flex-direction: column;
     justify-content: center;
     padding-top: clamp(7rem, 10vh, 4.6rem);
+    /*
+     * El vertical es de la página; el horizontal, de la web. Sin esto el navegador se queda
+     * el gesto para desplazar y cancela el toque: el carrusel no responde al dedo.
+     */
+    touch-action: pan-y;
   }
 
   /* En vertical no hay sitio a la izquierda del titular: el número se va a la derecha,

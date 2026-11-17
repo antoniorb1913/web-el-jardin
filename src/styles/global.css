@@ -2437,6 +2437,7 @@ html[data-movil='si'] .fondo__capa {
   opacity: 1;
 }
 
+@media (max-width: 760px) {
 /* ---------------------------------------------------------------------------
    El cierre en el móvil: compacto y sin pegarse al logotipo (2026-11-17)
 
@@ -2446,9 +2447,11 @@ html[data-movil='si'] .fondo__capa {
    que todo entre de una vez, sin scroll dentro de un bloque que ya está fijo.
    --------------------------------------------------------------------------- */
 
-html[data-movil='si'] .cierre {
+.cierre {
   gap: 0.5rem;
-  /*
+  }
+
+/*
    * El bloque arranca debajo del logotipo, no centrado: centrado dejaba un palmo de foto
    * vacía arriba y el texto se apelotonaba abajo. El relleno de arriba es el que libra el
    * logotipo (90 px) y deja aire suficiente para que el titular respire.
@@ -2685,6 +2688,7 @@ html[data-movil='si'] .cierre__mapa-caja {
   max-width: none;
 }
 
+@media (max-width: 760px) {
 /* ---------------------------------------------------------------------------
    Los grises del cierre, legibles sobre la foto (2026-11-17)
 
@@ -2699,41 +2703,44 @@ html[data-movil='si'] .cierre__mapa-caja {
       oscuro. Es la misma herramienta que ya usa el titular del cierre.
    --------------------------------------------------------------------------- */
 
-html[data-movil='si'] .cierre__direccion,
-html[data-movil='si'] .cierre__estado,
-html[data-movil='si'] .cierre__horario,
-html[data-movil='si'] .cierre__redes-titulo,
-html[data-movil='si'] .cierre__legal {
+.cierre__direccion,
+.cierre__estado,
+.cierre__horario,
+.cierre__redes-titulo,
+.cierre__legal {
   text-shadow: 0 1px 10px rgb(4 16 9 / 0.8), 0 0 2px rgb(4 16 9 / 0.55);
 }
 
-html[data-movil='si'] .cierre__direccion {
+.cierre__direccion {
   color: rgb(253 250 244 / 0.97);
 }
 
-html[data-movil='si'] .cierre__estado {
+.cierre__estado {
   color: rgb(253 250 244 / 0.95);
 }
 
-html[data-movil='si'] .cierre__horario dt,
-html[data-movil='si'] .cierre__horario dd {
+.cierre__horario dt,
+.cierre__horario dd {
   color: rgb(253 250 244 / 0.92);
 }
 
-html[data-movil='si'] .cierre__redes-titulo {
+.cierre__redes-titulo {
   color: rgb(253 250 244 / 0.88);
 }
 
-html[data-movil='si'] .cierre__legal {
+.cierre__legal {
   color: rgb(253 250 244 / 0.82);
 }
 
-html[data-movil='si'] .cierre__horario {
+.cierre__horario {
   border-top-color: rgb(253 250 244 / 0.45);
 }
 
-html[data-movil='si'] .cierre__redes-lista {
+.cierre__redes-lista {
   border-top-color: rgb(253 250 244 / 0.45);
+}
+
+@media (max-width: 760px) {
 }
 
 /*
@@ -2746,7 +2753,7 @@ html[data-movil='si'] .cierre__redes-lista {
  *
  * No es una caja: es un degradado que se disuelve, así que la foto se sigue viendo.
  */
-html[data-movil='si'] #ubicacion [data-panel]::before {
+#ubicacion [data-panel]::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -2762,9 +2769,11 @@ html[data-movil='si'] #ubicacion [data-panel]::before {
   );
 }
 
-html[data-movil='si'] #ubicacion [data-panel] > .cierre {
+#ubicacion [data-panel] > .cierre {
   position: relative;
   z-index: 1;
+}
+
 }
 
 /* ---------------------------------------------------------------------------

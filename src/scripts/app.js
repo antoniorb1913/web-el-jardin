@@ -101,9 +101,7 @@ const SALTO_FOTOGRAMA = MODO_LIGERO ? 2 : 1;
  * Se enciende en pantallas estrechas y también con `?movil=1` en la dirección, para poder
  * revisarlo desde el ordenador. En escritorio no cambia absolutamente nada.
  */
-const MODO_FOTOS =
-  typeof window !== 'undefined' &&
-  (window.innerWidth < 760 || new URLSearchParams(window.location.search).has('movil'));
+const MODO_FOTOS = false; // apagado a petición del dueño (2026-11-17): el móvil vuelve a la cámara
 
 /** Pasos de carga del recorrido y cuándo empieza cada uno. */
 const PASOS_CARGA = [24, 12, 4, 1];
