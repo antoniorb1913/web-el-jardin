@@ -2388,20 +2388,8 @@ html[data-movil='si'] #ubicacion {
 
 /* El fundido entre paradas: 700 ms y un desenfoque de 4 px que se va al llegar. */
 html[data-movil='si'] .foto {
-  /*
-   * Fundido de 480 ms, no 700: con dos fotos distintas, cuanto menos tiempo se vean
-   * superpuestas, mejor. Y la que entra hace un asentamiento de cámara (1,04 → 1 en algo
-   * más de un segundo): así el relevo se lee como un movimiento y no como un fantasma.
-   */
-  transition:
-    opacity 480ms ease-out,
-    transform 1150ms cubic-bezier(0.16, 1, 0.3, 1);
-  transform: scale(1.04);
+  transition: opacity 700ms ease-in-out;
   filter: blur(calc((1 - var(--op-foto, 0)) * 4px));
-}
-
-html[data-movil='si'] .foto[data-frente='si'] {
-  transform: none;
 }
 
 html[data-movil='si'] .foto img {
