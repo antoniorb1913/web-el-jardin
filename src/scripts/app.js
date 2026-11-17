@@ -398,15 +398,26 @@ export function iniciarPortada() {
       let activa = bordes.findIndex((borde) => avance < borde);
       if (activa === -1) activa = TRAMOS;
 
+
       fotos.forEach((foto, indice) => {
         const imagen = foto.elemento.querySelector('img');
-        const opacidad = indice === activa ? 1 : 0;
 
-        if (opacidad > 0 && imagen && !imagen.getAttribute('src')) {
+        /*
+         * Nunca más de dos fotos a la vez: la que manda y la anterior, que se queda opaca
+         * debajo para que no asome el fondo oscuro a mitad del fundido.
+         *
+         * Dejar todas las anteriores visibles (aunque estuvieran tapadas) metía cinco capas
+         * a pantalla completa en la GPU del teléfono, y eso se nota: tirones y parpadeos.
+         * Con dos, el compositor va sobrado.
+         */
+        const visible = indice === activa || indice === activa - 1;
+        foto.elemento.style.zIndex = indice === activa ? '2' : '1';
+        foto.elemento.style.setProperty('--op-foto', visible ? '1' : '0');
+
+        if (imagen && !imagen.getAttribute('src')) {
           imagen.setAttribute('srcset', imagen.dataset.fuenteSet || '');
           imagen.setAttribute('src', imagen.dataset.fuente || '');
         }
-        foto.elemento.style.setProperty('--op-foto', opacidad.toFixed(3));
       });
       return;
     }

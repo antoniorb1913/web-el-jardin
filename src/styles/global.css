@@ -2388,18 +2388,18 @@ html[data-movil='si'] #ubicacion {
 
 /* El fundido entre paradas: 700 ms y un desenfoque de 4 px que se va al llegar. */
 html[data-movil='si'] .foto {
-  transition: opacity 700ms ease-in-out;
-  filter: blur(calc((1 - var(--op-foto, 0)) * 4px));
+  /*
+   * Fundido limpio: solo opacidad.
+   *
+   * Antes llevaba `filter: blur(...)` en la foto que entraba. En Android eso obliga a
+   * repintar una imagen a pantalla completa en cada fotograma y se ve como un borrón
+   * grande y un salto: es el «parpadeo» que salía en el móvil. Con opacidad sola, el
+   * navegador lo resuelve en la GPU sin repintar.
+   */
+  transition: opacity 500ms ease-out;
 }
 
-html[data-movil='si'] .foto img {
-  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
-  transform: scale(1.03);
-}
 
-html[data-movil='si'] .foto[style*='--op-foto: 1'] img {
-  transform: scale(1);
-}
 
 /* La carta: tarjetas más pequeñas para que asome la siguiente y se vea que hay más. */
 html[data-movil='si'] .tira__pieza {

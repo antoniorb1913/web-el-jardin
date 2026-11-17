@@ -31,11 +31,7 @@ const fotos = [
 ---
 
 <div class="portada relative" data-scrolly data-total={TOTAL}>
-  {/* `100lvh` es el alto de la ventana con la barra de direcciones ESCONDIDA. Con `dvh`
-        la capa medía lo que la ventana medía al cargar; al deslizar, Android esconde su
-        barra, la ventana crece y aparecía una franja blanca del fondo de la página por
-        debajo de la foto. Con el alto mayor, siempre sobra capa y nunca falta. */}
-  <div class="sticky top-0 h-[100lvh] overflow-hidden bg-tinta-900" data-fondo>
+  <div class="sticky top-0 h-dvh overflow-hidden bg-tinta-900" data-fondo>
     <div class="fondo__capa" data-capa aria-hidden="true">
       <canvas class="fondo__lienzo" data-lienzo></canvas>
 
