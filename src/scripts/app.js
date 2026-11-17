@@ -242,6 +242,22 @@ export function iniciarPortada() {
   const portal = portada.querySelector('[data-portal]');
   const total = Number(portada.dataset.total || 0);
   const secciones = Array.from(portada.querySelectorAll('[data-seccion]'));
+  /*
+   * En modo fotos se piden las cinco de golpe, al arrancar.
+   *
+   * Antes cada foto se descargaba cuando le tocaba —al entrar en su apartado—, y en el
+   * fundido se veía un parpadeo negro: la imagen entraba antes de estar. En escritorio no
+   * pasa porque los fotogramas ya están todos en memoria. Son cinco archivos pequeños
+   * (~120 KB cada uno en móvil), no compensa el parpadeo para ahorrarlos.
+   */
+  if (MODO_FOTOS) {
+    document.querySelectorAll('[data-foto] img').forEach((imagen) => {
+      if (imagen.getAttribute('src')) return;
+      imagen.setAttribute('srcset', imagen.dataset.fuenteSet || '');
+      imagen.setAttribute('src', imagen.dataset.fuente || '');
+    });
+  }
+
   const fotos = Array.from(portada.querySelectorAll('[data-foto]')).map((elemento) => ({
     elemento,
     inicio: Number(elemento.dataset.inicio || 0),
@@ -400,13 +416,25 @@ export function iniciarPortada() {
 
       fotos.forEach((foto, indice) => {
         const imagen = foto.elemento.querySelector('img');
-        const opacidad = indice === activa ? 1 : 0;
 
-        if (opacidad > 0 && imagen && !imagen.getAttribute('src')) {
+        /*
+         * Fundido sin bajón: la foto que entra se pinta **encima** de la que se queda,
+         * que sigue opaca debajo. Si se apagaran las dos a la vez, a mitad del paso el
+         * fondo oscuro asomaría entre las dos y se vería un parpadeo negro, que es
+         * justo lo que pasaba en el móvil.
+         *
+         * Por eso todas las fotos hasta la activa se quedan opacas (tapadas por la de
+         * arriba) y solo la activa sube al frente.
+         */
+        const opacidad = indice <= activa ? 1 : 0;
+        foto.elemento.style.zIndex = indice === activa ? '2' : '1';
+        foto.elemento.dataset.frente = indice === activa ? 'si' : 'no';
+        foto.elemento.style.setProperty('--op-foto', opacidad.toFixed(3));
+
+        if (imagen && !imagen.getAttribute('src')) {
           imagen.setAttribute('srcset', imagen.dataset.fuenteSet || '');
           imagen.setAttribute('src', imagen.dataset.fuente || '');
         }
-        foto.elemento.style.setProperty('--op-foto', opacidad.toFixed(3));
       });
       return;
     }
